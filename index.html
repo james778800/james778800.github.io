@@ -151,6 +151,74 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-pheatmap绘制（凑个第一篇BLOG）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6%EF%BC%88%E5%87%91%E4%B8%AA%E7%AC%AC%E4%B8%80%E7%AF%87BLOG%EF%BC%89/">pheatmap绘制（凑个第一篇BLOG）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6%EF%BC%88%E5%87%91%E4%B8%AA%E7%AC%AC%E4%B8%80%E7%AF%87BLOG%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2020-04-16T12:06:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#pheatmap绘制热图（R语言）</p>
+<p>⚪本次跑代码的示例数据是源自不同病人结直肠癌不同组织单细胞测序数据，绘制热图的原因是想在大量数据中去寻找基因的表达量与结直肠癌病人的时期的关系，从而探究基因表达与疾病时期发展的关系。</p>
+<p>⚪显然热图是研究相关性进行数据可视化的很好的选择</p>
+<p>⚪对于新手若去了解一个包绘图的使用，please：?pheatmap()</p>
+<p>##工作示例<br>###①清空环境中的所有变量<br>    rm(list = ls())<br>###②这个很关键，关闭因子，以防出现未知的错误，追悔莫及<br>    options(stringsAsFactors = F)<br>###设置自己的工作目录，一定要有条理，不然输出的图片多了容易搞混淆<br>    getwd()<br>    setwd(“G:/CRC_scRNAseq/“)<br>###调包显然是必须，我选择导出的是pdf，这个包类似一个画布类型，先自动生产一个0KB的pdf，然后dev.off()之后就会生产文件，方便调节画布等。<br>    library(pheatmap)<br>    library(Cairo)<br>###这里可以设置输出PDF的宽度和高度<br>    CairoPDF(file = “Heatmap_BP_coll.pdf”,width = 14,height = 16)<br>###以csv格式读取表达矩阵，提前已经清洗注释了数据噢~<br>    B_P_DNB &lt;- read.csv(“B_P_DNB_genes_stage_1.csv”,header =T ,sep = “,”,row.names = 1)</p>
+<p>###画热图,针对stage和DNB基因的基因集的表达矩阵,没有聚类分组<br>####※比较值得记忆的是：angle_col = 0 可以旋转文字，其余就在使用中慢慢学习，反正我很菜hhh<br>    pheatmap(B_P_DNB, cluster_cols = T,border=FALSE,<br>         color = colorRampPalette(c(“navy”, “white”, “red”))(50),<br>         scale = “row”,show_colnames =T,show_rownames = F,<br>         main = “ B precancerous tissue DNBgenes&amp;stage heatmap”, angle_col = 0,<br>         treeheight_col = 8)<br>###出图，快乐<br>    dev.off()<br>#产出图片：<br>![alt <a href="https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2020/png/1107735/1584418825328-resources/861623/png/4995f8fd-2978-4b3c-9334-6b5235c1b9bd.png?OSSAccessKeyId=LTAIX2KDHwZymFhr&amp;Expires=1587042543&amp;Signature=fc%2FLuWtd%2Bu8d83OGRBWa80migYc%3D]" target="_blank" rel="noopener">https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2020/png/1107735/1584418825328-resources/861623/png/4995f8fd-2978-4b3c-9334-6b5235c1b9bd.png?OSSAccessKeyId=LTAIX2KDHwZymFhr&amp;Expires=1587042543&amp;Signature=fc%2FLuWtd%2Bu8d83OGRBWa80migYc%3D]</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6%EF%BC%88%E5%87%91%E4%B8%AA%E7%AC%AC%E4%B8%80%E7%AF%87BLOG%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
