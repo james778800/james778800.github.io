@@ -151,6 +151,397 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-TCGA数据-3-生存分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(3):生存分析（bulk水平）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2020-07-07T16:30:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>##生存分析的关键在与处理meta信息的数据<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="meta_new示例"></p>
+</li>
+<li><p>time属于自己做的，TCGA上没有</p>
+</li>
+<li><p>a.vital_status需要自己把Alive和Dead改成0 和 1</p>
+</li>
+<li><p>meta信息的样本和表达矩阵需要对应的上</p>
+</li>
+<li><p>##然后再使用以下包来进行分析：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;生存分析&#x2F;&quot;)</span><br><span class="line">########################################################################################</span><br><span class="line">options(stringsAsFactors &#x3D; F)</span><br><span class="line">########################################################################################</span><br><span class="line">library(survival)</span><br><span class="line">library(parallel)</span><br><span class="line">library(survminer)</span><br><span class="line">library(Cairo)</span><br></pre></td></tr></table></figure></li>
+<li><p>##读入整理的meta信息，以及转置后样本行数匹配的fpkm数据，因为需要合并制作生存分析的对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#Dead:0</span><br><span class="line">#Alive:1</span><br><span class="line"></span><br><span class="line">meta_data &lt;- read.csv(&quot;meta_new.csv&quot;,header &#x3D; T,check.names &#x3D; F)</span><br><span class="line">#meta_data &lt;- meta_data[,-1]</span><br><span class="line">fpkmdata &lt;- read.csv(&quot;FPKMexp_new.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">splots &lt;- list()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>##转置，再将两个矩阵的ID列完全匹配合并，使用merge()，考验数据清洗的基本功，显然我搞了半天mmp，太憨了老夫</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">T_EXP &lt;- as.data.frame(t(fpkmdata))</span><br><span class="line">T_EXP$ID &lt;- row.names(T_EXP)</span><br><span class="line"></span><br><span class="line">write.csv(dddd,&quot;FPKM_T_exp.csv&quot;)</span><br><span class="line"></span><br><span class="line">meta1 &lt;- read.csv(&quot;FPKM_T_exp.csv&quot;,header &#x3D; T)</span><br><span class="line">meta2 &lt;- read.csv(&quot;meta_new.csv&quot;,header &#x3D; T)</span><br><span class="line"></span><br><span class="line">data1 &lt;- merge(x &#x3D; meta2, y &#x3D; T_EXP , by &#x3D; &quot;ID&quot;, all &#x3D; TRUE)</span><br><span class="line">meta_data &#x3D; data1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>##定义MGP基因（你研究的gene）的表达量的高低，和平均表达量比或者中位数比，来分组进行线性拟合</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">group1&lt;-ifelse(meta_data$MGP&gt;mean(meta_data$MGP), &quot;High&quot;,&quot;Low&quot;)</span><br><span class="line">#group1&lt;-ifelse(meta_data$MGP&gt;median(meta_data$MGP), &quot;High&quot;,&quot;Low&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>##添加分组信息，绘制生存曲线</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sfit1&lt;-survfit(Surv(time,a.vital_status)~group1,data &#x3D; meta_data)</span><br><span class="line">ggsurvplot(sfit1,</span><br><span class="line">           legend.title &#x3D; NULL,</span><br><span class="line">           conf.int &#x3D; F,</span><br><span class="line">           pval &#x3D; T,</span><br><span class="line">           title &#x3D; &#39;Gene Entropy Level&#39;,</span><br><span class="line">           risk.table &#x3D; F,</span><br><span class="line">           palette &#x3D; c(&quot;#E7B800&quot;,&quot;#2E9FDF&quot;),</span><br><span class="line">           risk.table.col &#x3D; &#39;strata&#39;,</span><br><span class="line">           tables.height &#x3D; 0.2,</span><br><span class="line">           xlab &#x3D; &quot;Time In Days&quot;,</span><br><span class="line">           pval.method &#x3D; TRUE,</span><br><span class="line">           surv.median.line &#x3D; &quot;hv&quot;,</span><br><span class="line">           ncensor.plot &#x3D; T)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>1、按照中位数来分组的生存曲线：<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/2.png" alt="meta_new示例"><br>2、按照平均数数来分组的生存曲线：<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/3.png" alt="meta_new示例"></p>
+</blockquote>
+</li>
+<li><p>##然而这里两个生存分析的结果均不明显，选择直接网上下载</p>
+<blockquote>
+<p><a href="https://www.proteinatlas.org/" target="_blank" rel="noopener">https://www.proteinatlas.org/</a><br>#Human Protein Atlas 数据库<br>简称HPA数据库，它致力于提供全部24,000种人类蛋白质的组织和细胞分布信息，并免费提供公众查询。<br>创立这个数据库的瑞典 Knut &amp; Alice Wallenberg基金会使用特制的抗体，用免疫组化的技术，检查每一种蛋白质在48种人类正常组织，20种肿瘤组织，47个细胞系和12种血液细胞内的分布和表达，其结果用至少576张免疫组化染色图表示，并经专业人员阅读和标引。这些受检组织来自144个不同个体和216个肿瘤组织，保证染色结果具有充分的代表性。这是一个大规模蛋白质研究项目，主要目的是绘制人体组织和细胞中表达基因编码的蛋白位置。<br>举个栗子，查询明星基因pten的表达情况<br>在搜索栏输入基因名称。点击search。</p>
+</blockquote>
+</li>
+<li><p>还可以直接下载生存曲线哟！效果达到预期！真香！就是不高清……</p>
+<blockquote>
+<p><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/4.png" alt="meta_new示例"></p>
+</blockquote>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-TCGA数据-2-相关性分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(2):相关性分析（bulk水平）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2020-07-07T16:16:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#cor分析研究目的</p>
+<blockquote>
+<p>相关性分析就是为了研究我关注的基因和差异分析所得的基因的表达规律</p>
+</blockquote>
+<ul>
+<li>使用FPKM数据来进行？</li>
+<li>方法使用Spearman还是Pearson？</li>
+<li>是否需要取log？</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">library(tinyarray)</span><br><span class="line">BiocManager::install(&quot;tinyarray&quot;)</span><br><span class="line">library(dplyr)</span><br><span class="line">library(ggstatsplot)</span><br><span class="line">library(tidyr)</span><br><span class="line">library(Cairo)</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;相关性分析&#x2F;&quot;)</span><br><span class="line">exp&lt;-read.csv(file &#x3D; &quot;FPKM(CD274转置).csv&quot;,check.names &#x3D; F,stringsAsFactors &#x3D; F,row.names &#x3D; 1)</span><br><span class="line">exp&lt;-log(exp+1)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>读入的数据是转置注释的原始表达矩阵，行是样本，列是基因</li>
+<li>取对数保证表达量可比性，进行标准化</li>
+<li>FPKM来进行分析，counts只用来做差异分析</li>
+</ul>
+<blockquote>
+<p>批量相关分析（循环）</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- as.numeric(exp[,&quot;CD274&quot;])</span><br><span class="line">colnames &lt;- colnames(exp)</span><br><span class="line">cor_data_df &lt;- data.frame(colnames)</span><br><span class="line"></span><br><span class="line">for (i in 1:length(colnames))</span><br><span class="line">&#123;</span><br><span class="line">    test &lt;- cor.test(as.numeric(exp[,i]),y,type&#x3D;&quot;spearman&quot;)</span><br><span class="line">    cor_data_df[i,2] &lt;- test$estimate</span><br><span class="line">    cor_data_df[i,3] &lt;- test$p.value</span><br><span class="line">&#125;</span><br><span class="line">names(cor_data_df) &lt;- c(&quot;Symbol&quot;,&quot;correlation&quot;,&quot;pvalue&quot;)</span><br><span class="line">head(cor_data_df)</span><br><span class="line"></span><br><span class="line">cor_data_sig &lt;- cor_data_df %&gt;% </span><br><span class="line">    filter(pvalue &lt; 0.05) %&gt;% </span><br><span class="line">    arrange(desc(abs(correlation)))%&gt;% </span><br><span class="line">    dplyr::slice(1:500)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">CairoPDF(&quot;TLE2.pdf&quot;,height &#x3D; 12,width &#x3D; 12)</span><br><span class="line">ggscatterstats(data &#x3D;as.data.frame(exp), </span><br><span class="line">               y &#x3D; TLE2, </span><br><span class="line">               x &#x3D; CD274,</span><br><span class="line">               centrality.para &#x3D; &quot;mean&quot;,                              </span><br><span class="line">               margins &#x3D; &quot;both&quot;,                                         </span><br><span class="line">               xfill &#x3D; &quot;#CC79A7&quot;, </span><br><span class="line">               yfill &#x3D; &quot;#009E73&quot;, </span><br><span class="line">               marginal.type &#x3D; &quot;density&quot;,</span><br><span class="line">               title &#x3D; &quot;Relationship between PDL1 and MGP&quot;)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="表达矩阵示例"><br>#负相关和正相关基因都可以保留，来增加文章水分23333</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-TCGA数据-1-DESeq2差异分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(1):DESeq2差异分析（bulk水平）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2020-07-07T15:35:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>在具体搞差异分析代码之前,先整理一手TCGA数据相关背景知识，显然是我搬运百度。<br>#（一）TCGA背景知识</p>
+</blockquote>
+<ul>
+<li>肿瘤基因组图谱（TCGA）计划是由美国National Cancer Institute（NCI）和National Human Genome Research Institute（NHGRI）于2006年联合启动的项目，研究的癌症类型从最开始的多形性成胶质细胞瘤（GBM）到现在为止共有39种，涉及29种癌症器官，1万多个肿瘤样本，27万多份文件，当然其项目也将于2017年接近尾声。 网址：<a href="https://portal.gdc.cancer.gov/" target="_blank" rel="noopener">https://portal.gdc.cancer.gov/</a></li>
+</ul>
+<blockquote>
+<p>TCGA中数据类型主要有以下几种：</p>
+</blockquote>
+<ul>
+<li>Clinical：病人的一般情况、诊治情况、TNM分期、肿瘤病理、生存情况等</li>
+<li>mRNA：mRNA芯片或者RNA-Seq测得的mRNA表达量</li>
+<li>microRNA：microRNA芯片或者microRNA-Seq测得的microRNA表达量</li>
+<li>Copy Number：SNP芯片得到的肿瘤组织比对正常组织的染色体上各片段的比值</li>
+<li>Mutation：肿瘤组织测序结果相对参考基因组的核苷酸突变，包括插入和缺失等变化</li>
+<li>Protein：蛋白芯片测序得到的约200种常见癌症相关蛋白的表达量</li>
+<li>Methylation：甲基化芯片测得的DNA甲基化数据</li>
+</ul>
+<p>###其中mRNA-Seq，miRNA-Seq以及Methylation Array被广泛使用</p>
+<blockquote>
+<p>mRNA-Seq数据分为3种：</p>
+</blockquote>
+<ul>
+<li>HTSeq-Counts</li>
+<li>HTSeq-FPKM</li>
+<li>HTSeq-FPKM-UQ<h3 id="（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法"><a href="#（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法" class="headerlink" title="（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法"></a>（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法</h3></li>
+</ul>
+<p>#（二）差异分析背景知识</p>
+<blockquote>
+<p>参见 Bioconductor网站具体讲解：<a href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html" target="_blank" rel="noopener">http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html</a></p>
+<blockquote>
+<p>背景知识尤其重要，比如用FPKM做还是counts数据做呢？</p>
+<blockquote>
+<p>对于TCGA的样本需要取平均吗？（单细胞和bulk水平的区别）还有就是</p>
+<blockquote>
+<p>LogFC的定义，以及矫正后的qval的取值比较主观，如何定义阈值？</p>
+<blockquote>
+<p>正常样本数量和癌症样本数量不同会对其造成什么影响？<br>显然我想到这些问题，就是一句mmp……但是被师兄怒屌一顿，感觉变成老懂哥就完事了<br>#（三）差异分析基因列表制作</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;Normal&#x2F;&quot;)</span><br><span class="line">normal &lt;- read.csv(&quot;normal注释count表达矩阵.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;count&#x2F;&quot;)</span><br><span class="line">cancer &lt;- read.csv(&quot;count_data(注释).csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>此处的所读的两个矩阵，皆是我提前注释了的，所制成的行名是样本，列名是基因，且确保癌症和正常一样<br>同时删除了重复的，空的，因为要合并所以必须用统一注释方法。</p>
+</blockquote>
+<ul>
+<li><p>这里的代码是我在差异分析之前就做了。由于之前的Biobase的注释包有问题，于是用clusterProfiler注释。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#读取的是未注释的数据</span><br><span class="line">data &lt;- read.csv(&quot;TCGA_data_clean.csv&quot;)</span><br><span class="line">#注释表达矩阵</span><br><span class="line">library(&quot;biomaRt&quot;)</span><br><span class="line">library(&quot;clusterProfiler&quot;)</span><br><span class="line">BiocManager::install(&quot;clusterProfiler&quot;)</span><br><span class="line">install.packages(&quot;dplyr&quot;)</span><br><span class="line">library(&quot;org.Hs.eg.db&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>由于meta信息的基因编号的格式不同，为了方便提前替换“-”为“.”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a&lt;- gsub(&quot;\\_\\d*&quot;, &quot;&quot;, data$Tags)</span><br><span class="line"></span><br><span class="line">ENSEMBL &lt;- gsub(&quot;\\.\\d*&quot;, &quot;&quot;, a)</span><br><span class="line"></span><br><span class="line">row.names(data) &lt;- ENSEMBL</span><br><span class="line"></span><br><span class="line">colnames(data)[1] &lt;- c(&quot;ensembl_gene_id&quot;)</span><br><span class="line"></span><br><span class="line">write.csv(data,&quot;data.csv&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>这里便是用clusterProfiler注释的四个参数，用bitr(),mapIds(),皆可</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">eg &lt;- bitr(data$ensembl_gene_id, fromType&#x3D;&quot;ENSEMBL&quot;,</span><br><span class="line">                    toType&#x3D;&quot;SYMBOL&quot;, OrgDb&#x3D;&quot;org.Hs.eg.db&quot;,drop &#x3D; F)</span><br><span class="line"></span><br><span class="line">data$symbol &lt;- mapIds(org.Hs.eg.db, data$X, &quot;SYMBOL&quot;,&quot;ENSEMBL&quot;)</span><br><span class="line"></span><br><span class="line">data &lt;- read.csv(&quot;data.csv&quot;)</span><br><span class="line"></span><br><span class="line">#删除多余的列</span><br><span class="line">data &lt;- subset(data, select &#x3D; -c(X,X.1,X.2))</span><br><span class="line">#消除未注释和重复的行</span><br><span class="line">index3&lt;-is.na(data$symbol)</span><br><span class="line">b &lt;- data[!index3,]</span><br><span class="line"></span><br><span class="line">index4 &lt;- duplicated(b$symbol)</span><br><span class="line"></span><br><span class="line">gene_only &lt;- b[!index4,]</span><br><span class="line"></span><br><span class="line">rownames(gene_only) &lt;- gene_only$symbol</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注释工作完成之后，可以开始差异分析，回答之前所提出的问题，<br>差异分析使用counts数据做，单细胞取平均而bulk水平不需要。</p>
+</blockquote>
+</li>
+<li><p>制作DESeq需要的几个元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">library(tidyverse)</span><br><span class="line">library(DESeq2)</span><br><span class="line">#差异分析，制作列表</span><br><span class="line">names(cancer) &lt;- rep(&quot;cancer&quot;,448)</span><br><span class="line">names(normal) &lt;- rep(&quot;normal&quot;,40)</span><br><span class="line">Deflist &lt;- data.frame(normal,cancer)</span><br><span class="line">mycounts &lt;- Deflist</span><br><span class="line"></span><br><span class="line">condition &lt;- factor(c(rep(&quot;cancer&quot;,448),rep(&quot;normal&quot;,40)), levels &#x3D; c(&quot;cancer&quot;,&quot;normal&quot;))</span><br><span class="line"></span><br><span class="line">colData &lt;- data.frame(row.names&#x3D;colnames(mycounts), condition)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>DESeqDataSetFromMatrix(mycounts, colData, design= ~ condition)这就是上一步骤制作的需要的三个元素</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#构建DESeq对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(mycounts, colData, design&#x3D; ~ condition)</span><br><span class="line">dds &lt;- DESeq(dds)</span><br><span class="line">dds</span><br><span class="line"></span><br><span class="line">#查看分析结果</span><br><span class="line">res&#x3D; results(dds)</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">head(res)</span><br><span class="line">summary(res)</span><br><span class="line">#所有结果先进行输出</span><br><span class="line">write.csv(res,file&#x3D;&quot;All_results.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p>对差异分析的结果设置阈值，筛选表达量统计水平上的差异基因，code可回答之前的mmp问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">table(res$padj&lt;0.05)</span><br><span class="line"></span><br><span class="line">diff_gene_deseq2 &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 1)</span><br><span class="line">#或</span><br><span class="line">#&gt; diff_gene_deseq2 &lt;-subset(res,padj &lt; 0.05 &amp; (log2FoldChange &gt; 1 | log2FoldChange &lt; -1))</span><br><span class="line">dim(diff_gene_deseq2)</span><br><span class="line">head(diff_gene_deseq2)</span><br><span class="line">write.csv(diff_gene_deseq2,file&#x3D; &quot;DEG_treat_vs_control.csv&quot;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>每一个步骤都要记得保存文件，给大家看看得出的差异分析列表<br><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="示例"><br>对分析结果进行可视化：（绘制火山图）</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">library(ggplot2)</span><br><span class="line">library(ggrepel)</span><br><span class="line"></span><br><span class="line">Dat &lt;- read.csv(&quot;All_results.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$padj &lt; 0.05 &amp; abs(Dat$log2FoldChange) &gt;&#x3D; 1, ifelse(Dat$log2FoldChange&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;log2FoldChange,y&#x3D;-log10(padj),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;#DC143C&quot;,&quot;#00008B&quot;,&quot;#808080&quot;))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/2.png" alt="示例"></p>
+</li>
+</ul>
+<blockquote>
+<p>然后竟然发现自己需要研究的目标基因，在一顿分析后不是差异基因，转而使用北京大学张泽民老师课题组工具：GEPIA2、网页自动分析，不用<br>自己跑数据，虽然会有些许问题，但是确实香~所以直接把他们的结果下着可视化23333</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#GEPIA2数据</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;&quot;)</span><br><span class="line">data_diff &lt;- read.table(&quot;table_degenes.txt&quot;,sep &#x3D; &quot;\t&quot;,header &#x3D; T)</span><br><span class="line">Dat &#x3D; data_diff</span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$X.5 &lt; 0.05 &amp; abs(Dat$X.4) &gt;&#x3D; 1, ifelse(Dat$X.4&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;X.4,y&#x3D;-log10(X.5),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;#DC143C&quot;,&quot;#00008B&quot;,&quot;#808080&quot;))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/3.png" alt="示例"><br>#真香！</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-递归可视化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
+  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#递归的关键思想：不断缩小，调用自身</p>
+<ul>
+<li>利用该逻辑思想可进行简化问题</li>
+<li>1、画一个螺旋缩小正方形<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">def drawSpiral(t,lineLen):</span><br><span class="line">    if lineLen &gt; 0:</span><br><span class="line">        t.forward(lineLen)</span><br><span class="line">        t.right(90)</span><br><span class="line">        drawSpiral(t,lineLen - 5)</span><br><span class="line">drawSpiral(t,100)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/1.png" alt="螺旋结构展示"></li>
+<li>2、画一个五角星<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">t.pencolor(&quot;green&quot;)</span><br><span class="line">t.pensize(3)</span><br><span class="line">for i in  range(5):</span><br><span class="line">    t.forward(100)</span><br><span class="line">    t.right(144)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/2.png" alt="螺旋结构展示"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-栈的应用-后缀表达式计算" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -588,356 +979,10 @@
 
 
   
-    <article id="post-R语言根据meta信息清洗原始表达矩阵并注释" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">R语言根据meta信息清洗原始表达矩阵并注释</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/" class="archive-article-date">
-  	<time datetime="2020-04-20T15:45:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>关于R的一些比较基础的在清洗数据的一些使用，出问题的时候容易头皮发麻，很多基础的知识还是需要在实战中去巩固。总之<br>只要是为了结果，不管用什么方法都可以，追求效率不要在问题上死纠结，<strong>杀鸡用牛刀其实不可取</strong>，此次内容比较基础，毕竟<br>我就是一个实打实的菜逼、<br>#（一）前期准备</p>
-</blockquote>
-<ul>
-<li><p>清除当前环境中的所有变量，节省内存，因为R很吃内存，读取很大数据很慢</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br></pre></td></tr></table></figure></li>
-<li><p>关闭因子，以防数字的操作出现意想不到的问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(stringsAsFactors &#x3D; F)</span><br></pre></td></tr></table></figure></li>
-<li><p>设置小数点的位数的显示，并不改变数据本身噢</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(digits &#x3D; 2)</span><br></pre></td></tr></table></figure></li>
-<li><p>设置自己当前的工作目录在哪= =</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;CRC_scRNAseq&#x2F;&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>以下的两个R的包是关于对基因注释所用、可以选择自己合适的版本具体包的使用可参见</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(&quot;biomaRt&quot;)</span><br><span class="line">library(&quot;curl&quot;)</span><br></pre></td></tr></table></figure>
-<p>#（二）提取和清洗数据</p>
-</li>
-<li><p>对于读取数据的txt、csv。选择不同的读取方式，emmm，参数需要调整的以下有，针对不同的原始数据需要不同的改动</p>
-<blockquote>
-<p>这是最常见的表达矩阵类型：见图（我的示例数据是：不同组织的免疫细胞的数据，源自不同时期的病人）<br><img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5.png" alt="表达矩阵示例"></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">genecount &lt;- read.table(&quot;All.ReadCount.gene.matrix.txt&quot;,header &#x3D; T,sep &#x3D; &#39;\t&#39;)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>meta信息同样读一手，为的是保证与表达矩阵对应，随后的构建对象以及筛选基因or细胞等等有用。见图：<br><img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/meta%E4%BF%A1%E6%81%AF.png" alt="表达矩阵示例"></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phenoMatrix &lt;- read.csv(&quot;phenoMatrix.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>此时我想要研究的是B细胞内基因的表达，需要在原始表达矩阵进行筛选，当然excel可以搞，本菜鸡就喜欢杀鸡用牛刀，<br>相当于最基础的索引的操作，需要对逻辑判断的运算符了解（是在meta信息里直接查看的Cell_type）</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">B_pyhenoMatrix &lt;- phenoMatrix[phenoMatrix$Cell_Type &#x3D;&#x3D; 2|phenoMatrix$Cell_Type &#x3D;&#x3D; 11|</span><br><span class="line">                                phenoMatrix$Cell_Type &#x3D;&#x3D; 13,]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>建立索引list去找meta数据里面的B细胞，因为表达矩阵和meta矩阵共有的是病人的信息，因此相当于用筛选的meta的列去找表达矩阵对应的行</p>
-</blockquote>
-</li>
-<li><p>首先找出提取出的B细胞的meta数据框里面的行名也就是病人编号（图的X列）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B_index &lt;- rownames(B_pyhenoMatrix)</span><br></pre></td></tr></table></figure></li>
-<li><p>然后利用which函数对应到表达矩阵并且返回的是病人所在的列的编号（即第几列）成为新的索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index1 &lt;- which(names(genecount)%in%B_index)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>再次用已知的B细胞所在的列去索引可得到B细胞的表达矩阵</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;B_readcount.gene.matrix &lt;- genecount[,c(1,index1)]</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<p>#(三)注释B细胞</p>
-<ul>
-<li>查看注释所有的库并且进行选择<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listMarts()</span><br></pre></td></tr></table></figure></li>
-<li>选择人类参考基因组并且开始注释<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mart &lt;- useDataset(&quot;hsapiens_gene_ensembl&quot;, useMart(&quot;ensembl&quot;))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>但是需要对原始的表达矩阵的geneid进行处理，清洗<br>这种ENSG00000000003.14变成    ENSG00000000003才能更好的去对应到symbol id</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a&lt;- gsub(&quot;\\_\\d*&quot;, &quot;&quot;, B_readcount.gene.matrix$Ensembl_ID)</span><br><span class="line">ENSEMBL &lt;- gsub(&quot;\\.\\d*&quot;, &quot;&quot;, a)</span><br><span class="line">row.names(B_readcount.gene.matrix)&lt;- ENSEMBL</span><br><span class="line">B_readcount.gene.matrix&lt;- cbind(ENSEMBL,B_readcount.gene.matrix)</span><br><span class="line">colnames(B_readcount.gene.matrix)[1] &lt;- c(&quot;ensembl_gene_id&quot;)</span><br><span class="line">head(B_readcount.gene.matrix)</span><br><span class="line"></span><br><span class="line">my_ensembl_gene_id &lt;- row.names(B_readcount.gene.matrix)</span><br><span class="line">options(timeout &#x3D; 4000000)</span><br></pre></td></tr></table></figure></li>
-<li>这一步比较耗时，完成后会在数据框最后生成hg_symbols<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hg_symbols&lt;- getBM(attributes&#x3D;c(&#39;ensembl_gene_id&#39;,&#39;hgnc_symbol&#39;), filters&#x3D; &#39;ensembl_gene_id&#39;, values &#x3D; my_ensembl_gene_id, mart &#x3D; mart)</span><br></pre></td></tr></table></figure></li>
-<li>将合并后的表达数据框和注释得到的hg_symbols整合为一<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">abc &lt;- merge(B_readcount.gene.matrix, hg_symbols, by&#x3D;&quot;ensembl_gene_id&quot;)</span><br><span class="line">head(readcount_patient_0)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>删除空白没有注释到的基因&amp;删除重复的基因都是和之前一样索引的方法，也有一些需要注意的点<br>删除空白,一定要注意NA、NULL的区别，看情况能否删除，万一是你研究的基因，就遭中了呀</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index3&lt;-is.na(abc$hgnc_symbol)</span><br><span class="line">abc &lt;- abc[!index3,]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>删除重复的需要用到duplicatedh函数也是索引的方法</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">index4 &lt;- duplicated(abc$hgnc_symbol)</span><br><span class="line">index4</span><br><span class="line">gene_only &lt;- abc[!index4,]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>保存清洗好并且注释完成的文件~方便后续的分析</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write.csv(gene_only,file &#x3D; &quot;B_cell_cluster2_11_13.csv&quot;)</span><br></pre></td></tr></table></figure>
-<img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%E5%AE%8C%E6%88%90.png" alt="表达矩阵示例"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-gffutils处理GFF-GTF文件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">gffutils处理GFF-GTF文件</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/" class="archive-article-date">
-  	<time datetime="2020-04-17T17:29:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>####本次代码流程及.md撰写是不愿意透露身份的Master Mathew带来，我是一个没有感情的更博机器谢谢！</p>
-<blockquote>
-<p>测试环境<br>OS: Windows 7 64bit<br>Python: 3.6.3(Anaconda 64bit)<br>gffutils: 0.9</p>
-</blockquote>
-<blockquote>
-<p>使用Python处理GFF/GTF文件时，gffutils是一个很不错的选择。以NCBI上酿酒酵母<em>Saccharomyces cerevisiae</em> C288C(R64)的数据为例，一个典型的GFF文件格式如下图所示（GFF3）。其包含9列信息，互相以制表符（Tab）分割，依次为：seqid，source，type，start，end，score，strand，phase，attributes，而attributes中的“ID”标签需在文件中唯一。GFF的详细定义可查阅<a href="http://gmod.org/wiki/GFF3#GFF3_Format" target="_blank" rel="noopener">GFF3 - GMOD</a><br><img src="https://upload-images.jianshu.io/upload_images/22739114-f4e8ed130a162823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="GFF文件格式示例"><br><img src="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/1.png" alt="GFF文件格式示例"></p>
-</blockquote>
-<p><strong>安装</strong><br>gffutils可直接通过pip安装，这里使用清华大学镜像<br><code>python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gffutils</code></p>
-<p><strong>创建数据库</strong><br>gffutils的基本做法是通过create_db()方法把GFF文件解析成一个SQLite3数据库文件供后续使用，因此首先需要创建数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import gffutils</span><br><span class="line"></span><br><span class="line">#修改工作路径</span><br><span class="line">os.chdir(&#39;f:&#x2F;Bioinfo&#x2F;Python&#x2F;gffutils&#39;)</span><br><span class="line"></span><br><span class="line">#创建数据库</span><br><span class="line">db &#x3D; gffutils.create_db(&#39;GCF_000146045.2_R64_genomic.gff&#39;, dbfn &#x3D; &#39;C288C.db&#39;, force &#x3D; True, keep_order &#x3D; True, merge_strategy &#x3D; &#39;merge&#39;, sort_attribute_values &#x3D; True)</span><br></pre></td></tr></table></figure>
-<p>上述代码运行后，工作路径下会创建C288C.db文件，可以直接用SQLiteStudio查看<br><img src="https://upload-images.jianshu.io/upload_images/22739114-9812c0663f41f48a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gff数据库文件示例"><br><img src="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/2.png" alt="GFF文件格式示例"><br>从图中可以看出，gffutils的把GFF的attributes字段解析为了Python的字典类型数据。此外，start和end字段为int类型数据。</p>
-<p><strong>使用数据库</strong><br>数据库创建后，可以通过FeatureDB()方法使用该数据库，数据库主键使用了原GFF文件的ID标签，对应的数据也是用ID号访问。如上所述，attributes字段解析为了Python的字典，因此相关数据的获取即是字典的访问方式。而字典中的每一个value都是列表类型数据，如果只需要具体内容的话一般可输出列表第一个数据。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import gffutils</span><br><span class="line"></span><br><span class="line">#修改工作路径</span><br><span class="line">os.chdir(&#39;f:&#x2F;Bioinfo&#x2F;Python&#x2F;gffutils&#39;)</span><br><span class="line"></span><br><span class="line">#创建数据库</span><br><span class="line">#db &#x3D; gffutils.create_db(&#39;GCF_000146045.2_R64_genomic.gff&#39;, dbfn &#x3D; &#39;C288C.db&#39;, force &#x3D; True, keep_order &#x3D; True, merge_strategy &#x3D; &#39;merge&#39;, sort_attribute_values &#x3D; True)</span><br><span class="line"></span><br><span class="line">#使用数据库</span><br><span class="line">db &#x3D; gffutils.FeatureDB(&#39;C288C.db&#39;, keep_order &#x3D; True)</span><br><span class="line"></span><br><span class="line">#获取某个基因的所有注释信息</span><br><span class="line">gene &#x3D; db[&#39;cds-NP_009332.1&#39;]</span><br><span class="line"></span><br><span class="line">#获取该基因的具体字段并输出</span><br><span class="line">print(&#39;起始位点：%d&#39; % gene.start)</span><br><span class="line">print(&#39;结束位点：%d&#39; % gene.end)</span><br><span class="line">print(&#39;Note：%s&#39; % gene.attributes[&#39;Note&#39;][0])</span><br></pre></td></tr></table></figure>
-<p>上述代码的输出结果为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">起始位点：1807</span><br><span class="line">结束位点：2169</span><br><span class="line">Note：hypothetical protein; member of the seripauperin multigene family encoded mainly in subtelomeric regions</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-pheatmap绘制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/">pheatmap绘制（凑个第一篇BLOG）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2020-04-16T12:06:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#pheatmap绘制热图（R语言）</p>
-<p>⚪本次跑代码的示例数据是源自不同病人结直肠癌不同组织单细胞测序数据，绘制热图的原因是想在大量数据中去寻找基因的表达量与结直肠癌病人的时期的关系，从而探究基因表达与疾病时期发展的关系。</p>
-<p>⚪显然热图是研究相关性进行数据可视化的很好的选择</p>
-<p>⚪对于新手若去了解一个包绘图的使用，please：?pheatmap()</p>
-<p>##<em>工作示例</em><br>###1.清空环境中的所有变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm(list = ls())</span><br></pre></td></tr></table></figure>
-<p>###2.这个很关键，关闭因子，以防出现未知的错误，追悔莫及<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(stringsAsFactors = F)</span><br></pre></td></tr></table></figure><br>###3.设置自己的工作目录，一定要有条理，不然输出的图片多了容易搞混淆<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(<span class="string">"G:/CRC_scRNAseq/"</span>)</span><br></pre></td></tr></table></figure><br>###4.调包显然是必须，我选择导出的是pdf，这个包类似一个画布类型，先自动生产一个0KB的pdf，然后dev.off()之后就会生产文件，方便调节画布等。<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    library(pheatmap)</span><br><span class="line">    library(Cairo)</span><br><span class="line">    ``` </span><br><span class="line"><span class="comment">###5.这里可以设置输出PDF的宽度和高度</span></span><br><span class="line">    ``` bash</span><br><span class="line">    CairoPDF(file = <span class="string">"Heatmap_BP_coll.pdf"</span>,width = 14,height = 16)</span><br></pre></td></tr></table></figure><br>###6.以csv格式读取表达矩阵，提前已经清洗注释了数据噢~<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B_P_DNB &lt;- read.csv(<span class="string">"B_P_DNB_genes_stage_1.csv"</span>,header =T ,sep = <span class="string">","</span>,row.names = 1)</span><br></pre></td></tr></table></figure><br>###7.画热图,针对stage和DNB基因的基因集的表达矩阵,没有聚类分组<br>####※比较值得记忆的是：angle_col = 0 可以旋转文字，其余就在使用中慢慢学习，反正我很菜hhh<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pheatmap(B_P_DNB, cluster_cols = T,border=FALSE,</span><br><span class="line">     color = colorRampPalette(c(<span class="string">"navy"</span>, <span class="string">"white"</span>, <span class="string">"red"</span>))(50),</span><br><span class="line">     scale = <span class="string">"row"</span>,show_colnames =T,show_rownames = F,</span><br><span class="line">     main = <span class="string">" B precancerous tissue DNBgenes&amp;stage heatmap"</span>, angle_col = 0,</span><br><span class="line">     treeheight_col = 8)</span><br></pre></td></tr></table></figure><br>###8.出图，快乐<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dev.off()</span><br></pre></td></tr></table></figure><br>#产出图片：<br><img src="https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2020/png/1107735/1587059344562-resources/861623/png/6ee05e31-f1b8-41d2-8cb0-7e8a47a813a4.png?OSSAccessKeyId=LTAIX2KDHwZymFhr&Expires=1587106945&Signature=L3xmfyf6T4cJ3bjBrdxfU0d38UQ%3D" alt="alt 热图"><br><img src="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/B_P_bigsize.png" alt="成果热图"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/16/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/16/hello-world/" class="archive-article-date">
-  	<time datetime="2020-04-16T08:14:03.725Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/16/hello-world/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+    </nav>
   
 
 
