@@ -151,6 +151,95 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Mfuzz软聚类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">Mfuzz软聚类</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/" class="archive-article-date">
+  	<time datetime="2020-09-09T07:00:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> mfuzz这个包可对转录组时间序列数据处理。<br> 里面的软聚类的思想非常符合lhs怪哥哥的预期，可进行time-course的分析。</p>
+<blockquote>
+<p>time-course的方法一般就是聚类。常见的聚类分为三种，分别是层次聚类（Hierarchical Clustering）、硬聚类（hard clustering）、软聚类（soft clustering）。层次聚类好像一般就是像热图那种。看了pheatmap的文档，感觉pheatmap就是层次聚类，当然你可以设置k_means，变成硬聚类。硬聚类常见的就是k-menas。软聚类就是我们这会要用到的这个包的核心思路。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(Mfuzz)</span><br><span class="line">setwd(&quot;C:&#x2F;Users&#x2F;lenovo&#x2F;Desktop&#x2F;Mfuzz&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>数据集是来源于酵母细胞循环表达数据。6178个基因，横跨160分钟的17个时间点。用的是芯片数据。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data(&quot;yeast&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>第一步，去除那些有超过25%数据缺失的基因。注意这些数据缺失值应该是设为NA。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yeast.r &lt;- filter.NA(yeast, thres&#x3D;0.25)</span><br><span class="line">yeast.f &lt;- fill.NA(yeast.r,mode&#x3D;&quot;mean&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>许多已经出版的聚类分析包含过滤的步骤，从而来去除那些表达相对比较低的，或者表达不怎么变化的。通常来说，比较受欢迎的就是样本的标准差作为阈值。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tmp &lt;- filter.std(yeast.f,min.std&#x3D;0)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#由于聚类是在欧几里德空间中进行的，因此基因的表达值被标准化为平均值为零，标准差为1。该步骤确保了在欧几里得空间中具有相似表达模式的基因是相互接近的。</span><br><span class="line">yeast.s &lt;- standardise(yeast.f)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>聚类可以用来解释基因表达的调控机制。众所周知的，基因的表达并不是开和关的，而是一个逐渐变化的过程。一个聚类算法应该展现出一个基因有多么的符合dominant cluster pattern。软聚类应该是一个非常好的方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cl &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/1.png" alt="表达矩阵"></p>
+<ul>
+<li>对于fuzzy c-means来说，模糊值m和聚类数c必须提前设置好。对于m，我们应该选择一个可以防止随机数据聚类的值。值得注意的是，fuzzy 聚类可以遵守这样的准则，随机数据并不能被聚类。这相比于硬聚类（例如k-means）来说，是一个明显的优点。因为其即使在随机数据中，也可以检测到cluster。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">m1 &lt;- mestimate(yeast.s)</span><br><span class="line">cl2 &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.35)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl2,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/2.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">O &lt;- overlap(cl)</span><br><span class="line">Ptmp &lt;- overlap.plot(cl,over&#x3D;O,thres&#x3D;0.05)</span><br><span class="line">cl3 &lt;- mfuzz(yeast.s,c&#x3D;10,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl3,mfrow&#x3D;c(3,4))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/3.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O3 &lt;- overlap(cl3)</span><br><span class="line">overlap.plot(cl3,over&#x3D;O3,P&#x3D;Ptmp,thres&#x3D;0.05)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/4.png" alt="表达矩阵"><br><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/5.png" alt="表达矩阵"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-edgeR进行差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -898,80 +987,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-中缀表达式变后缀表达式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#中缀表达式变后缀表达式</p>
-<blockquote>
-<p>和读取括号是否匹配类似，一层层读（），根据栈的数据结构的特性“先进后出”<br>，也就是说最里面的括号在中缀表达式里运算最先运算</p>
-</blockquote>
-<p>这里的代码的一些Tips：</p>
-<blockquote>
-<blockquote>
-<p>将括号替换为运算符，并且将运算符排序，与数字近的先运算，同时也要考虑运算的优先级</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def infixToPostfix(infixexpr):</span><br><span class="line">    prec &#x3D; &#123;&#125;</span><br><span class="line">    prec[&quot;*&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;&#x2F;&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;+&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;-&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;(&quot;] &#x3D; 1</span><br><span class="line">    opStack &#x3D; Stack()</span><br><span class="line">    postfixList &#x3D; []</span><br><span class="line">    tokenList &#x3D; list(infixexpr)</span><br><span class="line">    #以下的问题出现，改成上面</span><br><span class="line">    #tokenList &#x3D; infixexpr.split()</span><br><span class="line">    for token in tokenList:</span><br><span class="line">        if token in &quot;ABCDEFGHIJKLMNOPQRSTVUWXYZ&quot; or token in &quot;0123456789&quot;:</span><br><span class="line">            postfixList.append(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            opStack.push(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;)&quot;:</span><br><span class="line">            topToken &#x3D; opStack.pop()</span><br><span class="line">            while  topToken !&#x3D; &quot;(&quot;:</span><br><span class="line">                postfixList.append(topToken)</span><br><span class="line">                topToken &#x3D; opStack.pop()</span><br><span class="line">        else:</span><br><span class="line">            while(not opStack.isEmpty()) and \</span><br><span class="line">                    (prec([opStack.peek()]) &gt;&#x3D; prec[token]):</span><br><span class="line">                postfixList.append(opStack.pop())</span><br><span class="line">            opStack.push(token)</span><br><span class="line">    while not opStack.isEmpty():</span><br><span class="line">        postfixList.append(opStack.pop())</span><br><span class="line">    return &quot; &quot; .join(postfixList)</span><br><span class="line"></span><br><span class="line">print(infixToPostfix(&quot;A+B&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;中缀表达式变后缀表达式.py</span><br><span class="line">A B +</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">展开全文 >></a>
         </p>
       
 

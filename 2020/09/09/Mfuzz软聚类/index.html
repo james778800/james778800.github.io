@@ -6,18 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Biomagic</title>
+  <title>Mfuzz软聚类 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/archives/page/2/index.html">
+  <meta name="description" content="mfuzz这个包可对转录组时间序列数据处理。 里面的软聚类的思想非常符合lhs怪哥哥的预期，可进行time-course的分析。  time-course的方法一般就是聚类。常见的聚类分为三种，分别是层次聚类（Hierarchical Clustering）、硬聚类（hard clustering）、软聚类（soft clustering）。层次聚类好像一般就是像热图那种。看了pheatmap的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mfuzz软聚类">
+<meta property="og:url" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="mfuzz这个包可对转录组时间序列数据处理。 里面的软聚类的思想非常符合lhs怪哥哥的预期，可进行time-course的分析。  time-course的方法一般就是聚类。常见的聚类分为三种，分别是层次聚类（Hierarchical Clustering）、硬聚类（hard clustering）、软聚类（soft clustering）。层次聚类好像一般就是像热图那种。看了pheatmap的">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/1.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/2.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/3.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/4.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/5.png">
+<meta property="article:published_time" content="2020-09-09T07:00:23.000Z">
+<meta property="article:modified_time" content="2020-09-09T07:10:24.916Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,268 +157,181 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Mfuzz软聚类" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mfuzz软聚类
+    </h1>
+  
+
+        
+        <a href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/" class="archive-article-date">
+  	<time datetime="2020-09-09T07:00:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> mfuzz这个包可对转录组时间序列数据处理。<br> 里面的软聚类的思想非常符合lhs怪哥哥的预期，可进行time-course的分析。</p>
+<blockquote>
+<p>time-course的方法一般就是聚类。常见的聚类分为三种，分别是层次聚类（Hierarchical Clustering）、硬聚类（hard clustering）、软聚类（soft clustering）。层次聚类好像一般就是像热图那种。看了pheatmap的文档，感觉pheatmap就是层次聚类，当然你可以设置k_means，变成硬聚类。硬聚类常见的就是k-menas。软聚类就是我们这会要用到的这个包的核心思路。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(Mfuzz)</span><br><span class="line">setwd(&quot;C:&#x2F;Users&#x2F;lenovo&#x2F;Desktop&#x2F;Mfuzz&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>数据集是来源于酵母细胞循环表达数据。6178个基因，横跨160分钟的17个时间点。用的是芯片数据。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data(&quot;yeast&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>第一步，去除那些有超过25%数据缺失的基因。注意这些数据缺失值应该是设为NA。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yeast.r &lt;- filter.NA(yeast, thres&#x3D;0.25)</span><br><span class="line">yeast.f &lt;- fill.NA(yeast.r,mode&#x3D;&quot;mean&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>许多已经出版的聚类分析包含过滤的步骤，从而来去除那些表达相对比较低的，或者表达不怎么变化的。通常来说，比较受欢迎的就是样本的标准差作为阈值。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tmp &lt;- filter.std(yeast.f,min.std&#x3D;0)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#由于聚类是在欧几里德空间中进行的，因此基因的表达值被标准化为平均值为零，标准差为1。该步骤确保了在欧几里得空间中具有相似表达模式的基因是相互接近的。</span><br><span class="line">yeast.s &lt;- standardise(yeast.f)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>聚类可以用来解释基因表达的调控机制。众所周知的，基因的表达并不是开和关的，而是一个逐渐变化的过程。一个聚类算法应该展现出一个基因有多么的符合dominant cluster pattern。软聚类应该是一个非常好的方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cl &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/1.png" alt="表达矩阵"></p>
+<ul>
+<li>对于fuzzy c-means来说，模糊值m和聚类数c必须提前设置好。对于m，我们应该选择一个可以防止随机数据聚类的值。值得注意的是，fuzzy 聚类可以遵守这样的准则，随机数据并不能被聚类。这相比于硬聚类（例如k-means）来说，是一个明显的优点。因为其即使在随机数据中，也可以检测到cluster。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">m1 &lt;- mestimate(yeast.s)</span><br><span class="line">cl2 &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.35)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl2,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/2.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">O &lt;- overlap(cl)</span><br><span class="line">Ptmp &lt;- overlap.plot(cl,over&#x3D;O,thres&#x3D;0.05)</span><br><span class="line">cl3 &lt;- mfuzz(yeast.s,c&#x3D;10,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl3,mfrow&#x3D;c(3,4))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/3.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O3 &lt;- overlap(cl3)</span><br><span class="line">overlap.plot(cl3,over&#x3D;O3,P&#x3D;Ptmp,thres&#x3D;0.05)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/4.png" alt="表达矩阵"><br><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/5.png" alt="表达矩阵"></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:08:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">edgeR进行差异分分析</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">栈的应用-二进制转换</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-05-15T16:13:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">栈的应用-简单括号匹配（修改）</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
-  	<time datetime="2020-05-15T15:51:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">栈的应用-简单括号匹配</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-05-14T08:27:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">逐字比较的算法分析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/" class="archive-article-date">
-  	<time datetime="2020-04-20T15:45:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">R语言根据meta信息清洗原始表达矩阵并注释</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/" class="archive-article-date">
-  	<time datetime="2020-04-17T17:29:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">gffutils处理GFF-GTF文件</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2020-04-16T12:06:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/">pheatmap绘制（凑个第一篇BLOG）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/04/16/hello-world/" class="archive-article-date">
-  	<time datetime="2020-04-16T08:14:03.725Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/04/16/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
-    </nav>
   
 
 
@@ -434,8 +355,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
