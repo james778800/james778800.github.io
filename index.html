@@ -35,7 +35,7 @@
 
   
 
-<meta name="generator" content="Hexo 4.2.0"></head>
+<meta name="generator" content="Hexo 4.2.1"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -150,6 +150,89 @@
           </div>
           <div id="js-content" class="content-ll">
             
+  
+    <article id="post-DEseq2差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">DEseq2差异分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-09-08T08:17:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>DESeq2和EdgeR都可用于做基因差异表达分析，主要也是用于RNA-Seq数据，同样也可以处理类似的ChIP-Seq,shRNA以及质谱数据。</p>
+</li>
+<li><p>这两个都属于R包，其相同点在于都是对count data数据进行处理，都是基于负二项分布模型。<br>因此会发现，用两者处理同一组数据，最后在相同阈值下筛选出的大部分基因都是一样的<br>，但是有一部分不同应该是由于其估计离散度的不同方法所导致的。 </p>
+<blockquote>
+<p>DESeq2的使用方法：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#清楚缓存的变量</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#调用DEseq2差异分析的包</span><br><span class="line">library(readxl)</span><br><span class="line">library(DESeq2)</span><br><span class="line"></span><br><span class="line">#载入数据框（表达矩阵）</span><br><span class="line"></span><br><span class="line">B_P_cell &lt;- read.csv(&quot;B_P_cell.csv&quot;, header &#x3D; T, sep &#x3D; &quot;,&quot;, row.names &#x3D; 2)</span><br><span class="line">B_P_cell &lt;- B_P_cell[,-1]</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
+</li>
+<li><p>grep的正则表达式需要熟练</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#提取表达矩阵样本病人名</span><br><span class="line">names &lt;- colnames(B_P_cell)</span><br><span class="line"></span><br><span class="line">#分析一期和二期的病人的列表</span><br><span class="line">#抓取一期病人的索引</span><br><span class="line">index1 &lt;- grep(&quot;RC03&quot;,names)</span><br><span class="line">index2 &lt;- grep(&quot;R02&quot;,names)</span><br><span class="line">index_1 &lt;- c(index1,index2)</span><br><span class="line">#抓取二期病人的索引</span><br><span class="line">index_2 &lt;- grep(&quot;LC01&quot;,names)</span><br><span class="line">#合并提取的为同一矩阵</span><br><span class="line">oneVStwo_exp &lt;- B_P_cell[,c(index_1,index_2)]</span><br><span class="line">#将表达矩阵取整并且变为矩阵</span><br><span class="line">oneVStwo_exp &lt;- round(as.matrix(oneVStwo_exp))</span><br><span class="line">#构建dds对象需要的condition,添加分组信息</span><br><span class="line">condition &lt;- factor(c(rep(&quot;control&quot;,length(index_1)),rep(&quot;treat&quot;,length(index_2))), </span><br><span class="line">                    levels &#x3D; c(&quot;control&quot;,&quot;treat&quot;))</span><br><span class="line"></span><br><span class="line">coldata&lt;-data.frame(row.names&#x3D;colnames(oneVStwo_exp), condition)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#构建DDS对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(oneVStwo_exp, coldata, design&#x3D; ~ condition)</span><br><span class="line"></span><br><span class="line">dds&lt;-DESeq(dds)</span><br><span class="line"></span><br><span class="line">res &#x3D; results(dds, contrast&#x3D;c(&quot;condition&quot;, &quot;control&quot;, &quot;treat&quot;))</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">write.csv(res,file&#x3D;&quot;1VS2_result.csv&quot;)</span><br><span class="line">diff_gene &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 2)</span><br><span class="line">write.csv(diff_gene,file &#x3D; &quot;1vs2_diff_gene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同理处理二期和三期的病人<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#分析二期和三期的病人的列表</span><br><span class="line">#抓取三期病人的索引</span><br><span class="line">index1 &lt;- grep(&quot;C473&quot;,names)</span><br><span class="line">index2 &lt;- grep(&quot;RC02&quot;,names)</span><br><span class="line">index_3 &lt;- c(index1,index2)</span><br><span class="line"></span><br><span class="line">#合并提取的为同一矩阵</span><br><span class="line">twoVSthree_exp &lt;- B_P_cell[,c(index_2,index_3)]</span><br><span class="line">#将表达矩阵取整并且变为矩阵</span><br><span class="line">twoVSthree_exp &lt;- round(as.matrix(twoVSthree_exp))</span><br><span class="line">#构建dds对象需要的condition,添加分组信息</span><br><span class="line">condition &lt;- factor(c(rep(&quot;control&quot;,length(index_2)),rep(&quot;treat&quot;,length(index_3))), </span><br><span class="line">                    levels &#x3D; c(&quot;control&quot;,&quot;treat&quot;))</span><br><span class="line"></span><br><span class="line">coldata&lt;-data.frame(row.names&#x3D;colnames(twoVSthree_exp), condition)</span><br><span class="line">#构建DDS对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(twoVSthree_exp, coldata, design&#x3D; ~ condition)</span><br><span class="line"></span><br><span class="line">dds&lt;-DESeq(dds)</span><br><span class="line"></span><br><span class="line">res &#x3D; results(dds, contrast&#x3D;c(&quot;condition&quot;, &quot;control&quot;, &quot;treat&quot;))</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">write.csv(res,file&#x3D;&quot;2VS3_result.csv&quot;)</span><br><span class="line">diff_gene &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 2)</span><br><span class="line">write.csv(diff_gene,file &#x3D; &quot;2vs3_diff_gene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<img src="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="差异分析结果"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
   
     <article id="post-sierpinski-递归三角形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
@@ -876,78 +959,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-简单括号匹配（修改）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">栈的应用-简单括号匹配（修改）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-05-15T16:13:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#栈的应用-简单括号匹配（修改）☞Bug</p>
-<blockquote>
-<p>为什么不返回布尔值给我？因为return的用法以及缩进的问题，我是憨憨</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def parChecker(symbolString):</span><br><span class="line">    s &#x3D; Stack ()</span><br><span class="line">    balanced &#x3D; True</span><br><span class="line">    index &#x3D; 0</span><br><span class="line">    while index &lt; len(symbolString) and balanced:</span><br><span class="line">        symbol &#x3D; symbolString[index]</span><br><span class="line">        if symbol &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            s.push(symbol)</span><br><span class="line">        else:</span><br><span class="line">            if s.isEmpty():</span><br><span class="line">                balanced &#x3D; False</span><br><span class="line">            else:</span><br><span class="line">                s.pop()</span><br><span class="line">        index &#x3D; index + 1</span><br><span class="line">    if balanced and s.isEmpty():</span><br><span class="line">       return(True)</span><br><span class="line">    else:</span><br><span class="line">       return(False)</span><br><span class="line">print(parChecker(&quot;()()&quot;))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>结果如下</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;栈的应用（括号匹配）.py</span><br><span class="line">True</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-<p>#每日一个憨憨小段子，每日逐渐变弱智</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">展开全文 >></a>
         </p>
       
 
