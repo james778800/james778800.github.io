@@ -151,6 +151,94 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-edgeR进行差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">edgeR进行差异分分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-09-09T06:41:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#edgeR</p>
+<blockquote>
+<p>主要是利用了多组实验的精确统计模型或者适用于多因素复杂实验的广义线性模型。</p>
+</blockquote>
+<blockquote>
+<p>前者叫做“经典edgeR”， 后者叫做”广义线性模型 edgeR“。</p>
+</blockquote>
+<blockquote>
+<p>定义的read数是可以指基因水平、外显子水平、转录本水平或者标签水平等</p>
+</blockquote>
+<p>##广义线性模型 edgeR  可用于无重复样本</p>
+<ul>
+<li>(为什么不用DEseq2，用这个？)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#清空缓存的变量</span><br><span class="line"></span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line"></span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line">#关闭因子和设置小数点位数</span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br><span class="line">#调用包</span><br><span class="line">library(edgeR)</span><br><span class="line">library(limma)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#读取清洗的数据，构造DGElist对象需要的东西，构建无重复的两个list进行差异分析</span><br><span class="line"></span><br><span class="line">Pstage &lt;- read.csv(&quot;B_P_cell.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 2,check.names &#x3D; F)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#edgeR开始</span><br><span class="line"></span><br><span class="line">#规整化数据，可以用log2处理表达矩阵</span><br><span class="line">Pstage &lt;- round(Pstage)</span><br><span class="line">counts &lt;- Pstage</span><br><span class="line">#设置分组信息</span><br><span class="line">group &lt;- 1:2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- DGEList(counts&#x3D;counts, group &#x3D; group)</span><br><span class="line">keep &lt;- rowSums(cpm(y)&gt;1) &gt;&#x3D; 1</span><br><span class="line">y &lt;- y[keep, , keep.lib.sizes&#x3D;FALSE]</span><br><span class="line">y &lt;- calcNormFactors(y)</span><br><span class="line">y_bcv &lt;- y</span><br><span class="line">bcv &lt;- 0.4</span><br><span class="line">et &lt;- exactTest(y_bcv, dispersion &#x3D; bcv ^ 2)</span><br><span class="line">gene1 &lt;- decideTestsDGE(et, p.value &#x3D; 0.05, lfc &#x3D; 0)</span><br><span class="line">summary(gene1)</span><br><span class="line">write.csv(et$table,&quot;gene_exp.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#根据fdrtool计算qval的</span><br><span class="line">exp&lt;-read.csv(&quot;gene_exp.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">p&lt;-exp$PValue</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#install.packages(&quot;fdrtool&quot;)</span><br><span class="line">library(fdrtool)</span><br><span class="line">fdr&#x3D;fdrtool(p,statistic&#x3D;&quot;pvalue&quot;)</span><br><span class="line">qval&lt;-fdr$qval</span><br><span class="line">exp&lt;-cbind(exp,qval)</span><br><span class="line">write.csv(exp,&quot;exp_qvalue.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/3.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#筛选log2FC &gt;2 并且 adj&lt;0.05的差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">diffgene &lt;-subset(exp, qval &lt; 0.05 &amp; abs(logFC) &gt; 2)</span><br><span class="line">dim(diffgene)</span><br><span class="line">head(diffgene)</span><br><span class="line">write.csv(diffgene,file &#x3D; &quot;diffgene.csv&quot;)</span><br><span class="line"></span><br><span class="line">#同理，可以筛选非差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">undiffgene &lt;-subset(exp, qval &gt; 0.05 &amp; abs(logFC) &lt; 2)</span><br><span class="line">dim(undiffgene)</span><br><span class="line">head(undiffgene)</span><br><span class="line">write.csv(undiffgene,file &#x3D; &quot;undiffgene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/4.png" alt="表达矩阵"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-DEseq2差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -884,81 +972,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-二进制转换" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">栈的应用-二进制转换</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:08:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#栈的应用-二进制转换</p>
-<blockquote>
-<p>高中就学过2的幂次方累加就是嘛，然后所得的余数应该的位置和栈数据结构形式一样</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<p>可以拆解为：计算和字符串排序</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def divideBy2(decNumber):</span><br><span class="line">    remstack &#x3D; Stack()</span><br><span class="line"></span><br><span class="line">    while decNumber &gt; 0:</span><br><span class="line">        rem &#x3D; decNumber % 2</span><br><span class="line">        remstack.push(rem)</span><br><span class="line">        decNumber &#x3D;decNumber &#x2F;&#x2F; 2</span><br><span class="line"></span><br><span class="line">    binString &#x3D; &quot;&quot;</span><br><span class="line">    while not remstack.isEmpty():</span><br><span class="line">        binString &#x3D; binString + str(remstack.pop())</span><br><span class="line">    return binString</span><br><span class="line"></span><br><span class="line">print(divideBy2(77))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>输出结果</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;二进制转换.py</span><br><span class="line">1001101</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">展开全文 >></a>
         </p>
       
 
