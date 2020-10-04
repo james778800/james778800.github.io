@@ -151,6 +151,77 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-栈的应用-后缀表达式计算" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">栈的应用-后缀表达式计算</a>
+    </h1>
+  
+
+        
+        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/" class="archive-article-date">
+  	<time datetime="2020-05-17T06:20:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#后缀表达式计算</p>
+<blockquote>
+<p>正如中缀转后缀中所提到的、需要考虑运算的优先级，小学我们曾学过，先乘除后加减嘛23333333</p>
+</blockquote>
+<p><img src="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.png" alt="后缀表达式计算示例"></p>
+<p>##代码实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def postfixEval(postfixExpr):</span><br><span class="line">        operandStack &#x3D; Stack()</span><br><span class="line">        tokenList&#x3D; list(postfixExpr)</span><br><span class="line"></span><br><span class="line">        for token in tokenList:</span><br><span class="line">            if token in &quot;0123456789&quot;:</span><br><span class="line">                operandStack.push(int(token))</span><br><span class="line">            else:</span><br><span class="line">                operand2 &#x3D; operandStack.pop()</span><br><span class="line">                operand1 &#x3D; operandStack.pop()</span><br><span class="line">                result &#x3D; doMath(token,operand1,operand2)</span><br><span class="line">                operandStack.push(result)</span><br><span class="line">        return operandStack.pop()</span><br><span class="line">def doMath(op,op1,op2):</span><br><span class="line">    if op &#x3D;&#x3D; &quot;*&quot;:</span><br><span class="line">      return op1*op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;&#x2F;&quot;:</span><br><span class="line">      return op1&#x2F;op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;+&quot;:</span><br><span class="line">      return op1+op2</span><br><span class="line">    else:</span><br><span class="line">      return op1-op2</span><br><span class="line"></span><br><span class="line">print(postfixEval(&quot;789*+&quot;))</span><br></pre></td></tr></table></figure>
+<p>##输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;后缀表达式计算.py</span><br><span class="line">79</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-栈的应用-中缀表达式变后缀表达式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     

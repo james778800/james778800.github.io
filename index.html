@@ -151,6 +151,78 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-GEO数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">GEO数据挖掘</a>
+    </h1>
+  
+
+        
+        <a href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/" class="archive-article-date">
+  	<time datetime="2020-10-04T03:52:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>GEO数据库相关知识： <a href="https://wenku.baidu.com/view/907abb0c1711cc7931b716e4.html#" target="_blank" rel="noopener">GEO数据库简介</a></p>
+<p>GEO数据库数据下载： <a href="https://blog.csdn.net/weixin_43700050/article/details/99096980" target="_blank" rel="noopener">GEO数据下载及简介</a></p>
+<p>GEO官网： <a href="http://www.ncbi.nlm.nih.gov/geo" target="_blank" rel="noopener">GEO官网 in NCBI</a></p>
+<blockquote>
+<p>本次数据分析是为了验证TCGA的数据里的MGP基因在GEO数据里和耐药性相关基因的相关性分析，包含对<br>GEO数据的数据清洗，对GEO芯片样本对不同平台根据不同GPL测序芯片进行注释，以及差异分析，最后可视化数据绘制火山图</p>
+</blockquote>
+<ul>
+<li>样本采用的是GSE20842，测序平台参见数据信息<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;GEO&#x2F;&quot;)</span><br><span class="line">## 1.下载GSE数据,获得表达量矩阵</span><br><span class="line">#BiocManager::install(&quot;GEOquery&quot;)</span><br><span class="line">suppressPackageStartupMessages(library(GEOquery))</span><br><span class="line"></span><br><span class="line">#下载数据  </span><br><span class="line">gset &lt;- getGEO(&#39;GSE20842&#39;,destdir &#x3D; &quot;.&quot;,</span><br><span class="line">               AnnotGPL &#x3D; F,</span><br><span class="line">               getGPL &#x3D; F)#下载GSE数据</span><br><span class="line"></span><br><span class="line"># save(gset,file &#x3D; &#39;GSE6988.gset.Rdata&#39;)</span><br><span class="line"># a &lt;- load(&#39;GSE6988.gset.Rdata&#39;)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- read.table(file &#x3D; &#39;GSE20842_series_matrix.txt.gz&#39;,</span><br><span class="line">                      sep &#x3D; &#39;\t&#39;,</span><br><span class="line">                      header &#x3D; T,</span><br><span class="line">                      quote &#x3D; &#39;&#39;,</span><br><span class="line">                      fill &#x3D; T, </span><br><span class="line">                      comment.char &#x3D; &quot;!&quot;) #读取表达数据</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">rownames(exprSet) &#x3D; exprSet[,1] #将第一列作为行名</span><br><span class="line">exprSet &lt;- exprSet[-1,] #去掉第一行</span><br><span class="line"></span><br><span class="line">library(GEOquery)</span><br><span class="line">gpl &lt;- getGEO(&#39;GPL4133&#39;, destdir&#x3D;&quot;.&quot;)</span><br><span class="line"></span><br><span class="line">dim(gpl)</span><br><span class="line">colnames(Table(gpl)) #查一下列明</span><br><span class="line">head(Table(gpl))[,c(1,10)]</span><br><span class="line">ids&#x3D;Table(gpl)[,c(1,10)]</span><br><span class="line"></span><br><span class="line">##踩坑放松1:会不会有NA值，检查一下,没问题就不管那些个警告了</span><br><span class="line">tmpids &lt;- na.omit(ids)</span><br><span class="line">dim(tmpids)</span><br><span class="line">head(ids)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">exprSet &#x3D; exprSet[rownames(exprSet) %in% ids$ID,] #迭代，再次过滤</span><br><span class="line"></span><br><span class="line">ids &#x3D; ids[match(rownames(exprSet),ids$ID),]</span><br><span class="line">exprSet$X.ID_REF. &lt;- ids$GENE_SYMBOL</span><br><span class="line"></span><br><span class="line">#注释完成，解决重复和空</span><br><span class="line"></span><br><span class="line">index1 &lt;- duplicated(exprSet$X.ID_REF.)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- exprSet[!index1,]</span><br><span class="line"></span><br><span class="line">index2 &lt;- is.na(exprSet$X.ID_REF.)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- exprSet[!index2,]</span><br><span class="line">#对ids处理</span><br><span class="line">index1 &lt;- duplicated(ids$GENE_SYMBOL)</span><br><span class="line"></span><br><span class="line">ids &lt;- ids[!index1,]</span><br><span class="line"></span><br><span class="line">index2 &lt;- is.na(exprSet$Accession)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- exprSet[!index2,]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">row.names(exprSet) &lt;- ids$GENE_SYMBOL</span><br><span class="line">exprSet1 &#x3D; exprSet[,-1]</span><br><span class="line">write.csv(exprSet1,&quot;exprSet_GSE20842_id_trans.csv&quot;)</span><br><span class="line"></span><br><span class="line">a &lt;- read.csv(&quot;DEGmeta.txt&quot;, sep &#x3D; &quot;\t&quot;, header &#x3D; F)</span><br><span class="line">### 4.差异表达</span><br><span class="line">library(DESeq2)</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">mycounts &lt;- read.csv(&quot;exprSet_DEG.csv&quot;, sep &#x3D; &quot;,&quot; ,header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">mycounts &lt;- as.matrix(mycounts)</span><br><span class="line"></span><br><span class="line">condition &lt;- factor(c(rep(&#39;Cancer&#39;,65),rep(&#39;Mucosa&#39;,65)), levels &#x3D; c(&#39;Cancer&#39;,&#39;Mucosa&#39;))</span><br><span class="line"></span><br><span class="line">colData &lt;- data.frame(row.names&#x3D;colnames(mycounts), condition)</span><br><span class="line"></span><br><span class="line">mycounts [str(exprSet) &#x3D;&#x3D; &quot;integers&quot;] &lt;- 0</span><br><span class="line">#调用包</span><br><span class="line">library(edgeR)</span><br><span class="line">library(limma)</span><br><span class="line"></span><br><span class="line">#读取清洗的数据，构造DGElist对象需要的东西，构建无重复的两个list进行差异分析</span><br><span class="line"></span><br><span class="line">#edgeR开始</span><br><span class="line"></span><br><span class="line">#规整化数据，可以用log2处理表达矩阵</span><br><span class="line">mycounts &lt;- round(mycounts)</span><br><span class="line">counts &lt;- Pstage</span><br><span class="line">#设置分组信息</span><br><span class="line">group &lt;- 1:2</span><br><span class="line"></span><br><span class="line">y &lt;- DGEList(counts&#x3D;counts, group &#x3D; group)</span><br><span class="line">keep &lt;- rowSums(cpm(y)&gt;1) &gt;&#x3D; 1</span><br><span class="line">y &lt;- y[keep, , keep.lib.sizes&#x3D;FALSE]</span><br><span class="line">y &lt;- calcNormFactors(y)</span><br><span class="line">y_bcv &lt;- y</span><br><span class="line">bcv &lt;- 0.4</span><br><span class="line">et &lt;- exactTest(y_bcv, dispersion &#x3D; bcv ^ 2)</span><br><span class="line">gene1 &lt;- decideTestsDGE(et, p.value &#x3D; 0.05, lfc &#x3D; 0)</span><br><span class="line">summary(gene1)</span><br><span class="line">write.csv(et$table,&quot;gene_exp.csv&quot;)</span><br><span class="line">#根据fdrtool计算qval的</span><br><span class="line">exp&lt;-read.csv(&quot;gene_exp.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">p&lt;-exp$PValue</span><br><span class="line"></span><br><span class="line">#install.packages(&quot;fdrtool&quot;)</span><br><span class="line">library(fdrtool)</span><br><span class="line">fdr&#x3D;fdrtool(p,statistic&#x3D;&quot;pvalue&quot;)</span><br><span class="line">qval&lt;-fdr$qval</span><br><span class="line">exp&lt;-cbind(exp,qval)</span><br><span class="line">write.csv(exp,&quot;exp_qvalue.csv&quot;)</span><br><span class="line"></span><br><span class="line">#筛选log2FC &gt;2 并且 adj&lt;0.05的差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">diffgene &lt;-subset(exp, qval &lt; 0.05 &amp; abs(logFC) &gt; 2)</span><br><span class="line">dim(diffgene)</span><br><span class="line">head(diffgene)</span><br><span class="line">write.csv(diffgene,file &#x3D; &quot;diffgene.csv&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a &lt;- read.table(&quot;chayi.txt&quot;, sep &#x3D; &quot;\t&quot;,header &#x3D; T)</span><br><span class="line"></span><br><span class="line">a &lt;- a[,-1]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#对ids处理</span><br><span class="line">index1 &lt;- duplicated(a$Gene.symbol)</span><br><span class="line"></span><br><span class="line">a &lt;- a[!index1,]</span><br><span class="line"></span><br><span class="line">index2 &lt;- is.na(a$Gene.symbol)</span><br><span class="line"></span><br><span class="line">a &lt;- a[!index2,]</span><br><span class="line"></span><br><span class="line">library(ggplot2)</span><br><span class="line">library(ggrepel)</span><br><span class="line">Dat &lt;- read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T)</span><br><span class="line">Dat &#x3D; a</span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$adj.P.Val &lt; 0.05 &amp; abs(Dat$logFC) &gt;&#x3D; 1, ifelse(Dat$logFC&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;logFC,y&#x3D;-log10(adj.P.Val),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;pink&quot;,&quot;green&quot;,&quot;grey&quot;))</span><br></pre></td></tr></table></figure></li>
+<li>差异基因火山图<br><img src="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/1.png" alt="火山图"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Mfuzz软聚类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -916,77 +988,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-后缀表达式计算" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">栈的应用-后缀表达式计算</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:20:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#后缀表达式计算</p>
-<blockquote>
-<p>正如中缀转后缀中所提到的、需要考虑运算的优先级，小学我们曾学过，先乘除后加减嘛23333333</p>
-</blockquote>
-<p><img src="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.png" alt="后缀表达式计算示例"></p>
-<p>##代码实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def postfixEval(postfixExpr):</span><br><span class="line">        operandStack &#x3D; Stack()</span><br><span class="line">        tokenList&#x3D; list(postfixExpr)</span><br><span class="line"></span><br><span class="line">        for token in tokenList:</span><br><span class="line">            if token in &quot;0123456789&quot;:</span><br><span class="line">                operandStack.push(int(token))</span><br><span class="line">            else:</span><br><span class="line">                operand2 &#x3D; operandStack.pop()</span><br><span class="line">                operand1 &#x3D; operandStack.pop()</span><br><span class="line">                result &#x3D; doMath(token,operand1,operand2)</span><br><span class="line">                operandStack.push(result)</span><br><span class="line">        return operandStack.pop()</span><br><span class="line">def doMath(op,op1,op2):</span><br><span class="line">    if op &#x3D;&#x3D; &quot;*&quot;:</span><br><span class="line">      return op1*op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;&#x2F;&quot;:</span><br><span class="line">      return op1&#x2F;op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;+&quot;:</span><br><span class="line">      return op1+op2</span><br><span class="line">    else:</span><br><span class="line">      return op1-op2</span><br><span class="line"></span><br><span class="line">print(postfixEval(&quot;789*+&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;后缀表达式计算.py</span><br><span class="line">79</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">展开全文 >></a>
         </p>
       
 
