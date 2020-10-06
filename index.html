@@ -151,6 +151,74 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-感知机的损失函数的推导" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">感知机的损失函数的推导</a>
+    </h1>
+  
+
+        
+        <a href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/" class="archive-article-date">
+  	<time datetime="2020-10-06T20:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>感知机的数学模型为sign(wixi+b)，其中w=(w1,w2,…,wn)是权重向量，xi=（x1i,x2i,…,xni)是一个样本点，从符号很容易理解，它们都是定义在Rn空间的(如果难以理解，可以简单的理解为样本点有n个维度，相应的权重向量也须有n个维度和它相匹配).<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/1.jpg" alt="感知机模型"></p>
+</blockquote>
+<ul>
+<li>其中损失函数的推导，其实初中就学过，整理如下：<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/2.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/3.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/4.jpg" alt="感知机模型"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-GEO数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -947,79 +1015,9 @@
 
 
   
-    <article id="post-递归可视化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#递归的关键思想：不断缩小，调用自身</p>
-<ul>
-<li>利用该逻辑思想可进行简化问题</li>
-<li>1、画一个螺旋缩小正方形<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">def drawSpiral(t,lineLen):</span><br><span class="line">    if lineLen &gt; 0:</span><br><span class="line">        t.forward(lineLen)</span><br><span class="line">        t.right(90)</span><br><span class="line">        drawSpiral(t,lineLen - 5)</span><br><span class="line">drawSpiral(t,100)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/1.png" alt="螺旋结构展示"></li>
-<li>2、画一个五角星<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">t.pencolor(&quot;green&quot;)</span><br><span class="line">t.pensize(3)</span><br><span class="line">for i in  range(5):</span><br><span class="line">    t.forward(100)</span><br><span class="line">    t.right(144)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/2.png" alt="螺旋结构展示"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
     </nav>
   
 
