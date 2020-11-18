@@ -151,6 +151,212 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-R语言根据meta信息清洗原始表达矩阵并注释" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">R语言根据meta信息清洗原始表达矩阵并注释</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/" class="archive-article-date">
+  	<time datetime="2020-04-20T15:45:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>关于R的一些比较基础的在清洗数据的一些使用，出问题的时候容易头皮发麻，很多基础的知识还是需要在实战中去巩固。总之<br>只要是为了结果，不管用什么方法都可以，追求效率不要在问题上死纠结，<strong>杀鸡用牛刀其实不可取</strong>，此次内容比较基础，毕竟<br>我就是一个实打实的菜逼、<br>#（一）前期准备</p>
+</blockquote>
+<ul>
+<li><p>清除当前环境中的所有变量，节省内存，因为R很吃内存，读取很大数据很慢</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br></pre></td></tr></table></figure></li>
+<li><p>关闭因子，以防数字的操作出现意想不到的问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(stringsAsFactors &#x3D; F)</span><br></pre></td></tr></table></figure></li>
+<li><p>设置小数点的位数的显示，并不改变数据本身噢</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(digits &#x3D; 2)</span><br></pre></td></tr></table></figure></li>
+<li><p>设置自己当前的工作目录在哪= =</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;CRC_scRNAseq&#x2F;&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>以下的两个R的包是关于对基因注释所用、可以选择自己合适的版本具体包的使用可参见</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(&quot;biomaRt&quot;)</span><br><span class="line">library(&quot;curl&quot;)</span><br></pre></td></tr></table></figure>
+<p>#（二）提取和清洗数据</p>
+</li>
+<li><p>对于读取数据的txt、csv。选择不同的读取方式，emmm，参数需要调整的以下有，针对不同的原始数据需要不同的改动</p>
+<blockquote>
+<p>这是最常见的表达矩阵类型：见图（我的示例数据是：不同组织的免疫细胞的数据，源自不同时期的病人）<br><img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5.png" alt="表达矩阵示例"></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">genecount &lt;- read.table(&quot;All.ReadCount.gene.matrix.txt&quot;,header &#x3D; T,sep &#x3D; &#39;\t&#39;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>meta信息同样读一手，为的是保证与表达矩阵对应，随后的构建对象以及筛选基因or细胞等等有用。见图：<br><img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/meta%E4%BF%A1%E6%81%AF.png" alt="表达矩阵示例"></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phenoMatrix &lt;- read.csv(&quot;phenoMatrix.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>此时我想要研究的是B细胞内基因的表达，需要在原始表达矩阵进行筛选，当然excel可以搞，本菜鸡就喜欢杀鸡用牛刀，<br>相当于最基础的索引的操作，需要对逻辑判断的运算符了解（是在meta信息里直接查看的Cell_type）</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">B_pyhenoMatrix &lt;- phenoMatrix[phenoMatrix$Cell_Type &#x3D;&#x3D; 2|phenoMatrix$Cell_Type &#x3D;&#x3D; 11|</span><br><span class="line">                                phenoMatrix$Cell_Type &#x3D;&#x3D; 13,]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>建立索引list去找meta数据里面的B细胞，因为表达矩阵和meta矩阵共有的是病人的信息，因此相当于用筛选的meta的列去找表达矩阵对应的行</p>
+</blockquote>
+</li>
+<li><p>首先找出提取出的B细胞的meta数据框里面的行名也就是病人编号（图的X列）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B_index &lt;- rownames(B_pyhenoMatrix)</span><br></pre></td></tr></table></figure></li>
+<li><p>然后利用which函数对应到表达矩阵并且返回的是病人所在的列的编号（即第几列）成为新的索引</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index1 &lt;- which(names(genecount)%in%B_index)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>再次用已知的B细胞所在的列去索引可得到B细胞的表达矩阵</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;B_readcount.gene.matrix &lt;- genecount[,c(1,index1)]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>#(三)注释B细胞</p>
+<ul>
+<li>查看注释所有的库并且进行选择<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listMarts()</span><br></pre></td></tr></table></figure></li>
+<li>选择人类参考基因组并且开始注释<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mart &lt;- useDataset(&quot;hsapiens_gene_ensembl&quot;, useMart(&quot;ensembl&quot;))</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>但是需要对原始的表达矩阵的geneid进行处理，清洗<br>这种ENSG00000000003.14变成    ENSG00000000003才能更好的去对应到symbol id</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a&lt;- gsub(&quot;\\_\\d*&quot;, &quot;&quot;, B_readcount.gene.matrix$Ensembl_ID)</span><br><span class="line">ENSEMBL &lt;- gsub(&quot;\\.\\d*&quot;, &quot;&quot;, a)</span><br><span class="line">row.names(B_readcount.gene.matrix)&lt;- ENSEMBL</span><br><span class="line">B_readcount.gene.matrix&lt;- cbind(ENSEMBL,B_readcount.gene.matrix)</span><br><span class="line">colnames(B_readcount.gene.matrix)[1] &lt;- c(&quot;ensembl_gene_id&quot;)</span><br><span class="line">head(B_readcount.gene.matrix)</span><br><span class="line"></span><br><span class="line">my_ensembl_gene_id &lt;- row.names(B_readcount.gene.matrix)</span><br><span class="line">options(timeout &#x3D; 4000000)</span><br></pre></td></tr></table></figure></li>
+<li>这一步比较耗时，完成后会在数据框最后生成hg_symbols<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hg_symbols&lt;- getBM(attributes&#x3D;c(&#39;ensembl_gene_id&#39;,&#39;hgnc_symbol&#39;), filters&#x3D; &#39;ensembl_gene_id&#39;, values &#x3D; my_ensembl_gene_id, mart &#x3D; mart)</span><br></pre></td></tr></table></figure></li>
+<li>将合并后的表达数据框和注释得到的hg_symbols整合为一<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">abc &lt;- merge(B_readcount.gene.matrix, hg_symbols, by&#x3D;&quot;ensembl_gene_id&quot;)</span><br><span class="line">head(readcount_patient_0)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>删除空白没有注释到的基因&amp;删除重复的基因都是和之前一样索引的方法，也有一些需要注意的点<br>删除空白,一定要注意NA、NULL的区别，看情况能否删除，万一是你研究的基因，就遭中了呀</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index3&lt;-is.na(abc$hgnc_symbol)</span><br><span class="line">abc &lt;- abc[!index3,]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>删除重复的需要用到duplicatedh函数也是索引的方法</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">index4 &lt;- duplicated(abc$hgnc_symbol)</span><br><span class="line">index4</span><br><span class="line">gene_only &lt;- abc[!index4,]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>保存清洗好并且注释完成的文件~方便后续的分析</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write.csv(gene_only,file &#x3D; &quot;B_cell_cluster2_11_13.csv&quot;)</span><br></pre></td></tr></table></figure>
+<img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%E5%AE%8C%E6%88%90.png" alt="表达矩阵示例"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-gffutils处理GFF-GTF文件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">gffutils处理GFF-GTF文件</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/" class="archive-article-date">
+  	<time datetime="2020-04-17T17:29:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>####本次代码流程及.md撰写是不愿意透露身份的Master Mathew带来，我是一个没有感情的更博机器谢谢！</p>
+<blockquote>
+<p>测试环境<br>OS: Windows 7 64bit<br>Python: 3.6.3(Anaconda 64bit)<br>gffutils: 0.9</p>
+</blockquote>
+<blockquote>
+<p>使用Python处理GFF/GTF文件时，gffutils是一个很不错的选择。以NCBI上酿酒酵母<em>Saccharomyces cerevisiae</em> C288C(R64)的数据为例，一个典型的GFF文件格式如下图所示（GFF3）。其包含9列信息，互相以制表符（Tab）分割，依次为：seqid，source，type，start，end，score，strand，phase，attributes，而attributes中的“ID”标签需在文件中唯一。GFF的详细定义可查阅<a href="http://gmod.org/wiki/GFF3#GFF3_Format" target="_blank" rel="noopener">GFF3 - GMOD</a><br><img src="https://upload-images.jianshu.io/upload_images/22739114-f4e8ed130a162823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="GFF文件格式示例"><br><img src="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/1.png" alt="GFF文件格式示例"></p>
+</blockquote>
+<p><strong>安装</strong><br>gffutils可直接通过pip安装，这里使用清华大学镜像<br><code>python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gffutils</code></p>
+<p><strong>创建数据库</strong><br>gffutils的基本做法是通过create_db()方法把GFF文件解析成一个SQLite3数据库文件供后续使用，因此首先需要创建数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import gffutils</span><br><span class="line"></span><br><span class="line">#修改工作路径</span><br><span class="line">os.chdir(&#39;f:&#x2F;Bioinfo&#x2F;Python&#x2F;gffutils&#39;)</span><br><span class="line"></span><br><span class="line">#创建数据库</span><br><span class="line">db &#x3D; gffutils.create_db(&#39;GCF_000146045.2_R64_genomic.gff&#39;, dbfn &#x3D; &#39;C288C.db&#39;, force &#x3D; True, keep_order &#x3D; True, merge_strategy &#x3D; &#39;merge&#39;, sort_attribute_values &#x3D; True)</span><br></pre></td></tr></table></figure>
+<p>上述代码运行后，工作路径下会创建C288C.db文件，可以直接用SQLiteStudio查看<br><img src="https://upload-images.jianshu.io/upload_images/22739114-9812c0663f41f48a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gff数据库文件示例"><br><img src="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/2.png" alt="GFF文件格式示例"><br>从图中可以看出，gffutils的把GFF的attributes字段解析为了Python的字典类型数据。此外，start和end字段为int类型数据。</p>
+<p><strong>使用数据库</strong><br>数据库创建后，可以通过FeatureDB()方法使用该数据库，数据库主键使用了原GFF文件的ID标签，对应的数据也是用ID号访问。如上所述，attributes字段解析为了Python的字典，因此相关数据的获取即是字典的访问方式。而字典中的每一个value都是列表类型数据，如果只需要具体内容的话一般可输出列表第一个数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import gffutils</span><br><span class="line"></span><br><span class="line">#修改工作路径</span><br><span class="line">os.chdir(&#39;f:&#x2F;Bioinfo&#x2F;Python&#x2F;gffutils&#39;)</span><br><span class="line"></span><br><span class="line">#创建数据库</span><br><span class="line">#db &#x3D; gffutils.create_db(&#39;GCF_000146045.2_R64_genomic.gff&#39;, dbfn &#x3D; &#39;C288C.db&#39;, force &#x3D; True, keep_order &#x3D; True, merge_strategy &#x3D; &#39;merge&#39;, sort_attribute_values &#x3D; True)</span><br><span class="line"></span><br><span class="line">#使用数据库</span><br><span class="line">db &#x3D; gffutils.FeatureDB(&#39;C288C.db&#39;, keep_order &#x3D; True)</span><br><span class="line"></span><br><span class="line">#获取某个基因的所有注释信息</span><br><span class="line">gene &#x3D; db[&#39;cds-NP_009332.1&#39;]</span><br><span class="line"></span><br><span class="line">#获取该基因的具体字段并输出</span><br><span class="line">print(&#39;起始位点：%d&#39; % gene.start)</span><br><span class="line">print(&#39;结束位点：%d&#39; % gene.end)</span><br><span class="line">print(&#39;Note：%s&#39; % gene.attributes[&#39;Note&#39;][0])</span><br></pre></td></tr></table></figure>
+<p>上述代码的输出结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">起始位点：1807</span><br><span class="line">结束位点：2169</span><br><span class="line">Note：hypothetical protein; member of the seripauperin multigene family encoded mainly in subtelomeric regions</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-pheatmap绘制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
