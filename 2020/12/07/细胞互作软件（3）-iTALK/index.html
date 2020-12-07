@@ -6,18 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Biomagic</title>
+  <title>细胞互作软件（3）-iTALK | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/archives/page/2/index.html">
+  <meta name="description" content="iTALK iTALK的特点    集成了多种差异分析和可视化方法；将配体-受体注释为4大类：细胞因子、生长因子、免疫检查点和其他；配体-受体分析的中间数据和最终结果都可以轻松导出。   能够用devtools在线安装的，就直接用，我的是scater无限报错 12345library(devtools)install_github(&quot;Coolgenome&#x2F;iTALK&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="细胞互作软件（3）-iTALK">
+<meta property="og:url" content="http://yoursite.com/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="iTALK iTALK的特点    集成了多种差异分析和可视化方法；将配体-受体注释为4大类：细胞因子、生长因子、免疫检查点和其他；配体-受体分析的中间数据和最终结果都可以轻松导出。   能够用devtools在线安装的，就直接用，我的是scater无限报错 12345library(devtools)install_github(&quot;Coolgenome&#x2F;iTALK&quot;">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_circ.png">
+<meta property="og:image" content="http://yoursite.com/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_net.png">
+<meta property="article:published_time" content="2020-12-07T08:42:32.000Z">
+<meta property="article:modified_time" content="2020-12-07T09:40:45.072Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_circ.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,295 +154,188 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-细胞互作软件（3）-iTALK" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      细胞互作软件（3）-iTALK
+    </h1>
+  
+
+        
+        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/" class="archive-article-date">
+  	<time datetime="2020-12-07T08:42:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="iTALK"><a href="#iTALK" class="headerlink" title="iTALK"></a>iTALK</h1><blockquote>
+<p>iTALK的特点 </p>
+</blockquote>
+<blockquote>
+<p>集成了多种差异分析和可视化方法；<br>将配体-受体注释为4大类：细胞因子、生长因子、免疫检查点和其他；<br>配体-受体分析的中间数据和最终结果都可以轻松导出。</p>
+</blockquote>
+<ul>
+<li><p>能够用devtools在线安装的，就直接用，我的是scater无限报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">library(devtools)</span><br><span class="line">install_github(&quot;Coolgenome&#x2F;iTALK&quot;, build_vignettes &#x3D; TRUE)</span><br><span class="line">install.packages(&quot;ps&quot;)</span><br><span class="line">install.packages(&quot;scater&quot;)</span><br><span class="line">BiocManager::install(&quot;scater&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>采用和下载celltalker一样的离线安装模式进行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">devtools::install_local(&quot;G:&#x2F;&#x2F;R-3.6.2&#x2F;library&#x2F;iTALK-master.zip&quot;)</span><br><span class="line">devtools::install_github(&#39;arc85&#x2F;celltalker&#39;)</span><br><span class="line">install.packages(&quot;G:&#x2F;&#x2F;google Downloads&#x2F;iTALK-master&#x2F;&quot;,repos&#x3D;NULL,type&#x3D;&quot;source&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>iTALK也可以无缝对接Seurat的对象，读取其中的meta信息和count数据</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(iTALK)</span><br><span class="line">library(Seurat)</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>由于celltalker的折磨，不愉快的开始，iTALK分析<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;肿瘤组织样本CD8&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">genecount &lt;- read.csv(&quot;Genecount_TTC.csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">genemeta &lt;- read.csv(&quot;TTC_monocleMeta.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">TTC &lt;- CreateSeuratObject(genecount,</span><br><span class="line">                          meta.data &#x3D; genemeta,</span><br><span class="line">                          project &#x3D; &quot;TTC&quot;,</span><br><span class="line">                          min.cells &#x3D; 5,</span><br><span class="line">                          min.features  &#x3D; 200)</span><br></pre></td></tr></table></figure>
+<h1 id="这里是正式开始iTALK的对象的构建"><a href="#这里是正式开始iTALK的对象的构建" class="headerlink" title="这里是正式开始iTALK的对象的构建"></a>这里是正式开始iTALK的对象的构建</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">##准备iTALK输入文件</span><br><span class="line"># 输入文件格式为数据框，行为细胞名称，列为基因名和细胞注释信息，基因名命名的列值为表达数据。</span><br><span class="line"># 细胞注释信息必选“cell_type”，值为细胞类型注释信息；可选“compare_group”，值为细胞的样本分组信息。</span><br><span class="line"></span><br><span class="line">cell.meta &lt;- subset(TTC@meta.data, select&#x3D;c(&quot;sampleType&quot;,&quot;pseudotime&quot;))</span><br><span class="line"></span><br><span class="line">names(cell.meta) &lt;- c(&quot;compare_group&quot;, &quot;cell_type&quot;)</span><br><span class="line"></span><br><span class="line">cell.expr &lt;- data.frame(t(as.matrix(TTC@assays$RNA@counts)), check.names&#x3D;F)</span><br><span class="line">data.italk &lt;- merge(cell.expr, cell.meta, by&#x3D;0)</span><br><span class="line">rownames(data.italk) &lt;- data.italk$Row.names</span><br><span class="line">data.italk &lt;- data.italk[,-1]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以查看构建的italk对象</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.italk[1:5,c(1:2,18027:18028)]</span><br></pre></td></tr></table></figure></li>
+<li>选择可视化的一些参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">##设置绘图颜色和其他变量</span><br><span class="line">mycolor &lt;- c(&quot;#92D0E6&quot;,&quot;#F5949B&quot;,&quot;#E11E24&quot;,&quot;#FBB96F&quot;,&quot;#007AB8&quot;,&quot;#A2D184&quot;,&quot;#00A04E&quot;,&quot;#BC5627&quot;,&quot;#0080BD&quot;,&quot;#EBC379&quot;,&quot;#A74D9D&quot;)</span><br><span class="line">cell_type &lt;- unique(data.italk$cell_type)</span><br><span class="line">cell_col &lt;- structure(mycolor[1:length(cell_type)], names&#x3D;cell_type)</span><br><span class="line">#通讯类型变量</span><br><span class="line">comm_list&lt;-c(&#39;growth factor&#39;,&#39;other&#39;,&#39;cytokine&#39;,&#39;checkpoint&#39;)</span><br><span class="line">#圈图展示配体-受体对的数量</span><br><span class="line">PN&#x3D;20</span><br></pre></td></tr></table></figure></li>
+<li>新建生成的文件夹，可视化输出文件方便<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##&#x3D;&#x3D;细胞通讯关系概览&#x3D;&#x3D;##</span><br><span class="line">dir.create(&#39;iTALK&#x2F;Overview&#39;)</span><br><span class="line">setwd(&quot;iTALK&#x2F;Overview&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>我这里只有一种组织，癌组织TTC，如果有细分的可以换的<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#实际上一个样本之内的细胞才能通讯，这里提取一组样本分析是为了克服单细胞数据稀疏性造成的误差</span><br><span class="line">data1 &lt;- subset(data.italk, subset&#x3D;data.italk$compare_group&#x3D;&#x3D;&quot;TTC&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>分析并生成图片<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#寻找高表达的配体受体基因,top_genes&#x3D;50代表提取平均表达量前50%的基因</span><br><span class="line">highly_exprs_genes &lt;- rawParse(data1, top_genes&#x3D;50, stats&#x3D;&quot;mean&quot;)</span><br><span class="line">res&lt;-NULL</span><br><span class="line">for(comm_type in comm_list)&#123;</span><br><span class="line">  #comm_type &#x3D; &#39;cytokine&#39;   #测试循环代码的临时变量</span><br><span class="line">  res_cat &lt;- FindLR(highly_exprs_genes, datatype&#x3D;&#39;mean count&#39;, comm_type&#x3D;comm_type)</span><br><span class="line">  res_cat &lt;- res_cat[order(res_cat$cell_from_mean_exprs*res_cat$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">  write.csv(res_cat, paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.xls&#39;))</span><br><span class="line">  #pdf(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.pdf&#39;), width&#x3D;6, height&#x3D;7)</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_net.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  #绘制细胞通讯关系网络图</span><br><span class="line">  NetView(res_cat, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">          vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">  dev.off()</span><br><span class="line">  #绘制topPN的配体-受体圈图</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_circ.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  LRPlot(res_cat[1:PN,],datatype&#x3D;&#39;mean count&#39;,cell_col&#x3D;cell_col,link.arr.lwd&#x3D;res_cat$cell_from_mean_exprs[1:PN],link.arr.width&#x3D;res_cat$cell_to_mean_exprs[1:PN], text.vjust &#x3D; &quot;0.35cm&quot;)</span><br><span class="line">  dev.off()</span><br><span class="line">  res&lt;-rbind(res,res_cat)</span><br><span class="line">&#125;</span><br><span class="line">res &lt;- res[order(res$cell_from_mean_exprs*res$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">write.csv(res, &#39;LRpairs_Overview.xls&#39;)</span><br><span class="line">res.top &lt;- res[1:PN,]</span><br><span class="line">png(&#39;LRpairs_Overview_net.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">NetView(res, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">        vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">dev.off()</span><br><span class="line">png(&#39;LRpairs_Overview_circ.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">LRPlot(res.top, datatype&#x3D;&#39;mean count&#39;, link.arr.lwd&#x3D;res.top$cell_from_mean_exprs,</span><br><span class="line">       cell_col&#x3D;cell_col, link.arr.width&#x3D;res.top$cell_to_mean_exprs)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<h1 id="可视化结果"><a href="#可视化结果" class="headerlink" title="可视化结果"></a>可视化结果</h1>（1）检查点的圈图（LRpairs_Overview_checkpoint_circ）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_circ.png" alt="iTALK"><br>（2）检查点的网络图（LRpairs_Overview_checkpoint_net）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_net.png" alt="iTALK"></li>
+</ul>
+<blockquote>
+<p>还有LRpairs_Overview_growth factor、LRpairs_Overview_cytokine的结果就不一一展示。总是三个软件里面，这个使用效果最佳。</p>
+</blockquote>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-09-08T08:17:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">DEseq2差异分析</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
-  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">细胞互作软件（2）-cellphoneDB</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
-  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:30:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(3):生存分析（bulk水平）</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:16:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(2):相关性分析（bulk水平）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:35:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(1):DESeq2差异分析（bulk水平）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:20:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">栈的应用-后缀表达式计算</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:08:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">栈的应用-二进制转换</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next &amp;raquo;</a>
-    </nav>
   
 
 
@@ -461,8 +359,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

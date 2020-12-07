@@ -151,6 +151,232 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-DEseq2差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">DEseq2差异分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-09-08T08:17:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>DESeq2和EdgeR都可用于做基因差异表达分析，主要也是用于RNA-Seq数据，同样也可以处理类似的ChIP-Seq,shRNA以及质谱数据。</p>
+</li>
+<li><p>这两个都属于R包，其相同点在于都是对count data数据进行处理，都是基于负二项分布模型。<br>因此会发现，用两者处理同一组数据，最后在相同阈值下筛选出的大部分基因都是一样的<br>，但是有一部分不同应该是由于其估计离散度的不同方法所导致的。 </p>
+<blockquote>
+<p>DESeq2的使用方法：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#清楚缓存的变量</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#调用DEseq2差异分析的包</span><br><span class="line">library(readxl)</span><br><span class="line">library(DESeq2)</span><br><span class="line"></span><br><span class="line">#载入数据框（表达矩阵）</span><br><span class="line"></span><br><span class="line">B_P_cell &lt;- read.csv(&quot;B_P_cell.csv&quot;, header &#x3D; T, sep &#x3D; &quot;,&quot;, row.names &#x3D; 2)</span><br><span class="line">B_P_cell &lt;- B_P_cell[,-1]</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
+</li>
+<li><p>grep的正则表达式需要熟练</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#提取表达矩阵样本病人名</span><br><span class="line">names &lt;- colnames(B_P_cell)</span><br><span class="line"></span><br><span class="line">#分析一期和二期的病人的列表</span><br><span class="line">#抓取一期病人的索引</span><br><span class="line">index1 &lt;- grep(&quot;RC03&quot;,names)</span><br><span class="line">index2 &lt;- grep(&quot;R02&quot;,names)</span><br><span class="line">index_1 &lt;- c(index1,index2)</span><br><span class="line">#抓取二期病人的索引</span><br><span class="line">index_2 &lt;- grep(&quot;LC01&quot;,names)</span><br><span class="line">#合并提取的为同一矩阵</span><br><span class="line">oneVStwo_exp &lt;- B_P_cell[,c(index_1,index_2)]</span><br><span class="line">#将表达矩阵取整并且变为矩阵</span><br><span class="line">oneVStwo_exp &lt;- round(as.matrix(oneVStwo_exp))</span><br><span class="line">#构建dds对象需要的condition,添加分组信息</span><br><span class="line">condition &lt;- factor(c(rep(&quot;control&quot;,length(index_1)),rep(&quot;treat&quot;,length(index_2))), </span><br><span class="line">                    levels &#x3D; c(&quot;control&quot;,&quot;treat&quot;))</span><br><span class="line"></span><br><span class="line">coldata&lt;-data.frame(row.names&#x3D;colnames(oneVStwo_exp), condition)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#构建DDS对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(oneVStwo_exp, coldata, design&#x3D; ~ condition)</span><br><span class="line"></span><br><span class="line">dds&lt;-DESeq(dds)</span><br><span class="line"></span><br><span class="line">res &#x3D; results(dds, contrast&#x3D;c(&quot;condition&quot;, &quot;control&quot;, &quot;treat&quot;))</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">write.csv(res,file&#x3D;&quot;1VS2_result.csv&quot;)</span><br><span class="line">diff_gene &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 2)</span><br><span class="line">write.csv(diff_gene,file &#x3D; &quot;1vs2_diff_gene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同理处理二期和三期的病人<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#分析二期和三期的病人的列表</span><br><span class="line">#抓取三期病人的索引</span><br><span class="line">index1 &lt;- grep(&quot;C473&quot;,names)</span><br><span class="line">index2 &lt;- grep(&quot;RC02&quot;,names)</span><br><span class="line">index_3 &lt;- c(index1,index2)</span><br><span class="line"></span><br><span class="line">#合并提取的为同一矩阵</span><br><span class="line">twoVSthree_exp &lt;- B_P_cell[,c(index_2,index_3)]</span><br><span class="line">#将表达矩阵取整并且变为矩阵</span><br><span class="line">twoVSthree_exp &lt;- round(as.matrix(twoVSthree_exp))</span><br><span class="line">#构建dds对象需要的condition,添加分组信息</span><br><span class="line">condition &lt;- factor(c(rep(&quot;control&quot;,length(index_2)),rep(&quot;treat&quot;,length(index_3))), </span><br><span class="line">                    levels &#x3D; c(&quot;control&quot;,&quot;treat&quot;))</span><br><span class="line"></span><br><span class="line">coldata&lt;-data.frame(row.names&#x3D;colnames(twoVSthree_exp), condition)</span><br><span class="line">#构建DDS对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(twoVSthree_exp, coldata, design&#x3D; ~ condition)</span><br><span class="line"></span><br><span class="line">dds&lt;-DESeq(dds)</span><br><span class="line"></span><br><span class="line">res &#x3D; results(dds, contrast&#x3D;c(&quot;condition&quot;, &quot;control&quot;, &quot;treat&quot;))</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">write.csv(res,file&#x3D;&quot;2VS3_result.csv&quot;)</span><br><span class="line">diff_gene &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 2)</span><br><span class="line">write.csv(diff_gene,file &#x3D; &quot;2vs3_diff_gene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<img src="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="差异分析结果"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-sierpinski-递归三角形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
+  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#递归的关键思想：不断缩小，调用自身<br><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/1.png" alt="实例"></p>
+<ul>
+<li>注意三角形绘制顺序是左上右！<blockquote>
+<p>谢尔宾斯基三角形（英语：Sierpinski triangle）是一种分形，<br>由波兰数学家谢尔宾斯基在1915年提出。它是自相似集的例子。它的豪斯多夫维是<br>log(3)/log(2) ≈ 1.585。</p>
+<ul>
+<li>先作一个正三角形，挖去一个“中心三角形”（即以原三角形各边的中点为顶点的三角形），<br>然后在剩下的小三角形中又挖去一个“中心三角形”，我们用黑色三角形代表挖去的面积，那么白三角形为剩下的面积（我们称白三角形为谢尔宾斯基三角形）。如果用上面的方法无限连续地作下去，则谢尔宾斯基三角形的面积越趋近于零，而它的周长越趋近于无限大（如图）。<br>若设操作次数为n（每挖去一次中心三角形算一次操作），<br>则剩余三角形面积公式为：4的n次方分之3的n次方。<br>将边长为1的等边三角形区域，均分成四个小等边三角形，去掉中间一个，<br>然后再对每个小等边三角形进行相同的操作得……，这样的操作不断继续下<br>去直到无穷，最终所得的极限图形称为谢尔宾斯基垫片。谢尔宾斯基垫片的<br>极限图形的面积趋于零，而小图形的数目趋于无穷，作为小图形的边的线段数目<br>趋于无穷，实际上是一个线集。操作n次后边长r=(1/2)n，三角形个数N(r)=3<br>n，根据公式N(r)=1/rD，3n=2Dr，D=ln3/ln2=1.585。所以谢尔宾斯基垫片是1.585。<br>它比普通的一维直线占据了更多空间，但还是没有二维正方形占据的那么多，可以用等比数列的知识求出他的面积是0。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def sierpinski(degree,points):</span><br><span class="line">    colormap &#x3D; [&quot;blue&quot;,&quot;red&quot;,&quot;green&quot;,&quot;white&quot;,&quot;yellow&quot;,&quot;orange&quot;]</span><br><span class="line">    drawTriangle(points,colormap[degree])</span><br><span class="line">    if degree &gt; 0:</span><br><span class="line">        sierpinski(degree -1,</span><br><span class="line">                   &#123;&quot;left&quot;:points[&quot;left&quot;],</span><br><span class="line">                    &quot;top&quot;:getMid(points[&quot;left&quot;],points[&quot;top&quot;]),</span><br><span class="line">                    &quot;right&quot;:getMid(points[&quot;left&quot;],points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;top&quot;]),</span><br><span class="line">                    &quot;top&quot;: points[&quot;top&quot;],</span><br><span class="line">                    &quot;right&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;top&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;right&quot;: points[&quot;right&quot;]&#125;)</span><br><span class="line">def drawTriangle(points,color):</span><br><span class="line">    t.fillcolor(color)</span><br><span class="line">    t.penup()</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.pendown()</span><br><span class="line">    t.begin_fill()</span><br><span class="line">    t.goto(points[&quot;left&quot;])</span><br><span class="line">    t.goto(points[&quot;right&quot;])</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.end_fill()</span><br><span class="line"></span><br><span class="line">def getMid(p1,p2):</span><br><span class="line">    return ((p1[0]+p2[0])&#x2F;2,(p1[1]+p2[1])&#x2F;2)</span><br><span class="line"></span><br><span class="line">t &#x3D;  turtle.Turtle()</span><br><span class="line"></span><br><span class="line">points &#x3D;&#123;&#39;left&#39;:(-200,-100),</span><br><span class="line">         &#39;top&#39;:(0,200),</span><br><span class="line">         &#39;right&#39;:(200,-100)&#125;</span><br><span class="line">sierpinski(5,points)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/2.png" alt="logo实例"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-盗版添柏岚Timberland-递归分形树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
+  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>title: 盗版添柏岚Timberland(递归分形树)<br>date: 2020-07-14 10:43:33<br>tags:<br>#递归的关键思想：不断缩小，调用自身</p>
+<ul>
+<li>利用该逻辑思想可进行简化问题</li>
+<li>树的结构可以用递归进行实现：同时大黄靴知名品牌添柏岚的LOGO便是如此相似<br>。使用递归的思想可以来盗版其logo<br><img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/1.png" alt="logo实例"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def tree(branch_len):</span><br><span class="line">    if branch_len &gt; 10:</span><br><span class="line">        t.forward(branch_len)</span><br><span class="line">        t.right(20)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.left(40)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.right(20)</span><br><span class="line">        t.backward(branch_len)</span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line">t.left(90)</span><br><span class="line">t.penup()</span><br><span class="line">t.backward(100)</span><br><span class="line">t.pendown()</span><br><span class="line">t.pencolor(&quot;black&quot;)</span><br><span class="line">t.pensize(17)</span><br><span class="line">tree(150)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/2.png" alt="logo实例"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-TCGA数据-3-生存分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -733,223 +959,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-简单括号匹配（修改）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">栈的应用-简单括号匹配（修改）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-05-15T16:13:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#栈的应用-简单括号匹配（修改）☞Bug</p>
-<blockquote>
-<p>为什么不返回布尔值给我？因为return的用法以及缩进的问题，我是憨憨</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def parChecker(symbolString):</span><br><span class="line">    s &#x3D; Stack ()</span><br><span class="line">    balanced &#x3D; True</span><br><span class="line">    index &#x3D; 0</span><br><span class="line">    while index &lt; len(symbolString) and balanced:</span><br><span class="line">        symbol &#x3D; symbolString[index]</span><br><span class="line">        if symbol &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            s.push(symbol)</span><br><span class="line">        else:</span><br><span class="line">            if s.isEmpty():</span><br><span class="line">                balanced &#x3D; False</span><br><span class="line">            else:</span><br><span class="line">                s.pop()</span><br><span class="line">        index &#x3D; index + 1</span><br><span class="line">    if balanced and s.isEmpty():</span><br><span class="line">       return(True)</span><br><span class="line">    else:</span><br><span class="line">       return(False)</span><br><span class="line">print(parChecker(&quot;()()&quot;))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>结果如下</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;栈的应用（括号匹配）.py</span><br><span class="line">True</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-<p>#每日一个憨憨小段子，每日逐渐变弱智</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-简单括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">栈的应用-简单括号匹配</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
-  	<time datetime="2020-05-15T15:51:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#（1）首先安装pythonds</p>
-<blockquote>
-<p>如果有conda</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install pythonds</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>不知道是镜像源的原因还是为什么，conda没成功还是走老套路</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pythonds</span><br></pre></td></tr></table></figure>
-<p>#（2）代码流程走起</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def parChecker(symbolString):</span><br><span class="line">    s &#x3D; Stack ()</span><br><span class="line">    balanced &#x3D; True</span><br><span class="line">    index &#x3D; 0</span><br><span class="line">    while index &lt; len(symbolString) and balanced:</span><br><span class="line">        symbol &#x3D; symbolString[index]</span><br><span class="line">        if symbol &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            s.push(symbol)</span><br><span class="line">        else:</span><br><span class="line">            if s.isEmpty():</span><br><span class="line">                balanced &#x3D; False</span><br><span class="line">            else:</span><br><span class="line">                s.pop()</span><br><span class="line">        index &#x3D; index + 1</span><br><span class="line">    if balanced and s.isEmpty():</span><br><span class="line">        return True</span><br><span class="line">    else:</span><br><span class="line">        return False</span><br><span class="line">    print(parChecker(&quot;()()()()()(()&quot;))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>但最后结果,感觉是进入一个死循环，下期进行解答</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>并没有给我一个 True or False<br>，明天起床把它解决</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-逐字比较的算法分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">逐字比较的算法分析</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-05-14T08:27:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>变位词判断问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def anagramSolution(s1,s2):</span><br><span class="line">    c1 &#x3D; [0]*26</span><br><span class="line">    c2 &#x3D; [0]*26</span><br><span class="line">    for i in range(len(s1)):</span><br><span class="line">        pos &#x3D; ord(s1[i])-ord(&#39;a&#39;)</span><br><span class="line">        c1[pos] &#x3D; c1[pos] + 1</span><br><span class="line">    for i in range(len(s2)):</span><br><span class="line">        pos &#x3D; ord(s2[i]) - ord(&#39;a&#39;)</span><br><span class="line">        c2[pos] &#x3D; c2[pos] + 1</span><br><span class="line">    j &#x3D; 0</span><br><span class="line">    stillOK &#x3D; True</span><br><span class="line">    while j &lt; 26 and stillOK:</span><br><span class="line">        if c1[j] &#x3D;&#x3D; c2[j]:</span><br><span class="line">            j &#x3D; j+1</span><br><span class="line">        else:</span><br><span class="line">            stillOK &#x3D; False</span><br><span class="line">        return stillOK</span><br><span class="line"></span><br><span class="line">print(anagramSolution(&quot;bitch&quot;,&quot;tibch&quot;))</span><br></pre></td></tr></table></figure>
-<p>#True</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">展开全文 >></a>
         </p>
       
 
