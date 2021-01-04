@@ -151,459 +151,223 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-栈的应用-中缀表达式变后缀表达式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-Mfuzz软聚类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
+      <a class="article-title" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">Mfuzz软聚类</a>
     </h1>
   
 
         
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
+        <a href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/" class="archive-article-date">
+  	<time datetime="2020-09-09T07:00:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>#中缀表达式变后缀表达式</p>
+        <p> mfuzz这个包可对转录组时间序列数据处理。<br> 里面的软聚类的思想非常符合lhs怪哥哥的预期，可进行time-course的分析。</p>
 <blockquote>
-<p>和读取括号是否匹配类似，一层层读（），根据栈的数据结构的特性“先进后出”<br>，也就是说最里面的括号在中缀表达式里运算最先运算</p>
+<p>time-course的方法一般就是聚类。常见的聚类分为三种，分别是层次聚类（Hierarchical Clustering）、硬聚类（hard clustering）、软聚类（soft clustering）。层次聚类好像一般就是像热图那种。看了pheatmap的文档，感觉pheatmap就是层次聚类，当然你可以设置k_means，变成硬聚类。硬聚类常见的就是k-menas。软聚类就是我们这会要用到的这个包的核心思路。</p>
 </blockquote>
-<p>这里的代码的一些Tips：</p>
-<blockquote>
-<blockquote>
-<p>将括号替换为运算符，并且将运算符排序，与数字近的先运算，同时也要考虑运算的优先级</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def infixToPostfix(infixexpr):</span><br><span class="line">    prec &#x3D; &#123;&#125;</span><br><span class="line">    prec[&quot;*&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;&#x2F;&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;+&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;-&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;(&quot;] &#x3D; 1</span><br><span class="line">    opStack &#x3D; Stack()</span><br><span class="line">    postfixList &#x3D; []</span><br><span class="line">    tokenList &#x3D; list(infixexpr)</span><br><span class="line">    #以下的问题出现，改成上面</span><br><span class="line">    #tokenList &#x3D; infixexpr.split()</span><br><span class="line">    for token in tokenList:</span><br><span class="line">        if token in &quot;ABCDEFGHIJKLMNOPQRSTVUWXYZ&quot; or token in &quot;0123456789&quot;:</span><br><span class="line">            postfixList.append(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            opStack.push(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;)&quot;:</span><br><span class="line">            topToken &#x3D; opStack.pop()</span><br><span class="line">            while  topToken !&#x3D; &quot;(&quot;:</span><br><span class="line">                postfixList.append(topToken)</span><br><span class="line">                topToken &#x3D; opStack.pop()</span><br><span class="line">        else:</span><br><span class="line">            while(not opStack.isEmpty()) and \</span><br><span class="line">                    (prec([opStack.peek()]) &gt;&#x3D; prec[token]):</span><br><span class="line">                postfixList.append(opStack.pop())</span><br><span class="line">            opStack.push(token)</span><br><span class="line">    while not opStack.isEmpty():</span><br><span class="line">        postfixList.append(opStack.pop())</span><br><span class="line">    return &quot; &quot; .join(postfixList)</span><br><span class="line"></span><br><span class="line">print(infixToPostfix(&quot;A+B&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;中缀表达式变后缀表达式.py</span><br><span class="line">A B +</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-二进制转换" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">栈的应用-二进制转换</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:08:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#栈的应用-二进制转换</p>
-<blockquote>
-<p>高中就学过2的幂次方累加就是嘛，然后所得的余数应该的位置和栈数据结构形式一样</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<p>可以拆解为：计算和字符串排序</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def divideBy2(decNumber):</span><br><span class="line">    remstack &#x3D; Stack()</span><br><span class="line"></span><br><span class="line">    while decNumber &gt; 0:</span><br><span class="line">        rem &#x3D; decNumber % 2</span><br><span class="line">        remstack.push(rem)</span><br><span class="line">        decNumber &#x3D;decNumber &#x2F;&#x2F; 2</span><br><span class="line"></span><br><span class="line">    binString &#x3D; &quot;&quot;</span><br><span class="line">    while not remstack.isEmpty():</span><br><span class="line">        binString &#x3D; binString + str(remstack.pop())</span><br><span class="line">    return binString</span><br><span class="line"></span><br><span class="line">print(divideBy2(77))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>输出结果</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;二进制转换.py</span><br><span class="line">1001101</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-简单括号匹配（修改）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">栈的应用-简单括号匹配（修改）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-05-15T16:13:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#栈的应用-简单括号匹配（修改）☞Bug</p>
-<blockquote>
-<p>为什么不返回布尔值给我？因为return的用法以及缩进的问题，我是憨憨</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def parChecker(symbolString):</span><br><span class="line">    s &#x3D; Stack ()</span><br><span class="line">    balanced &#x3D; True</span><br><span class="line">    index &#x3D; 0</span><br><span class="line">    while index &lt; len(symbolString) and balanced:</span><br><span class="line">        symbol &#x3D; symbolString[index]</span><br><span class="line">        if symbol &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            s.push(symbol)</span><br><span class="line">        else:</span><br><span class="line">            if s.isEmpty():</span><br><span class="line">                balanced &#x3D; False</span><br><span class="line">            else:</span><br><span class="line">                s.pop()</span><br><span class="line">        index &#x3D; index + 1</span><br><span class="line">    if balanced and s.isEmpty():</span><br><span class="line">       return(True)</span><br><span class="line">    else:</span><br><span class="line">       return(False)</span><br><span class="line">print(parChecker(&quot;()()&quot;))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>结果如下</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;栈的应用（括号匹配）.py</span><br><span class="line">True</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-<p>#每日一个憨憨小段子，每日逐渐变弱智</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-简单括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">栈的应用-简单括号匹配</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
-  	<time datetime="2020-05-15T15:51:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#（1）首先安装pythonds</p>
-<blockquote>
-<p>如果有conda</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install pythonds</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>不知道是镜像源的原因还是为什么，conda没成功还是走老套路</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pythonds</span><br></pre></td></tr></table></figure>
-<p>#（2）代码流程走起</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def parChecker(symbolString):</span><br><span class="line">    s &#x3D; Stack ()</span><br><span class="line">    balanced &#x3D; True</span><br><span class="line">    index &#x3D; 0</span><br><span class="line">    while index &lt; len(symbolString) and balanced:</span><br><span class="line">        symbol &#x3D; symbolString[index]</span><br><span class="line">        if symbol &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            s.push(symbol)</span><br><span class="line">        else:</span><br><span class="line">            if s.isEmpty():</span><br><span class="line">                balanced &#x3D; False</span><br><span class="line">            else:</span><br><span class="line">                s.pop()</span><br><span class="line">        index &#x3D; index + 1</span><br><span class="line">    if balanced and s.isEmpty():</span><br><span class="line">        return True</span><br><span class="line">    else:</span><br><span class="line">        return False</span><br><span class="line">    print(parChecker(&quot;()()()()()(()&quot;))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>但最后结果,感觉是进入一个死循环，下期进行解答</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>并没有给我一个 True or False<br>，明天起床把它解决</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/15/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-逐字比较的算法分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">逐字比较的算法分析</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-05-14T08:27:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>变位词判断问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def anagramSolution(s1,s2):</span><br><span class="line">    c1 &#x3D; [0]*26</span><br><span class="line">    c2 &#x3D; [0]*26</span><br><span class="line">    for i in range(len(s1)):</span><br><span class="line">        pos &#x3D; ord(s1[i])-ord(&#39;a&#39;)</span><br><span class="line">        c1[pos] &#x3D; c1[pos] + 1</span><br><span class="line">    for i in range(len(s2)):</span><br><span class="line">        pos &#x3D; ord(s2[i]) - ord(&#39;a&#39;)</span><br><span class="line">        c2[pos] &#x3D; c2[pos] + 1</span><br><span class="line">    j &#x3D; 0</span><br><span class="line">    stillOK &#x3D; True</span><br><span class="line">    while j &lt; 26 and stillOK:</span><br><span class="line">        if c1[j] &#x3D;&#x3D; c2[j]:</span><br><span class="line">            j &#x3D; j+1</span><br><span class="line">        else:</span><br><span class="line">            stillOK &#x3D; False</span><br><span class="line">        return stillOK</span><br><span class="line"></span><br><span class="line">print(anagramSolution(&quot;bitch&quot;,&quot;tibch&quot;))</span><br></pre></td></tr></table></figure>
-<p>#True</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/14/%E9%80%90%E5%AD%97%E6%AF%94%E8%BE%83%E7%9A%84%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-R语言根据meta信息清洗原始表达矩阵并注释" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">R语言根据meta信息清洗原始表达矩阵并注释</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/" class="archive-article-date">
-  	<time datetime="2020-04-20T15:45:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>关于R的一些比较基础的在清洗数据的一些使用，出问题的时候容易头皮发麻，很多基础的知识还是需要在实战中去巩固。总之<br>只要是为了结果，不管用什么方法都可以，追求效率不要在问题上死纠结，<strong>杀鸡用牛刀其实不可取</strong>，此次内容比较基础，毕竟<br>我就是一个实打实的菜逼、<br>#（一）前期准备</p>
-</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(Mfuzz)</span><br><span class="line">setwd(&quot;C:&#x2F;Users&#x2F;lenovo&#x2F;Desktop&#x2F;Mfuzz&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>清除当前环境中的所有变量，节省内存，因为R很吃内存，读取很大数据很慢</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br></pre></td></tr></table></figure></li>
-<li><p>关闭因子，以防数字的操作出现意想不到的问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(stringsAsFactors &#x3D; F)</span><br></pre></td></tr></table></figure></li>
-<li><p>设置小数点的位数的显示，并不改变数据本身噢</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(digits &#x3D; 2)</span><br></pre></td></tr></table></figure></li>
-<li><p>设置自己当前的工作目录在哪= =</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;CRC_scRNAseq&#x2F;&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>以下的两个R的包是关于对基因注释所用、可以选择自己合适的版本具体包的使用可参见</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(&quot;biomaRt&quot;)</span><br><span class="line">library(&quot;curl&quot;)</span><br></pre></td></tr></table></figure>
-<p>#（二）提取和清洗数据</p>
-</li>
-<li><p>对于读取数据的txt、csv。选择不同的读取方式，emmm，参数需要调整的以下有，针对不同的原始数据需要不同的改动</p>
-<blockquote>
-<p>这是最常见的表达矩阵类型：见图（我的示例数据是：不同组织的免疫细胞的数据，源自不同时期的病人）<br><img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5.png" alt="表达矩阵示例"></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">genecount &lt;- read.table(&quot;All.ReadCount.gene.matrix.txt&quot;,header &#x3D; T,sep &#x3D; &#39;\t&#39;)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>meta信息同样读一手，为的是保证与表达矩阵对应，随后的构建对象以及筛选基因or细胞等等有用。见图：<br><img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/meta%E4%BF%A1%E6%81%AF.png" alt="表达矩阵示例"></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phenoMatrix &lt;- read.csv(&quot;phenoMatrix.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>此时我想要研究的是B细胞内基因的表达，需要在原始表达矩阵进行筛选，当然excel可以搞，本菜鸡就喜欢杀鸡用牛刀，<br>相当于最基础的索引的操作，需要对逻辑判断的运算符了解（是在meta信息里直接查看的Cell_type）</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">B_pyhenoMatrix &lt;- phenoMatrix[phenoMatrix$Cell_Type &#x3D;&#x3D; 2|phenoMatrix$Cell_Type &#x3D;&#x3D; 11|</span><br><span class="line">                                phenoMatrix$Cell_Type &#x3D;&#x3D; 13,]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>建立索引list去找meta数据里面的B细胞，因为表达矩阵和meta矩阵共有的是病人的信息，因此相当于用筛选的meta的列去找表达矩阵对应的行</p>
-</blockquote>
-</li>
-<li><p>首先找出提取出的B细胞的meta数据框里面的行名也就是病人编号（图的X列）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B_index &lt;- rownames(B_pyhenoMatrix)</span><br></pre></td></tr></table></figure></li>
-<li><p>然后利用which函数对应到表达矩阵并且返回的是病人所在的列的编号（即第几列）成为新的索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index1 &lt;- which(names(genecount)%in%B_index)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>再次用已知的B细胞所在的列去索引可得到B细胞的表达矩阵</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;B_readcount.gene.matrix &lt;- genecount[,c(1,index1)]</span><br></pre></td></tr></table></figure>
+<li>数据集是来源于酵母细胞循环表达数据。6178个基因，横跨160分钟的17个时间点。用的是芯片数据。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data(&quot;yeast&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>第一步，去除那些有超过25%数据缺失的基因。注意这些数据缺失值应该是设为NA。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yeast.r &lt;- filter.NA(yeast, thres&#x3D;0.25)</span><br><span class="line">yeast.f &lt;- fill.NA(yeast.r,mode&#x3D;&quot;mean&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>许多已经出版的聚类分析包含过滤的步骤，从而来去除那些表达相对比较低的，或者表达不怎么变化的。通常来说，比较受欢迎的就是样本的标准差作为阈值。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tmp &lt;- filter.std(yeast.f,min.std&#x3D;0)</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
-<p>#(三)注释B细胞</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#由于聚类是在欧几里德空间中进行的，因此基因的表达值被标准化为平均值为零，标准差为1。该步骤确保了在欧几里得空间中具有相似表达模式的基因是相互接近的。</span><br><span class="line">yeast.s &lt;- standardise(yeast.f)</span><br></pre></td></tr></table></figure>
 <ul>
-<li>查看注释所有的库并且进行选择<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">listMarts()</span><br></pre></td></tr></table></figure></li>
-<li>选择人类参考基因组并且开始注释<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mart &lt;- useDataset(&quot;hsapiens_gene_ensembl&quot;, useMart(&quot;ensembl&quot;))</span><br></pre></td></tr></table></figure>
+<li>聚类可以用来解释基因表达的调控机制。众所周知的，基因的表达并不是开和关的，而是一个逐渐变化的过程。一个聚类算法应该展现出一个基因有多么的符合dominant cluster pattern。软聚类应该是一个非常好的方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cl &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/1.png" alt="表达矩阵"></p>
+<ul>
+<li>对于fuzzy c-means来说，模糊值m和聚类数c必须提前设置好。对于m，我们应该选择一个可以防止随机数据聚类的值。值得注意的是，fuzzy 聚类可以遵守这样的准则，随机数据并不能被聚类。这相比于硬聚类（例如k-means）来说，是一个明显的优点。因为其即使在随机数据中，也可以检测到cluster。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">m1 &lt;- mestimate(yeast.s)</span><br><span class="line">cl2 &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.35)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl2,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/2.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">O &lt;- overlap(cl)</span><br><span class="line">Ptmp &lt;- overlap.plot(cl,over&#x3D;O,thres&#x3D;0.05)</span><br><span class="line">cl3 &lt;- mfuzz(yeast.s,c&#x3D;10,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl3,mfrow&#x3D;c(3,4))</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/3.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O3 &lt;- overlap(cl3)</span><br><span class="line">overlap.plot(cl3,over&#x3D;O3,P&#x3D;Ptmp,thres&#x3D;0.05)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/4.png" alt="表达矩阵"><br><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/5.png" alt="表达矩阵"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-edgeR进行差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">edgeR进行差异分分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-09-09T06:41:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#edgeR</p>
 <blockquote>
-<p>但是需要对原始的表达矩阵的geneid进行处理，清洗<br>这种ENSG00000000003.14变成    ENSG00000000003才能更好的去对应到symbol id</p>
+<p>主要是利用了多组实验的精确统计模型或者适用于多因素复杂实验的广义线性模型。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a&lt;- gsub(&quot;\\_\\d*&quot;, &quot;&quot;, B_readcount.gene.matrix$Ensembl_ID)</span><br><span class="line">ENSEMBL &lt;- gsub(&quot;\\.\\d*&quot;, &quot;&quot;, a)</span><br><span class="line">row.names(B_readcount.gene.matrix)&lt;- ENSEMBL</span><br><span class="line">B_readcount.gene.matrix&lt;- cbind(ENSEMBL,B_readcount.gene.matrix)</span><br><span class="line">colnames(B_readcount.gene.matrix)[1] &lt;- c(&quot;ensembl_gene_id&quot;)</span><br><span class="line">head(B_readcount.gene.matrix)</span><br><span class="line"></span><br><span class="line">my_ensembl_gene_id &lt;- row.names(B_readcount.gene.matrix)</span><br><span class="line">options(timeout &#x3D; 4000000)</span><br></pre></td></tr></table></figure></li>
-<li>这一步比较耗时，完成后会在数据框最后生成hg_symbols<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hg_symbols&lt;- getBM(attributes&#x3D;c(&#39;ensembl_gene_id&#39;,&#39;hgnc_symbol&#39;), filters&#x3D; &#39;ensembl_gene_id&#39;, values &#x3D; my_ensembl_gene_id, mart &#x3D; mart)</span><br></pre></td></tr></table></figure></li>
-<li>将合并后的表达数据框和注释得到的hg_symbols整合为一<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">abc &lt;- merge(B_readcount.gene.matrix, hg_symbols, by&#x3D;&quot;ensembl_gene_id&quot;)</span><br><span class="line">head(readcount_patient_0)</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>删除空白没有注释到的基因&amp;删除重复的基因都是和之前一样索引的方法，也有一些需要注意的点<br>删除空白,一定要注意NA、NULL的区别，看情况能否删除，万一是你研究的基因，就遭中了呀</p>
+<p>前者叫做“经典edgeR”， 后者叫做”广义线性模型 edgeR“。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index3&lt;-is.na(abc$hgnc_symbol)</span><br><span class="line">abc &lt;- abc[!index3,]</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>删除重复的需要用到duplicatedh函数也是索引的方法</p>
+<p>定义的read数是可以指基因水平、外显子水平、转录本水平或者标签水平等</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">index4 &lt;- duplicated(abc$hgnc_symbol)</span><br><span class="line">index4</span><br><span class="line">gene_only &lt;- abc[!index4,]</span><br></pre></td></tr></table></figure>
+<p>##广义线性模型 edgeR  可用于无重复样本</p>
+<ul>
+<li>(为什么不用DEseq2，用这个？)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#清空缓存的变量</span><br><span class="line"></span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line"></span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line">#关闭因子和设置小数点位数</span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br><span class="line">#调用包</span><br><span class="line">library(edgeR)</span><br><span class="line">library(limma)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#读取清洗的数据，构造DGElist对象需要的东西，构建无重复的两个list进行差异分析</span><br><span class="line"></span><br><span class="line">Pstage &lt;- read.csv(&quot;B_P_cell.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 2,check.names &#x3D; F)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#edgeR开始</span><br><span class="line"></span><br><span class="line">#规整化数据，可以用log2处理表达矩阵</span><br><span class="line">Pstage &lt;- round(Pstage)</span><br><span class="line">counts &lt;- Pstage</span><br><span class="line">#设置分组信息</span><br><span class="line">group &lt;- 1:2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- DGEList(counts&#x3D;counts, group &#x3D; group)</span><br><span class="line">keep &lt;- rowSums(cpm(y)&gt;1) &gt;&#x3D; 1</span><br><span class="line">y &lt;- y[keep, , keep.lib.sizes&#x3D;FALSE]</span><br><span class="line">y &lt;- calcNormFactors(y)</span><br><span class="line">y_bcv &lt;- y</span><br><span class="line">bcv &lt;- 0.4</span><br><span class="line">et &lt;- exactTest(y_bcv, dispersion &#x3D; bcv ^ 2)</span><br><span class="line">gene1 &lt;- decideTestsDGE(et, p.value &#x3D; 0.05, lfc &#x3D; 0)</span><br><span class="line">summary(gene1)</span><br><span class="line">write.csv(et$table,&quot;gene_exp.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#根据fdrtool计算qval的</span><br><span class="line">exp&lt;-read.csv(&quot;gene_exp.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">p&lt;-exp$PValue</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#install.packages(&quot;fdrtool&quot;)</span><br><span class="line">library(fdrtool)</span><br><span class="line">fdr&#x3D;fdrtool(p,statistic&#x3D;&quot;pvalue&quot;)</span><br><span class="line">qval&lt;-fdr$qval</span><br><span class="line">exp&lt;-cbind(exp,qval)</span><br><span class="line">write.csv(exp,&quot;exp_qvalue.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/3.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#筛选log2FC &gt;2 并且 adj&lt;0.05的差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">diffgene &lt;-subset(exp, qval &lt; 0.05 &amp; abs(logFC) &gt; 2)</span><br><span class="line">dim(diffgene)</span><br><span class="line">head(diffgene)</span><br><span class="line">write.csv(diffgene,file &#x3D; &quot;diffgene.csv&quot;)</span><br><span class="line"></span><br><span class="line">#同理，可以筛选非差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">undiffgene &lt;-subset(exp, qval &gt; 0.05 &amp; abs(logFC) &lt; 2)</span><br><span class="line">dim(undiffgene)</span><br><span class="line">head(undiffgene)</span><br><span class="line">write.csv(undiffgene,file &#x3D; &quot;undiffgene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/4.png" alt="表达矩阵"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-DEseq2差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">DEseq2差异分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-09-08T08:17:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>DESeq2和EdgeR都可用于做基因差异表达分析，主要也是用于RNA-Seq数据，同样也可以处理类似的ChIP-Seq,shRNA以及质谱数据。</p>
+</li>
+<li><p>这两个都属于R包，其相同点在于都是对count data数据进行处理，都是基于负二项分布模型。<br>因此会发现，用两者处理同一组数据，最后在相同阈值下筛选出的大部分基因都是一样的<br>，但是有一部分不同应该是由于其估计离散度的不同方法所导致的。 </p>
 <blockquote>
-<p>保存清洗好并且注释完成的文件~方便后续的分析</p>
+<p>DESeq2的使用方法：</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write.csv(gene_only,file &#x3D; &quot;B_cell_cluster2_11_13.csv&quot;)</span><br></pre></td></tr></table></figure>
-<img src="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/%E6%B3%A8%E9%87%8A%E5%AE%8C%E6%88%90.png" alt="表达矩阵示例"></li>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#清楚缓存的变量</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#调用DEseq2差异分析的包</span><br><span class="line">library(readxl)</span><br><span class="line">library(DESeq2)</span><br><span class="line"></span><br><span class="line">#载入数据框（表达矩阵）</span><br><span class="line"></span><br><span class="line">B_P_cell &lt;- read.csv(&quot;B_P_cell.csv&quot;, header &#x3D; T, sep &#x3D; &quot;,&quot;, row.names &#x3D; 2)</span><br><span class="line">B_P_cell &lt;- B_P_cell[,-1]</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
+</li>
+<li><p>grep的正则表达式需要熟练</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#提取表达矩阵样本病人名</span><br><span class="line">names &lt;- colnames(B_P_cell)</span><br><span class="line"></span><br><span class="line">#分析一期和二期的病人的列表</span><br><span class="line">#抓取一期病人的索引</span><br><span class="line">index1 &lt;- grep(&quot;RC03&quot;,names)</span><br><span class="line">index2 &lt;- grep(&quot;R02&quot;,names)</span><br><span class="line">index_1 &lt;- c(index1,index2)</span><br><span class="line">#抓取二期病人的索引</span><br><span class="line">index_2 &lt;- grep(&quot;LC01&quot;,names)</span><br><span class="line">#合并提取的为同一矩阵</span><br><span class="line">oneVStwo_exp &lt;- B_P_cell[,c(index_1,index_2)]</span><br><span class="line">#将表达矩阵取整并且变为矩阵</span><br><span class="line">oneVStwo_exp &lt;- round(as.matrix(oneVStwo_exp))</span><br><span class="line">#构建dds对象需要的condition,添加分组信息</span><br><span class="line">condition &lt;- factor(c(rep(&quot;control&quot;,length(index_1)),rep(&quot;treat&quot;,length(index_2))), </span><br><span class="line">                    levels &#x3D; c(&quot;control&quot;,&quot;treat&quot;))</span><br><span class="line"></span><br><span class="line">coldata&lt;-data.frame(row.names&#x3D;colnames(oneVStwo_exp), condition)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#构建DDS对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(oneVStwo_exp, coldata, design&#x3D; ~ condition)</span><br><span class="line"></span><br><span class="line">dds&lt;-DESeq(dds)</span><br><span class="line"></span><br><span class="line">res &#x3D; results(dds, contrast&#x3D;c(&quot;condition&quot;, &quot;control&quot;, &quot;treat&quot;))</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">write.csv(res,file&#x3D;&quot;1VS2_result.csv&quot;)</span><br><span class="line">diff_gene &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 2)</span><br><span class="line">write.csv(diff_gene,file &#x3D; &quot;1vs2_diff_gene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同理处理二期和三期的病人<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#分析二期和三期的病人的列表</span><br><span class="line">#抓取三期病人的索引</span><br><span class="line">index1 &lt;- grep(&quot;C473&quot;,names)</span><br><span class="line">index2 &lt;- grep(&quot;RC02&quot;,names)</span><br><span class="line">index_3 &lt;- c(index1,index2)</span><br><span class="line"></span><br><span class="line">#合并提取的为同一矩阵</span><br><span class="line">twoVSthree_exp &lt;- B_P_cell[,c(index_2,index_3)]</span><br><span class="line">#将表达矩阵取整并且变为矩阵</span><br><span class="line">twoVSthree_exp &lt;- round(as.matrix(twoVSthree_exp))</span><br><span class="line">#构建dds对象需要的condition,添加分组信息</span><br><span class="line">condition &lt;- factor(c(rep(&quot;control&quot;,length(index_2)),rep(&quot;treat&quot;,length(index_3))), </span><br><span class="line">                    levels &#x3D; c(&quot;control&quot;,&quot;treat&quot;))</span><br><span class="line"></span><br><span class="line">coldata&lt;-data.frame(row.names&#x3D;colnames(twoVSthree_exp), condition)</span><br><span class="line">#构建DDS对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(twoVSthree_exp, coldata, design&#x3D; ~ condition)</span><br><span class="line"></span><br><span class="line">dds&lt;-DESeq(dds)</span><br><span class="line"></span><br><span class="line">res &#x3D; results(dds, contrast&#x3D;c(&quot;condition&quot;, &quot;control&quot;, &quot;treat&quot;))</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">write.csv(res,file&#x3D;&quot;2VS3_result.csv&quot;)</span><br><span class="line">diff_gene &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 2)</span><br><span class="line">write.csv(diff_gene,file &#x3D; &quot;2vs3_diff_gene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<img src="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="差异分析结果"></li>
 </ul>
 
       
@@ -617,7 +381,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/20/R%E8%AF%AD%E8%A8%80%E6%A0%B9%E6%8D%AEmeta%E4%BF%A1%E6%81%AF%E6%B8%85%E6%B4%97%E5%8E%9F%E5%A7%8B%E8%A1%A8%E8%BE%BE%E7%9F%A9%E9%98%B5%E5%B9%B6%E6%B3%A8%E9%87%8A/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
         </p>
       
 
@@ -647,41 +411,39 @@
 
 
   
-    <article id="post-gffutils处理GFF-GTF文件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-sierpinski-递归三角形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">gffutils处理GFF-GTF文件</a>
+      <a class="article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
     </h1>
   
 
         
-        <a href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/" class="archive-article-date">
-  	<time datetime="2020-04-17T17:29:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-18</time>
+        <a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
+  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>####本次代码流程及.md撰写是不愿意透露身份的Master Mathew带来，我是一个没有感情的更博机器谢谢！</p>
-<blockquote>
-<p>测试环境<br>OS: Windows 7 64bit<br>Python: 3.6.3(Anaconda 64bit)<br>gffutils: 0.9</p>
+        <p>#递归的关键思想：不断缩小，调用自身<br><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/1.png" alt="实例"></p>
+<ul>
+<li>注意三角形绘制顺序是左上右！<blockquote>
+<p>谢尔宾斯基三角形（英语：Sierpinski triangle）是一种分形，<br>由波兰数学家谢尔宾斯基在1915年提出。它是自相似集的例子。它的豪斯多夫维是<br>log(3)/log(2) ≈ 1.585。</p>
+<ul>
+<li>先作一个正三角形，挖去一个“中心三角形”（即以原三角形各边的中点为顶点的三角形），<br>然后在剩下的小三角形中又挖去一个“中心三角形”，我们用黑色三角形代表挖去的面积，那么白三角形为剩下的面积（我们称白三角形为谢尔宾斯基三角形）。如果用上面的方法无限连续地作下去，则谢尔宾斯基三角形的面积越趋近于零，而它的周长越趋近于无限大（如图）。<br>若设操作次数为n（每挖去一次中心三角形算一次操作），<br>则剩余三角形面积公式为：4的n次方分之3的n次方。<br>将边长为1的等边三角形区域，均分成四个小等边三角形，去掉中间一个，<br>然后再对每个小等边三角形进行相同的操作得……，这样的操作不断继续下<br>去直到无穷，最终所得的极限图形称为谢尔宾斯基垫片。谢尔宾斯基垫片的<br>极限图形的面积趋于零，而小图形的数目趋于无穷，作为小图形的边的线段数目<br>趋于无穷，实际上是一个线集。操作n次后边长r=(1/2)n，三角形个数N(r)=3<br>n，根据公式N(r)=1/rD，3n=2Dr，D=ln3/ln2=1.585。所以谢尔宾斯基垫片是1.585。<br>它比普通的一维直线占据了更多空间，但还是没有二维正方形占据的那么多，可以用等比数列的知识求出他的面积是0。</li>
+</ul>
 </blockquote>
-<blockquote>
-<p>使用Python处理GFF/GTF文件时，gffutils是一个很不错的选择。以NCBI上酿酒酵母<em>Saccharomyces cerevisiae</em> C288C(R64)的数据为例，一个典型的GFF文件格式如下图所示（GFF3）。其包含9列信息，互相以制表符（Tab）分割，依次为：seqid，source，type，start，end，score，strand，phase，attributes，而attributes中的“ID”标签需在文件中唯一。GFF的详细定义可查阅<a href="http://gmod.org/wiki/GFF3#GFF3_Format" target="_blank" rel="noopener">GFF3 - GMOD</a><br><img src="https://upload-images.jianshu.io/upload_images/22739114-f4e8ed130a162823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="GFF文件格式示例"><br><img src="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/1.png" alt="GFF文件格式示例"></p>
-</blockquote>
-<p><strong>安装</strong><br>gffutils可直接通过pip安装，这里使用清华大学镜像<br><code>python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gffutils</code></p>
-<p><strong>创建数据库</strong><br>gffutils的基本做法是通过create_db()方法把GFF文件解析成一个SQLite3数据库文件供后续使用，因此首先需要创建数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import gffutils</span><br><span class="line"></span><br><span class="line">#修改工作路径</span><br><span class="line">os.chdir(&#39;f:&#x2F;Bioinfo&#x2F;Python&#x2F;gffutils&#39;)</span><br><span class="line"></span><br><span class="line">#创建数据库</span><br><span class="line">db &#x3D; gffutils.create_db(&#39;GCF_000146045.2_R64_genomic.gff&#39;, dbfn &#x3D; &#39;C288C.db&#39;, force &#x3D; True, keep_order &#x3D; True, merge_strategy &#x3D; &#39;merge&#39;, sort_attribute_values &#x3D; True)</span><br></pre></td></tr></table></figure>
-<p>上述代码运行后，工作路径下会创建C288C.db文件，可以直接用SQLiteStudio查看<br><img src="https://upload-images.jianshu.io/upload_images/22739114-9812c0663f41f48a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="gff数据库文件示例"><br><img src="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/2.png" alt="GFF文件格式示例"><br>从图中可以看出，gffutils的把GFF的attributes字段解析为了Python的字典类型数据。此外，start和end字段为int类型数据。</p>
-<p><strong>使用数据库</strong><br>数据库创建后，可以通过FeatureDB()方法使用该数据库，数据库主键使用了原GFF文件的ID标签，对应的数据也是用ID号访问。如上所述，attributes字段解析为了Python的字典，因此相关数据的获取即是字典的访问方式。而字典中的每一个value都是列表类型数据，如果只需要具体内容的话一般可输出列表第一个数据。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import gffutils</span><br><span class="line"></span><br><span class="line">#修改工作路径</span><br><span class="line">os.chdir(&#39;f:&#x2F;Bioinfo&#x2F;Python&#x2F;gffutils&#39;)</span><br><span class="line"></span><br><span class="line">#创建数据库</span><br><span class="line">#db &#x3D; gffutils.create_db(&#39;GCF_000146045.2_R64_genomic.gff&#39;, dbfn &#x3D; &#39;C288C.db&#39;, force &#x3D; True, keep_order &#x3D; True, merge_strategy &#x3D; &#39;merge&#39;, sort_attribute_values &#x3D; True)</span><br><span class="line"></span><br><span class="line">#使用数据库</span><br><span class="line">db &#x3D; gffutils.FeatureDB(&#39;C288C.db&#39;, keep_order &#x3D; True)</span><br><span class="line"></span><br><span class="line">#获取某个基因的所有注释信息</span><br><span class="line">gene &#x3D; db[&#39;cds-NP_009332.1&#39;]</span><br><span class="line"></span><br><span class="line">#获取该基因的具体字段并输出</span><br><span class="line">print(&#39;起始位点：%d&#39; % gene.start)</span><br><span class="line">print(&#39;结束位点：%d&#39; % gene.end)</span><br><span class="line">print(&#39;Note：%s&#39; % gene.attributes[&#39;Note&#39;][0])</span><br></pre></td></tr></table></figure>
-<p>上述代码的输出结果为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">起始位点：1807</span><br><span class="line">结束位点：2169</span><br><span class="line">Note：hypothetical protein; member of the seripauperin multigene family encoded mainly in subtelomeric regions</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def sierpinski(degree,points):</span><br><span class="line">    colormap &#x3D; [&quot;blue&quot;,&quot;red&quot;,&quot;green&quot;,&quot;white&quot;,&quot;yellow&quot;,&quot;orange&quot;]</span><br><span class="line">    drawTriangle(points,colormap[degree])</span><br><span class="line">    if degree &gt; 0:</span><br><span class="line">        sierpinski(degree -1,</span><br><span class="line">                   &#123;&quot;left&quot;:points[&quot;left&quot;],</span><br><span class="line">                    &quot;top&quot;:getMid(points[&quot;left&quot;],points[&quot;top&quot;]),</span><br><span class="line">                    &quot;right&quot;:getMid(points[&quot;left&quot;],points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;top&quot;]),</span><br><span class="line">                    &quot;top&quot;: points[&quot;top&quot;],</span><br><span class="line">                    &quot;right&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;top&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;right&quot;: points[&quot;right&quot;]&#125;)</span><br><span class="line">def drawTriangle(points,color):</span><br><span class="line">    t.fillcolor(color)</span><br><span class="line">    t.penup()</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.pendown()</span><br><span class="line">    t.begin_fill()</span><br><span class="line">    t.goto(points[&quot;left&quot;])</span><br><span class="line">    t.goto(points[&quot;right&quot;])</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.end_fill()</span><br><span class="line"></span><br><span class="line">def getMid(p1,p2):</span><br><span class="line">    return ((p1[0]+p2[0])&#x2F;2,(p1[1]+p2[1])&#x2F;2)</span><br><span class="line"></span><br><span class="line">t &#x3D;  turtle.Turtle()</span><br><span class="line"></span><br><span class="line">points &#x3D;&#123;&#39;left&#39;:(-200,-100),</span><br><span class="line">         &#39;top&#39;:(0,200),</span><br><span class="line">         &#39;right&#39;:(200,-100)&#125;</span><br><span class="line">sierpinski(5,points)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/2.png" alt="logo实例"></p>
+
       
 
       
@@ -693,7 +455,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/18/gffutils%E5%A4%84%E7%90%86GFF-GTF%E6%96%87%E4%BB%B6/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">展开全文 >></a>
         </p>
       
 
@@ -723,33 +485,33 @@
 
 
   
-    <article id="post-pheatmap绘制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-盗版添柏岚Timberland-递归分形树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/">pheatmap绘制（凑个第一篇BLOG）</a>
+      <a class="article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
     </h1>
   
 
         
-        <a href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2020-04-16T12:06:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
+        <a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
+  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>#pheatmap绘制热图（R语言）</p>
-<p>⚪本次跑代码的示例数据是源自不同病人结直肠癌不同组织单细胞测序数据，绘制热图的原因是想在大量数据中去寻找基因的表达量与结直肠癌病人的时期的关系，从而探究基因表达与疾病时期发展的关系。</p>
-<p>⚪显然热图是研究相关性进行数据可视化的很好的选择</p>
-<p>⚪对于新手若去了解一个包绘图的使用，please：?pheatmap()</p>
-<p>##<em>工作示例</em><br>###1.清空环境中的所有变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm(list = ls())</span><br></pre></td></tr></table></figure>
-<p>###2.这个很关键，关闭因子，以防出现未知的错误，追悔莫及<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options(stringsAsFactors = F)</span><br></pre></td></tr></table></figure><br>###3.设置自己的工作目录，一定要有条理，不然输出的图片多了容易搞混淆<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(<span class="string">"G:/CRC_scRNAseq/"</span>)</span><br></pre></td></tr></table></figure><br>###4.调包显然是必须，我选择导出的是pdf，这个包类似一个画布类型，先自动生产一个0KB的pdf，然后dev.off()之后就会生产文件，方便调节画布等。<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    library(pheatmap)</span><br><span class="line">    library(Cairo)</span><br><span class="line">    ``` </span><br><span class="line"><span class="comment">###5.这里可以设置输出PDF的宽度和高度</span></span><br><span class="line">    ``` bash</span><br><span class="line">    CairoPDF(file = <span class="string">"Heatmap_BP_coll.pdf"</span>,width = 14,height = 16)</span><br></pre></td></tr></table></figure><br>###6.以csv格式读取表达矩阵，提前已经清洗注释了数据噢~<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B_P_DNB &lt;- read.csv(<span class="string">"B_P_DNB_genes_stage_1.csv"</span>,header =T ,sep = <span class="string">","</span>,row.names = 1)</span><br></pre></td></tr></table></figure><br>###7.画热图,针对stage和DNB基因的基因集的表达矩阵,没有聚类分组<br>####※比较值得记忆的是：angle_col = 0 可以旋转文字，其余就在使用中慢慢学习，反正我很菜hhh<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pheatmap(B_P_DNB, cluster_cols = T,border=FALSE,</span><br><span class="line">     color = colorRampPalette(c(<span class="string">"navy"</span>, <span class="string">"white"</span>, <span class="string">"red"</span>))(50),</span><br><span class="line">     scale = <span class="string">"row"</span>,show_colnames =T,show_rownames = F,</span><br><span class="line">     main = <span class="string">" B precancerous tissue DNBgenes&amp;stage heatmap"</span>, angle_col = 0,</span><br><span class="line">     treeheight_col = 8)</span><br></pre></td></tr></table></figure><br>###8.出图，快乐<br>    <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dev.off()</span><br></pre></td></tr></table></figure><br>#产出图片：<br><img src="https://lark-assets-prod-aliyun.oss-cn-hangzhou.aliyuncs.com/yuque/0/2020/png/1107735/1587059344562-resources/861623/png/6ee05e31-f1b8-41d2-8cb0-7e8a47a813a4.png?OSSAccessKeyId=LTAIX2KDHwZymFhr&Expires=1587106945&Signature=L3xmfyf6T4cJ3bjBrdxfU0d38UQ%3D" alt="alt 热图"><br><img src="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/B_P_bigsize.png" alt="成果热图"></p>
+        <hr>
+<p>title: 盗版添柏岚Timberland(递归分形树)<br>date: 2020-07-14 10:43:33<br>tags:<br>#递归的关键思想：不断缩小，调用自身</p>
+<ul>
+<li>利用该逻辑思想可进行简化问题</li>
+<li>树的结构可以用递归进行实现：同时大黄靴知名品牌添柏岚的LOGO便是如此相似<br>。使用递归的思想可以来盗版其logo<br><img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/1.png" alt="logo实例"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def tree(branch_len):</span><br><span class="line">    if branch_len &gt; 10:</span><br><span class="line">        t.forward(branch_len)</span><br><span class="line">        t.right(20)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.left(40)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.right(20)</span><br><span class="line">        t.backward(branch_len)</span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line">t.left(90)</span><br><span class="line">t.penup()</span><br><span class="line">t.backward(100)</span><br><span class="line">t.pendown()</span><br><span class="line">t.pencolor(&quot;black&quot;)</span><br><span class="line">t.pensize(17)</span><br><span class="line">tree(150)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/2.png" alt="logo实例"></li>
+</ul>
 
       
 
@@ -762,82 +524,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/16/pheatmap%E7%BB%98%E5%88%B6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/16/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/16/hello-world/" class="archive-article-date">
-  	<time datetime="2020-04-16T08:14:03.725Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/16/hello-world/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">展开全文 >></a>
         </p>
       
 
@@ -869,7 +556,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
     </nav>
   
 
