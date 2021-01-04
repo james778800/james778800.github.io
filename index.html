@@ -151,6 +151,190 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-空间转录组分析（1）-Seurat-V4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/">空间转录组分析（1）-Seurat V4</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/" class="archive-article-date">
+  	<time datetime="2021-01-04T06:28:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p><a href="https://zhuanlan.zhihu.com/p/103163429" target="_blank" rel="noopener">(1)空间转录组测序</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1605990" target="_blank" rel="noopener">(2)空间转录组Seurat分析方法</a></p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>简介：10X genomic Visium空间基因表达解决方案（Visium Spatial Gene Expression Solution）可以测量完整组织切片的总mRNA，将总mRNA的空间信息与形态学内容相结合，并绘制所有基因表达发生的位置，获得疾病复杂而完整的基因表达图谱。在确定不同细胞群的同时保留空间位置，为细胞功能、表型和组织微环境中位置的关系提供了重要信息。</p>
+</blockquote>
+</blockquote>
+<p>##（1）构建分析环境</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;zoomRNA_seq&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+<p>##（2）调用相关软件</p>
+<blockquote>
+<p>一开始采用的是Seurat V3的版本，可以进行构建10X genomic Visium对象分析。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">library(Seurat)</span><br><span class="line">library(ggplot2)</span><br><span class="line">library(cowplot)</span><br><span class="line">library(dplyr)</span><br><span class="line">#下载相关包</span><br><span class="line"></span><br><span class="line">library(SeuratData)</span><br><span class="line"></span><br><span class="line">install.packages(&quot;SeuratData&quot;)</span><br><span class="line">InstallData(&quot;stxBrain&quot;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>devtools安装失败，采用github里面去下载，本地进行安装。并且安装相关的依赖的包</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#本地安装包</span><br><span class="line">install.packages(&quot;H:&#x2F;singlecell&#x2F;Seurat&#x2F;stxBrain.SeuratData_0.1.1.tar.gz&quot;, repos &#x3D; NULL, type &#x3D; &quot;source&quot;)</span><br><span class="line"></span><br><span class="line">brain &lt;- LoadData(&quot;stxBrain&quot;, type &#x3D; &quot;anterior1&quot;)</span><br><span class="line"></span><br><span class="line">#合并读入：Failed</span><br><span class="line">list.files(&quot;E:&#x2F;zoomRNA_seq&#x2F;V1_Adult_Mouse_Brain&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">#brain&lt;-Seurat::Load10X_Spatial(&quot;E:\\zoomRNA_seq\\V1_Adult_Mouse_Brain&quot;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>下载10X官网的数据，其中我们选取了小鼠脑组织的数据，H5的数据以及组织切片的数据。</p>
+</blockquote>
+<blockquote>
+<p><a href="https://support.10xgenomics.com/spatial-gene-expression/datasets" target="_blank" rel="noopener">10X官网空间转录组数据</a></p>
+<p><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/1.png" alt="图1"></p>
+<p><a href="https://support.10xgenomics.com/" target="_blank" rel="noopener">我们采用的数据</a></p>
+<p><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/2.png" alt="图1"><br>其中这红框两个文件是构建Seurat对象必须的数据。</p>
+</blockquote>
+<p>#（3）导入数据并分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># Load the expression data</span><br><span class="line">expr.url &lt;- &#39;V1_Adult_Mouse_Brain&#x2F;V1_Adult_Mouse_Brain_filtered_feature_bc_matrix.h5&#39;</span><br><span class="line"></span><br><span class="line">expr.data &lt;- Seurat::Read10X_h5(filename &#x3D;  expr.url )</span><br><span class="line"></span><br><span class="line">anterior1 &lt;- Seurat::CreateSeuratObject(counts &#x3D; expr.data, project &#x3D; &#39;anterior1&#39;, assay &#x3D; &#39;Spatial&#39;)</span><br><span class="line"></span><br><span class="line">anterior1$slice &lt;- 1</span><br><span class="line"></span><br><span class="line">anterior1$region &lt;- &#39;anterior&#39;</span><br><span class="line"># Load the image data</span><br><span class="line">img.url &lt;- &#39;V1_Adult_Mouse_Brain&#x2F;V1_Adult_Mouse_Brain_spatial.tar.gz&#39;</span><br><span class="line"></span><br><span class="line">untar(tarfile &#x3D;  img.url)</span><br><span class="line"></span><br><span class="line">img &lt;- Seurat::Read10X_Image(image.dir &#x3D; &#39;V1_Adult_Mouse_Brain&#x2F;spatial&#x2F;&#39;)</span><br><span class="line"></span><br><span class="line">Seurat::DefaultAssay(object &#x3D; img) &lt;- &#39;Spatial&#39;</span><br><span class="line"></span><br><span class="line">img &lt;- img[colnames(x &#x3D; anterior1)]</span><br><span class="line"></span><br><span class="line">anterior1[[&#39;image&#39;]] &lt;- img</span><br><span class="line"></span><br><span class="line">brain &#x3D; anterior1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>导入img原始的数据：组织图像。<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/3.png" alt="图1"></li>
+<li>数据还有细胞对应组织位置的信息list<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/4.png" alt="图1"></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#数据预处理</span><br><span class="line">plot1 &lt;- VlnPlot(brain, features &#x3D; &quot;nCount_Spatial&quot;, pt.size &#x3D; 0.1) + NoLegend()</span><br><span class="line"></span><br><span class="line">plot2 &lt;- SpatialFeaturePlot(brain, features &#x3D; &quot;nCount_Spatial&quot;) + theme(legend.position &#x3D; &quot;right&quot;)</span><br><span class="line">plot_grid(plot1, plot2)</span><br><span class="line"></span><br><span class="line"># rerun normalization to store sctransform residuals for all genes</span><br><span class="line">brain &lt;- SCTransform(brain, assay &#x3D; &quot;Spatial&quot;, return.only.var.genes &#x3D; FALSE, verbose &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line"># Computes the correlation of the log normalized data and sctransform residuals with the number</span><br><span class="line"># of UMIs</span><br><span class="line">brain &lt;- GroupCorrelation(brain, group.assay &#x3D; &quot;Spatial&quot;, assay &#x3D; &quot;Spatial&quot;, slot &#x3D; &quot;data&quot;,</span><br><span class="line">                          do.plot &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line">brain &lt;- GroupCorrelation(brain, group.assay &#x3D; &quot;Spatial&quot;, assay &#x3D; &quot;SCT&quot;, slot &#x3D; &quot;scale.data&quot;, </span><br><span class="line">                          do.plot &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line">p1 &lt;- GroupCorrelationPlot(brain, assay &#x3D; &quot;Spatial&quot;, cor &#x3D; &quot;nCount_Spatial_cor&quot;) + ggtitle(&quot;Log Normalization&quot;) + </span><br><span class="line">    theme(plot.title &#x3D; element_text(hjust &#x3D; 0.5))</span><br><span class="line"></span><br><span class="line">p2 &lt;- GroupCorrelationPlot(brain, assay &#x3D; &quot;SCT&quot;, cor &#x3D; &quot;nCount_Spatial_cor&quot;) + ggtitle(&quot;SCTransform Normalization&quot;) + </span><br><span class="line">    theme(plot.title &#x3D; element_text(hjust &#x3D; 0.5))</span><br><span class="line">plot_grid(p1, p2)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>两种不同的标准化的方法对数据的影响，建议SCT方法（如右图）。效果比较好。<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/6.png" alt="图1"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#基因表达可视化</span><br><span class="line">SpatialFeaturePlot(brain, features &#x3D; c(&quot;Hpca&quot;, &quot;Ttr&quot;))</span><br></pre></td></tr></table></figure></li>
+<li>Hpca和Ttr基因的表达量在组织中的分布情况（海马体为多）<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/7.png" alt="图1"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#降维、聚类和可视化</span><br><span class="line">#然后，我们可以使用与scRNA-seq分析相同的工作流，对RNA表达数据进行降维和聚类。</span><br><span class="line">#我们可以在UMAP空间(使用DimPlot)或使用SpatialDimPlot将分群的结果显示在图像上。</span><br><span class="line"></span><br><span class="line">brain &lt;- RunPCA(brain, assay &#x3D; &quot;SCT&quot;, verbose &#x3D; FALSE)</span><br><span class="line">brain &lt;- FindNeighbors(brain, reduction &#x3D; &quot;pca&quot;, dims &#x3D; 1:30)</span><br><span class="line">brain &lt;- FindClusters(brain, verbose &#x3D; FALSE)</span><br><span class="line">brain &lt;- RunUMAP(brain, reduction &#x3D; &quot;pca&quot;, dims &#x3D; 1:30)</span><br><span class="line"></span><br><span class="line">p1 &lt;- DimPlot(brain, reduction &#x3D; &quot;umap&quot;, label &#x3D; TRUE)</span><br><span class="line">p2 &lt;- SpatialDimPlot(brain, label &#x3D; TRUE, label.size &#x3D; 3)</span><br><span class="line">plot_grid(p1, p2)</span><br></pre></td></tr></table></figure></li>
+<li>各个Cluster在组织中都有对应<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/8.png" alt="图1"></li>
+</ul>
+<p>##（4）这里是想构建鼠标指针点击图片互动，但是SeuratV3似乎会报错（Error: Cannot find ‘NA’ in this Seurat object）<br>##（5）因此更新V4版本（develop）重新跑，在Rstudio可以展示出互动的图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># move your mouse</span><br><span class="line">SpatialPlot(brain, do.hover &#x3D; T,label &#x3D; T)</span><br><span class="line">?SpatialDimPlot()</span><br><span class="line"></span><br><span class="line">#devtools::install_github(repo &#x3D; &#39;satijalab&#x2F;seurat&#39;, ref &#x3D; &#39;develop&#39;)</span><br><span class="line"></span><br><span class="line">#install.packages(&quot;testthat&quot;)</span><br><span class="line">#install.packages(&quot;RcppAnnoy&quot;)</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Logistics回归分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/">Logistics回归分析</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-01-04T05:41:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Logistics回归分析</p>
+<blockquote>
+<p>logistic回归又称logistic回归分析，是一种广义的线性回归分析模型，常用于数据挖掘，疾病自动诊断，经济预测等领域。例如，探讨引发疾病的危险因素，并根据危险因素预测疾病发生的概率等。以胃癌病情分析为例，选择两组人群，一组是胃癌组，一组是非胃癌组，两组人群必定具有不同的体征与生活方式等。因此因变量就为是否胃癌，值为“是”或“否”，自变量就可以包括很多了，如年龄、性别、饮食习惯、幽门螺杆菌感染等。自变量既可以是连续的，也可以是分类的。然后通过logistic回归分析，可以得到自变量的权重，从而可以大致了解到底哪些因素是胃癌的危险因素。同时根据该权值可以根据危险因素预测一个人患癌症的可能性。<br>##（1）构建分析环境</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;Statistic_R&#x2F;Logistic&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+<p>##（2）探究抽烟喝酒对食管癌风险倍数差异<br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/1.png" alt="Logistics回归分析"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#读取吸烟喝酒与食管癌病例文件</span><br><span class="line">test1 &lt;- read.csv(&quot;yabianliang.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">#设置哑变量</span><br><span class="line">dummyx1 &lt;- model.matrix(~x1 + x2, data &#x3D; test1)</span><br><span class="line">head(cbind(dummyx1, test1$x1))</span><br><span class="line"></span><br><span class="line">#变量因子化</span><br><span class="line">test1$y &lt;- as.factor(test1$y)</span><br><span class="line">test1$x1 &lt;- as.factor(test1$x1)</span><br><span class="line">test1$x2 &lt;- as.factor(test1$x2)</span><br><span class="line"></span><br><span class="line">levels(test1$y)</span><br><span class="line">#练习重复数据框的行</span><br></pre></td></tr></table></figure>
+<p>##（3）构建可以纳入模型的对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dat1&lt;-test1[rep(1:nrow(test1),c(63,63,44,265,136,107,57,151)),]</span><br></pre></td></tr></table></figure>
+<p>##（4）导入数据框进行分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#导入数据库</span><br><span class="line">attach(dat1)</span><br><span class="line">detach(test1)</span><br><span class="line">#?attach()</span><br><span class="line">#数据库被附加到R搜索路径上。</span><br><span class="line">#这意味着在评估变量时，R会对数据库进行搜索，</span><br><span class="line">#因此只需给出数据库中的对象的名称，就可以访问这些对象</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#构建模型</span><br><span class="line"></span><br><span class="line">fit &lt;- glm(y~ x1+ x2, family &#x3D; binomial(), data &#x3D; dat1)</span><br><span class="line">summary(fit)</span><br></pre></td></tr></table></figure>
+<p>#（5）模型结果展示<br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/2.png" alt="Logistics回归分析"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">coefficients(fit)</span><br><span class="line">exp(coefficients(fit))</span><br><span class="line">plot(fit)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/3.png" alt="Logistics回归分析"><br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/4.png" alt="Logistics回归分析"><br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/5.png" alt="Logistics回归分析"><br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/6.png" alt="Logistics回归分析"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-细胞互作软件（3）-iTALK" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -907,183 +1091,6 @@
 
 
   
-    <article id="post-Mfuzz软聚类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">Mfuzz软聚类</a>
-    </h1>
-  
-
-        
-        <a href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/" class="archive-article-date">
-  	<time datetime="2020-09-09T07:00:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p> mfuzz这个包可对转录组时间序列数据处理。<br> 里面的软聚类的思想非常符合lhs怪哥哥的预期，可进行time-course的分析。</p>
-<blockquote>
-<p>time-course的方法一般就是聚类。常见的聚类分为三种，分别是层次聚类（Hierarchical Clustering）、硬聚类（hard clustering）、软聚类（soft clustering）。层次聚类好像一般就是像热图那种。看了pheatmap的文档，感觉pheatmap就是层次聚类，当然你可以设置k_means，变成硬聚类。硬聚类常见的就是k-menas。软聚类就是我们这会要用到的这个包的核心思路。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(Mfuzz)</span><br><span class="line">setwd(&quot;C:&#x2F;Users&#x2F;lenovo&#x2F;Desktop&#x2F;Mfuzz&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>数据集是来源于酵母细胞循环表达数据。6178个基因，横跨160分钟的17个时间点。用的是芯片数据。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data(&quot;yeast&quot;)</span><br></pre></td></tr></table></figure></li>
-<li>第一步，去除那些有超过25%数据缺失的基因。注意这些数据缺失值应该是设为NA。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yeast.r &lt;- filter.NA(yeast, thres&#x3D;0.25)</span><br><span class="line">yeast.f &lt;- fill.NA(yeast.r,mode&#x3D;&quot;mean&quot;)</span><br></pre></td></tr></table></figure></li>
-<li>许多已经出版的聚类分析包含过滤的步骤，从而来去除那些表达相对比较低的，或者表达不怎么变化的。通常来说，比较受欢迎的就是样本的标准差作为阈值。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tmp &lt;- filter.std(yeast.f,min.std&#x3D;0)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#由于聚类是在欧几里德空间中进行的，因此基因的表达值被标准化为平均值为零，标准差为1。该步骤确保了在欧几里得空间中具有相似表达模式的基因是相互接近的。</span><br><span class="line">yeast.s &lt;- standardise(yeast.f)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>聚类可以用来解释基因表达的调控机制。众所周知的，基因的表达并不是开和关的，而是一个逐渐变化的过程。一个聚类算法应该展现出一个基因有多么的符合dominant cluster pattern。软聚类应该是一个非常好的方法</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cl &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/1.png" alt="表达矩阵"></p>
-<ul>
-<li>对于fuzzy c-means来说，模糊值m和聚类数c必须提前设置好。对于m，我们应该选择一个可以防止随机数据聚类的值。值得注意的是，fuzzy 聚类可以遵守这样的准则，随机数据并不能被聚类。这相比于硬聚类（例如k-means）来说，是一个明显的优点。因为其即使在随机数据中，也可以检测到cluster。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">m1 &lt;- mestimate(yeast.s)</span><br><span class="line">cl2 &lt;- mfuzz(yeast.s,c&#x3D;16,m&#x3D;1.35)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl2,mfrow&#x3D;c(4,4),time.labels&#x3D;seq(0,160,10))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/2.png" alt="表达矩阵"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">O &lt;- overlap(cl)</span><br><span class="line">Ptmp &lt;- overlap.plot(cl,over&#x3D;O,thres&#x3D;0.05)</span><br><span class="line">cl3 &lt;- mfuzz(yeast.s,c&#x3D;10,m&#x3D;1.25)</span><br><span class="line">mfuzz.plot(yeast.s,cl&#x3D;cl3,mfrow&#x3D;c(3,4))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/3.png" alt="表达矩阵"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">O3 &lt;- overlap(cl3)</span><br><span class="line">overlap.plot(cl3,over&#x3D;O3,P&#x3D;Ptmp,thres&#x3D;0.05)</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/4.png" alt="表达矩阵"><br><img src="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/5.png" alt="表达矩阵"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-edgeR进行差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">edgeR进行差异分分析</a>
-    </h1>
-  
-
-        
-        <a href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-09-09T06:41:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#edgeR</p>
-<blockquote>
-<p>主要是利用了多组实验的精确统计模型或者适用于多因素复杂实验的广义线性模型。</p>
-</blockquote>
-<blockquote>
-<p>前者叫做“经典edgeR”， 后者叫做”广义线性模型 edgeR“。</p>
-</blockquote>
-<blockquote>
-<p>定义的read数是可以指基因水平、外显子水平、转录本水平或者标签水平等</p>
-</blockquote>
-<p>##广义线性模型 edgeR  可用于无重复样本</p>
-<ul>
-<li>(为什么不用DEseq2，用这个？)</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#清空缓存的变量</span><br><span class="line"></span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line"></span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line">#关闭因子和设置小数点位数</span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br><span class="line">#调用包</span><br><span class="line">library(edgeR)</span><br><span class="line">library(limma)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#读取清洗的数据，构造DGElist对象需要的东西，构建无重复的两个list进行差异分析</span><br><span class="line"></span><br><span class="line">Pstage &lt;- read.csv(&quot;B_P_cell.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 2,check.names &#x3D; F)</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#edgeR开始</span><br><span class="line"></span><br><span class="line">#规整化数据，可以用log2处理表达矩阵</span><br><span class="line">Pstage &lt;- round(Pstage)</span><br><span class="line">counts &lt;- Pstage</span><br><span class="line">#设置分组信息</span><br><span class="line">group &lt;- 1:2</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- DGEList(counts&#x3D;counts, group &#x3D; group)</span><br><span class="line">keep &lt;- rowSums(cpm(y)&gt;1) &gt;&#x3D; 1</span><br><span class="line">y &lt;- y[keep, , keep.lib.sizes&#x3D;FALSE]</span><br><span class="line">y &lt;- calcNormFactors(y)</span><br><span class="line">y_bcv &lt;- y</span><br><span class="line">bcv &lt;- 0.4</span><br><span class="line">et &lt;- exactTest(y_bcv, dispersion &#x3D; bcv ^ 2)</span><br><span class="line">gene1 &lt;- decideTestsDGE(et, p.value &#x3D; 0.05, lfc &#x3D; 0)</span><br><span class="line">summary(gene1)</span><br><span class="line">write.csv(et$table,&quot;gene_exp.csv&quot;)</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="表达矩阵"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#根据fdrtool计算qval的</span><br><span class="line">exp&lt;-read.csv(&quot;gene_exp.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">p&lt;-exp$PValue</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#install.packages(&quot;fdrtool&quot;)</span><br><span class="line">library(fdrtool)</span><br><span class="line">fdr&#x3D;fdrtool(p,statistic&#x3D;&quot;pvalue&quot;)</span><br><span class="line">qval&lt;-fdr$qval</span><br><span class="line">exp&lt;-cbind(exp,qval)</span><br><span class="line">write.csv(exp,&quot;exp_qvalue.csv&quot;)</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/3.png" alt="表达矩阵"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#筛选log2FC &gt;2 并且 adj&lt;0.05的差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">diffgene &lt;-subset(exp, qval &lt; 0.05 &amp; abs(logFC) &gt; 2)</span><br><span class="line">dim(diffgene)</span><br><span class="line">head(diffgene)</span><br><span class="line">write.csv(diffgene,file &#x3D; &quot;diffgene.csv&quot;)</span><br><span class="line"></span><br><span class="line">#同理，可以筛选非差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">undiffgene &lt;-subset(exp, qval &gt; 0.05 &amp; abs(logFC) &lt; 2)</span><br><span class="line">dim(undiffgene)</span><br><span class="line">head(undiffgene)</span><br><span class="line">write.csv(undiffgene,file &#x3D; &quot;undiffgene.csv&quot;)</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/4.png" alt="表达矩阵"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -1098,7 +1105,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 Hu Jiaqi
+    		&copy; 2021 Hu Jiaqi
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
