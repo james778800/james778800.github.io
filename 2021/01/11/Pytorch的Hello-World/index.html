@@ -6,18 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Biomagic</title>
+  <title>Pytorch的Hello World | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/archives/page/2/index.html">
+  <meta name="description" content="##识别图片中的手写体##分类模型 ###一、首先我是在服务器里conda新建了环境开始配置的，然后部署了jupyter notebook,可以使用Firefox网页的编辑器类似： 123456789101112131415[I 21:13:27.717 NotebookApp] 端口 8888 已经被站用, 请尝试其他端口.[I 21:13:27.719 NotebookApp] 启动noteb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pytorch的Hello World">
+<meta property="og:url" content="http://yoursite.com/2021/01/11/Pytorch%E7%9A%84Hello-World/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="##识别图片中的手写体##分类模型 ###一、首先我是在服务器里conda新建了环境开始配置的，然后部署了jupyter notebook,可以使用Firefox网页的编辑器类似： 123456789101112131415[I 21:13:27.717 NotebookApp] 端口 8888 已经被站用, 请尝试其他端口.[I 21:13:27.719 NotebookApp] 启动noteb">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/01/11/Pytorch%E7%9A%84Hello-World/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/11/Pytorch%E7%9A%84Hello-World/1.png">
+<meta property="article:published_time" content="2021-01-11T13:29:15.000Z">
+<meta property="article:modified_time" content="2021-01-11T13:54:27.941Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/11/Pytorch%E7%9A%84Hello-World/2.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,295 +154,212 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Pytorch的Hello-World" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Pytorch的Hello World
+    </h1>
+  
+
+        
+        <a href="/2021/01/11/Pytorch%E7%9A%84Hello-World/" class="archive-article-date">
+  	<time datetime="2021-01-11T13:29:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-11</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/2021/01/11/Pytorch%E7%9A%84Hello-World/2.png" alt="图2"><br>##识别图片中的手写体<br>##分类模型</p>
+<p>###一、首先我是在服务器里conda新建了环境开始配置的，然后部署了jupyter notebook,可以使用Firefox网页的编辑器<br>类似：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[I 21:13:27.717 NotebookApp] 端口 8888 已经被站用, 请尝试其他端口.</span><br><span class="line">[I 21:13:27.719 NotebookApp] 启动notebooks 在本地路径: &#x2F;home&#x2F;zhongjiayuan&#x2F;singlecell&#x2F;hujiaqi&#x2F;zms</span><br><span class="line">[I 21:13:27.719 NotebookApp] Jupyter Notebook 6.1.6 is running at:</span><br><span class="line">[I 21:13:27.719 NotebookApp] http:&#x2F;&#x2F;localhost:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">[I 21:13:27.719 NotebookApp]  or http:&#x2F;&#x2F;127.0.0.1:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">[I 21:13:27.719 NotebookApp] 使用control-c停止此服务器并关闭所有内核(两次跳过确认).</span><br><span class="line">[C 21:13:27.722 NotebookApp]</span><br><span class="line"></span><br><span class="line">    To access the notebook, open this file in a browser:</span><br><span class="line">        file:&#x2F;&#x2F;&#x2F;home&#x2F;zhongjiayuan&#x2F;.local&#x2F;share&#x2F;jupyter&#x2F;runtime&#x2F;nbserver-33538-open.html</span><br><span class="line">    Or copy and paste one of these URLs:</span><br><span class="line">        http:&#x2F;&#x2F;localhost:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">     or http:&#x2F;&#x2F;127.0.0.1:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">[I 21:20:32.364 NotebookApp] Kernel started: afeb6534-3c81-4254-9b14-2153d29f86b9, name: python3</span><br><span class="line">[I 21:36:46.179 NotebookApp] Starting buffering for afeb6534-3c81-4254-9b14-2153d29f86b9:0b0496fc0ead471f8d6e3a562b4f585a</span><br></pre></td></tr></table></figure>
+<p>##我的shell和火狐的Jupyter notebook界面：<br><img src="/2021/01/11/Pytorch%E7%9A%84Hello-World/1.png" alt="图1"></p>
+<blockquote>
+<p>####二、导入相关模块，我是在conda的python3.6进行的，我的相关包版本如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">&gt;Package                       Version</span><br><span class="line">&gt;----------------------------- -------------------</span><br><span class="line">&gt;argon2-cffi                   20.1.0</span><br><span class="line">&gt;async-generator               1.10</span><br><span class="line">&gt;attrs                         20.3.0</span><br><span class="line">&gt;backcall                      0.2.0</span><br><span class="line">&gt;backports.functools-lru-cache 1.6.1</span><br><span class="line">&gt;bleach                        1.4.2</span><br><span class="line">&gt;certifi                       2020.12.5</span><br><span class="line">&gt;cffi                          1.14.4</span><br><span class="line">&gt;cycler                        0.10.0</span><br><span class="line">&gt;decorator                     4.4.2</span><br><span class="line">&gt;defusedxml                    0.6.0</span><br><span class="line">&gt;entrypoints                   0.3</span><br><span class="line">&gt;html5lib                      1.1</span><br><span class="line">&gt;importlib-metadata            3.3.0</span><br><span class="line">&gt;ipykernel                     5.4.2</span><br><span class="line">&gt;ipython                       7.12.0</span><br><span class="line">&gt;ipython-genutils              0.2.0</span><br><span class="line">&gt;ipywidgets                    7.6.3</span><br><span class="line">&gt;jedi                          0.18.0</span><br><span class="line">&gt;Jinja2                        2.11.2</span><br><span class="line">&gt;jsonschema                    3.2.0</span><br><span class="line">&gt;jupyter-client                6.1.11</span><br><span class="line">&gt;jupyter-console               6.2.0</span><br><span class="line">&gt;jupyter-core                  4.7.0</span><br><span class="line">&gt;jupyterlab-pygments           0.1.2</span><br><span class="line">&gt;jupyterlab-widgets            1.0.0</span><br><span class="line">&gt;kiwisolver                    1.3.1</span><br><span class="line">&gt;MarkupSafe                    1.1.1</span><br><span class="line">&gt;matplotlib                    3.3.3</span><br><span class="line">&gt;mistune                       0.8.4</span><br><span class="line">&gt;nbclient                      0.5.1</span><br><span class="line">&gt;nbconvert                     6.0.7</span><br><span class="line">&gt;nbformat                      5.0.8</span><br><span class="line">&gt;nest-asyncio                  1.4.3</span><br><span class="line">&gt;notebook                      6.1.6</span><br><span class="line">&gt;numpy                         1.19.5</span><br><span class="line">&gt;olefile                       0.46</span><br><span class="line">&gt;pandas                        1.1.5</span><br><span class="line">&gt;pandocfilters                 1.4.2</span><br><span class="line">&gt;parso                         0.8.1</span><br><span class="line">&gt;pexpect                       4.8.0</span><br><span class="line">&gt;pickleshare                   0.7.5</span><br><span class="line">&gt;Pillow                        8.1.0</span><br><span class="line">&gt;pip                           20.3.3</span><br><span class="line">&gt;prometheus-client             0.9.0</span><br><span class="line">&gt;prompt-toolkit                3.0.10</span><br><span class="line">&gt;ptyprocess                    0.7.0</span><br><span class="line">&gt;pycparser                     2.20</span><br><span class="line">&gt;Pygments                      2.7.3</span><br><span class="line">&gt;pyparsing                     2.4.7</span><br><span class="line">&gt;PyQt5                         5.12.3</span><br><span class="line">&gt;PyQt5-sip                     4.19.18</span><br><span class="line">&gt;PyQtChart                     5.12</span><br><span class="line">&gt;PyQtWebEngine                 5.12.1</span><br><span class="line">&gt;pyrsistent                    0.17.3</span><br><span class="line">&gt;python-dateutil               2.8.1</span><br><span class="line">&gt;pytz                          2020.5</span><br><span class="line">&gt;pyzmq                         20.0.0</span><br><span class="line">&gt;qtconsole                     5.0.1</span><br><span class="line">&gt;QtPy                          1.9.0</span><br><span class="line">&gt;Send2Trash                    1.5.0</span><br><span class="line">&gt;setuptools                    49.6.0.post20210108</span><br><span class="line">&gt;six                           1.15.0</span><br><span class="line">&gt;terminado                     0.9.2</span><br><span class="line">&gt;testpath                      0.4.4</span><br><span class="line">&gt;torch                         0.4.1</span><br><span class="line">&gt;torchvision                   0.1.8</span><br><span class="line">&gt;tornado                       6.1</span><br><span class="line">&gt;traitlets                     4.3.3</span><br><span class="line">&gt;typing-extensions             3.7.4.3</span><br><span class="line">&gt;wcwidth                       0.2.5</span><br><span class="line">&gt;webencodings                  0.5.1</span><br><span class="line">&gt;wheel                         0.36.2</span><br><span class="line">&gt;widgetsnbextension            3.5.1</span><br><span class="line">&gt;zipp                          3.4.0 </span><br></pre></td></tr></table></figure>
+<p>import torch<br>import torch.nn as nn<br>import torchvision<br>import torchvision.transforms as transforms</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="判定GPU是否存在"><a href="#判定GPU是否存在" class="headerlink" title="判定GPU是否存在"></a>判定GPU是否存在</h1><p>device = torch.device(‘cuda’ if torch.cuda.is_available() else ‘cpu’)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="定义超参数"><a href="#定义超参数" class="headerlink" title="定义超参数"></a>定义超参数</h1><p>input_size = 784<br>hidden_size = 500<br>num_classes = 10<br>num_epochs = 5<br>batch_size = 100<br>learning_rate = 0.001</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="手写体数据"><a href="#手写体数据" class="headerlink" title="手写体数据"></a>手写体数据</h1><p>train_dataset = torchvision.datasets.MNIST(root=’./data’,<br>                                           train=True,<br>                                           transform=transforms.ToTensor(),<br>                                           download=True)</p>
+<p>test_dataset = torchvision.datasets.MNIST(root=’./data’,<br>                                          train=False,<br>                                          transform=transforms.ToTensor())</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Downloading <a href="http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz" target="_blank" rel="noopener">http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz</a><br>Downloading <a href="http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz" target="_blank" rel="noopener">http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz</a><br>Downloading <a href="http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz" target="_blank" rel="noopener">http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz</a><br>Downloading <a href="http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz" target="_blank" rel="noopener">http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz</a><br>Processing…<br>Done!</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>train_loader = torch.utils.data.DataLoader(dataset=train_dataset,<br>                                           batch_size=batch_size,<br>                                           shuffle=True)</p>
+<p>test_loader = torch.utils.data.DataLoader(dataset=test_dataset,<br>                                          batch_size=batch_size,<br>                                          shuffle=False)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="定义含有一个隐含层的全连接神经网络。"><a href="#定义含有一个隐含层的全连接神经网络。" class="headerlink" title="定义含有一个隐含层的全连接神经网络。"></a>定义含有一个隐含层的全连接神经网络。</h1><p>class NeuralNet(nn.Module):<br>    def <strong>init</strong>(self, input_size, hidden_size, num_classes):<br>        super(NeuralNet, self).<strong>init</strong>()<br>        self.fc1 = nn.Linear(input_size, hidden_size)<br>        self.relu = nn.ReLU()<br>        self.fc2 = nn.Linear(hidden_size, num_classes)  </p>
+<pre><code>def forward(self, x):
+    out = self.fc1(x)
+    out = self.relu(out)
+    out = self.fc2(out)
+    return out</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="定义模型"><a href="#定义模型" class="headerlink" title="定义模型"></a>定义模型</h1><p>model = NeuralNet(input_size, hidden_size, num_classes).to(device)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#耗时较长</span><br></pre></td></tr></table></figure>
+<h1 id="损失函数和优化算法"><a href="#损失函数和优化算法" class="headerlink" title="损失函数和优化算法"></a>损失函数和优化算法</h1><p>criterion = nn.CrossEntropyLoss()<br>optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate) </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#GPU运算</span><br></pre></td></tr></table></figure>
+<p>/python3.6/site-packages/torch/cuda/<strong>init</strong>.py:114: UserWarning:<br>    Found GPU0 TITAN RTX which requires CUDA_VERSION &gt;= 9000 for<br>     optimal performance and fast startup time, but your PyTorch was compiled<br>     with CUDA_VERSION 8000. Please install the correct PyTorch binary<br>     using instructions from <a href="http://pytorch.org" target="_blank" rel="noopener">http://pytorch.org</a></p>
+<p>  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))<br>/python3.6/site-packages/torch/cuda/<strong>init</strong>.py:114: UserWarning:<br>    Found GPU1 GeForce RTX 2080 Ti which requires CUDA_VERSION &gt;= 9000 for<br>     optimal performance and fast startup time, but your PyTorch was compiled<br>     with CUDA_VERSION 8000. Please install the correct PyTorch binary<br>     using instructions from <a href="http://pytorch.org" target="_blank" rel="noopener">http://pytorch.org</a></p>
+<p>  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))<br>/python3.6/site-packages/torch/cuda/<strong>init</strong>.py:114: UserWarning:<br>    Found GPU2 GeForce RTX 2080 Ti which requires CUDA_VERSION &gt;= 9000 for<br>     optimal performance and fast startup time, but your PyTorch was compiled<br>     with CUDA_VERSION 8000. Please install the correct PyTorch binary<br>     using instructions from <a href="http://pytorch.org" target="_blank" rel="noopener">http://pytorch.org</a></p>
+<p>  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))<br>/home/zhongjiayuan/miniconda3/envs/hjq/lib/python3.6/site-packages/torch/cuda/<strong>init</strong>.py:114: UserWarning:<br>    Found GPU3 GeForce RTX 2080 Ti which requires CUDA_VERSION &gt;= 9000 for<br>     optimal performance and fast startup time, but your PyTorch was compiled<br>     with CUDA_VERSION 8000. Please install the correct PyTorch binary<br>     using instructions from <a href="http://pytorch.org" target="_blank" rel="noopener">http://pytorch.org</a></p>
+<p>  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h1><p>total_step = len(train_loader)<br>for epoch in range(num_epochs):<br>    for i, (images, labels) in enumerate(train_loader):<br>        # Move tensors to the configured device<br>        images = images.reshape(-1, 28*28).to(device)<br>        labels = labels.to(device)</p>
+<pre><code># 前向传播和计算loss
+outputs = model(images)
+loss = criterion(outputs, labels)
+
+# 后向传播和调整参数
+optimizer.zero_grad()
+loss.backward()
+optimizer.step()
+# 每100个batch打印一次数据
+if (i+1) % 100 == 0:
+    print (&apos;Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}&apos; 
+           .format(epoch+1, num_epochs, i+1, total_step, loss.item()))</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>Epoch [1/5], Step [100/600], Loss: 0.5699<br>Epoch [1/5], Step [200/600], Loss: 0.2943<br>Epoch [1/5], Step [300/600], Loss: 0.4047<br>Epoch [1/5], Step [400/600], Loss: 0.1379<br>Epoch [1/5], Step [500/600], Loss: 0.0782<br>Epoch [1/5], Step [600/600], Loss: 0.2034<br>Epoch [2/5], Step [100/600], Loss: 0.1151<br>Epoch [2/5], Step [200/600], Loss: 0.1684<br>Epoch [2/5], Step [300/600], Loss: 0.1150<br>Epoch [2/5], Step [400/600], Loss: 0.1497<br>Epoch [2/5], Step [500/600], Loss: 0.0788<br>Epoch [2/5], Step [600/600], Loss: 0.0614<br>Epoch [3/5], Step [100/600], Loss: 0.0786<br>Epoch [3/5], Step [200/600], Loss: 0.1572<br>Epoch [3/5], Step [300/600], Loss: 0.0281<br>Epoch [3/5], Step [400/600], Loss: 0.0306<br>Epoch [3/5], Step [500/600], Loss: 0.1343<br>Epoch [3/5], Step [600/600], Loss: 0.0401<br>Epoch [4/5], Step [100/600], Loss: 0.0496<br>Epoch [4/5], Step [200/600], Loss: 0.0570<br>Epoch [4/5], Step [300/600], Loss: 0.1419<br>Epoch [4/5], Step [400/600], Loss: 0.0546<br>Epoch [4/5], Step [500/600], Loss: 0.0208<br>Epoch [4/5], Step [600/600], Loss: 0.0283<br>Epoch [5/5], Step [100/600], Loss: 0.0109<br>Epoch [5/5], Step [200/600], Loss: 0.0495<br>Epoch [5/5], Step [300/600], Loss: 0.0254<br>Epoch [5/5], Step [400/600], Loss: 0.0456<br>Epoch [5/5], Step [500/600], Loss: 0.0924<br>Epoch [5/5], Step [600/600], Loss: 0.0063</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="模型测试部分"><a href="#模型测试部分" class="headerlink" title="模型测试部分"></a>模型测试部分</h1><h1 id="测试阶段不需要计算梯度，注意"><a href="#测试阶段不需要计算梯度，注意" class="headerlink" title="测试阶段不需要计算梯度，注意"></a>测试阶段不需要计算梯度，注意</h1><p>with torch.no_grad():<br>    correct = 0<br>    total = 0<br>    for images, labels in test_loader:<br>        images = images.reshape(-1, 28*28).to(device)<br>        labels = labels.to(device)<br>        outputs = model(images)<br>        _, predicted = torch.max(outputs.data, 1)<br>        total += labels.size(0)<br>        correct += (predicted == labels).sum().item()</p>
+<pre><code>print(&apos;Accuracy of the network on the 10000 test images: {} %&apos;.format(100 * correct / total))</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#模型准确率：</span><br></pre></td></tr></table></figure>
+<p>Accuracy of the network on the 10000 test images: 97.93 %</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="保存模型参数"><a href="#保存模型参数" class="headerlink" title="保存模型参数"></a>保存模型参数</h1><p>torch.save(model.state_dict(), ‘model.ckpt’)</p>
+<pre><code></code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/" class="archive-article-date">
-  	<time datetime="2020-10-04T03:52:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">GEO数据挖掘</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/01/11/Pytorch%E7%9A%84Hello-World/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/" class="archive-article-date">
-  	<time datetime="2020-09-09T07:00:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">空间转录组分析（1）-Seurat V4</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/09/Mfuzz%E8%BD%AF%E8%81%9A%E7%B1%BB/">Mfuzz软聚类</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-09-09T06:41:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">edgeR进行差异分分析</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2020-09-08T08:17:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/09/08/DEseq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">DEseq2差异分析</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
-  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
-  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:30:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(3):生存分析（bulk水平）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:16:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(2):相关性分析（bulk水平）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:35:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(1):DESeq2差异分析（bulk水平）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/">Next &amp;raquo;</a>
-    </nav>
   
 
 
@@ -461,8 +383,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
