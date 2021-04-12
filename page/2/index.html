@@ -151,6 +151,301 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Logistics回归分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/">Logistics回归分析</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-01-04T05:41:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Logistics回归分析</p>
+<blockquote>
+<p>logistic回归又称logistic回归分析，是一种广义的线性回归分析模型，常用于数据挖掘，疾病自动诊断，经济预测等领域。例如，探讨引发疾病的危险因素，并根据危险因素预测疾病发生的概率等。以胃癌病情分析为例，选择两组人群，一组是胃癌组，一组是非胃癌组，两组人群必定具有不同的体征与生活方式等。因此因变量就为是否胃癌，值为“是”或“否”，自变量就可以包括很多了，如年龄、性别、饮食习惯、幽门螺杆菌感染等。自变量既可以是连续的，也可以是分类的。然后通过logistic回归分析，可以得到自变量的权重，从而可以大致了解到底哪些因素是胃癌的危险因素。同时根据该权值可以根据危险因素预测一个人患癌症的可能性。<br>##（1）构建分析环境</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;Statistic_R&#x2F;Logistic&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+<p>##（2）探究抽烟喝酒对食管癌风险倍数差异<br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/1.png" alt="Logistics回归分析"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#读取吸烟喝酒与食管癌病例文件</span><br><span class="line">test1 &lt;- read.csv(&quot;yabianliang.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">#设置哑变量</span><br><span class="line">dummyx1 &lt;- model.matrix(~x1 + x2, data &#x3D; test1)</span><br><span class="line">head(cbind(dummyx1, test1$x1))</span><br><span class="line"></span><br><span class="line">#变量因子化</span><br><span class="line">test1$y &lt;- as.factor(test1$y)</span><br><span class="line">test1$x1 &lt;- as.factor(test1$x1)</span><br><span class="line">test1$x2 &lt;- as.factor(test1$x2)</span><br><span class="line"></span><br><span class="line">levels(test1$y)</span><br><span class="line">#练习重复数据框的行</span><br></pre></td></tr></table></figure>
+<p>##（3）构建可以纳入模型的对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dat1&lt;-test1[rep(1:nrow(test1),c(63,63,44,265,136,107,57,151)),]</span><br></pre></td></tr></table></figure>
+<p>##（4）导入数据框进行分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#导入数据库</span><br><span class="line">attach(dat1)</span><br><span class="line">detach(test1)</span><br><span class="line">#?attach()</span><br><span class="line">#数据库被附加到R搜索路径上。</span><br><span class="line">#这意味着在评估变量时，R会对数据库进行搜索，</span><br><span class="line">#因此只需给出数据库中的对象的名称，就可以访问这些对象</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#构建模型</span><br><span class="line"></span><br><span class="line">fit &lt;- glm(y~ x1+ x2, family &#x3D; binomial(), data &#x3D; dat1)</span><br><span class="line">summary(fit)</span><br></pre></td></tr></table></figure>
+<p>#（5）模型结果展示<br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/2.png" alt="Logistics回归分析"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">coefficients(fit)</span><br><span class="line">exp(coefficients(fit))</span><br><span class="line">plot(fit)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/3.png" alt="Logistics回归分析"><br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/4.png" alt="Logistics回归分析"><br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/5.png" alt="Logistics回归分析"><br><img src="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/6.png" alt="Logistics回归分析"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-细胞互作软件（3）-iTALK" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/">细胞互作软件（3）-iTALK</a>
+    </h1>
+  
+
+        
+        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/" class="archive-article-date">
+  	<time datetime="2020-12-07T08:42:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="iTALK"><a href="#iTALK" class="headerlink" title="iTALK"></a>iTALK</h1><blockquote>
+<p>iTALK的特点 </p>
+</blockquote>
+<blockquote>
+<p>集成了多种差异分析和可视化方法；<br>将配体-受体注释为4大类：细胞因子、生长因子、免疫检查点和其他；<br>配体-受体分析的中间数据和最终结果都可以轻松导出。</p>
+</blockquote>
+<ul>
+<li><p>能够用devtools在线安装的，就直接用，我的是scater无限报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">library(devtools)</span><br><span class="line">install_github(&quot;Coolgenome&#x2F;iTALK&quot;, build_vignettes &#x3D; TRUE)</span><br><span class="line">install.packages(&quot;ps&quot;)</span><br><span class="line">install.packages(&quot;scater&quot;)</span><br><span class="line">BiocManager::install(&quot;scater&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>采用和下载celltalker一样的离线安装模式进行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">devtools::install_local(&quot;G:&#x2F;&#x2F;R-3.6.2&#x2F;library&#x2F;iTALK-master.zip&quot;)</span><br><span class="line">devtools::install_github(&#39;arc85&#x2F;celltalker&#39;)</span><br><span class="line">install.packages(&quot;G:&#x2F;&#x2F;google Downloads&#x2F;iTALK-master&#x2F;&quot;,repos&#x3D;NULL,type&#x3D;&quot;source&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>iTALK也可以无缝对接Seurat的对象，读取其中的meta信息和count数据</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(iTALK)</span><br><span class="line">library(Seurat)</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>由于celltalker的折磨，不愉快的开始，iTALK分析<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;肿瘤组织样本CD8&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">genecount &lt;- read.csv(&quot;Genecount_TTC.csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">genemeta &lt;- read.csv(&quot;TTC_monocleMeta.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">TTC &lt;- CreateSeuratObject(genecount,</span><br><span class="line">                          meta.data &#x3D; genemeta,</span><br><span class="line">                          project &#x3D; &quot;TTC&quot;,</span><br><span class="line">                          min.cells &#x3D; 5,</span><br><span class="line">                          min.features  &#x3D; 200)</span><br></pre></td></tr></table></figure>
+<h1 id="这里是正式开始iTALK的对象的构建"><a href="#这里是正式开始iTALK的对象的构建" class="headerlink" title="这里是正式开始iTALK的对象的构建"></a>这里是正式开始iTALK的对象的构建</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">##准备iTALK输入文件</span><br><span class="line"># 输入文件格式为数据框，行为细胞名称，列为基因名和细胞注释信息，基因名命名的列值为表达数据。</span><br><span class="line"># 细胞注释信息必选“cell_type”，值为细胞类型注释信息；可选“compare_group”，值为细胞的样本分组信息。</span><br><span class="line"></span><br><span class="line">cell.meta &lt;- subset(TTC@meta.data, select&#x3D;c(&quot;sampleType&quot;,&quot;pseudotime&quot;))</span><br><span class="line"></span><br><span class="line">names(cell.meta) &lt;- c(&quot;compare_group&quot;, &quot;cell_type&quot;)</span><br><span class="line"></span><br><span class="line">cell.expr &lt;- data.frame(t(as.matrix(TTC@assays$RNA@counts)), check.names&#x3D;F)</span><br><span class="line">data.italk &lt;- merge(cell.expr, cell.meta, by&#x3D;0)</span><br><span class="line">rownames(data.italk) &lt;- data.italk$Row.names</span><br><span class="line">data.italk &lt;- data.italk[,-1]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以查看构建的italk对象</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.italk[1:5,c(1:2,18027:18028)]</span><br></pre></td></tr></table></figure></li>
+<li>选择可视化的一些参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">##设置绘图颜色和其他变量</span><br><span class="line">mycolor &lt;- c(&quot;#92D0E6&quot;,&quot;#F5949B&quot;,&quot;#E11E24&quot;,&quot;#FBB96F&quot;,&quot;#007AB8&quot;,&quot;#A2D184&quot;,&quot;#00A04E&quot;,&quot;#BC5627&quot;,&quot;#0080BD&quot;,&quot;#EBC379&quot;,&quot;#A74D9D&quot;)</span><br><span class="line">cell_type &lt;- unique(data.italk$cell_type)</span><br><span class="line">cell_col &lt;- structure(mycolor[1:length(cell_type)], names&#x3D;cell_type)</span><br><span class="line">#通讯类型变量</span><br><span class="line">comm_list&lt;-c(&#39;growth factor&#39;,&#39;other&#39;,&#39;cytokine&#39;,&#39;checkpoint&#39;)</span><br><span class="line">#圈图展示配体-受体对的数量</span><br><span class="line">PN&#x3D;20</span><br></pre></td></tr></table></figure></li>
+<li>新建生成的文件夹，可视化输出文件方便<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##&#x3D;&#x3D;细胞通讯关系概览&#x3D;&#x3D;##</span><br><span class="line">dir.create(&#39;iTALK&#x2F;Overview&#39;)</span><br><span class="line">setwd(&quot;iTALK&#x2F;Overview&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>我这里只有一种组织，癌组织TTC，如果有细分的可以换的<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#实际上一个样本之内的细胞才能通讯，这里提取一组样本分析是为了克服单细胞数据稀疏性造成的误差</span><br><span class="line">data1 &lt;- subset(data.italk, subset&#x3D;data.italk$compare_group&#x3D;&#x3D;&quot;TTC&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>分析并生成图片<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#寻找高表达的配体受体基因,top_genes&#x3D;50代表提取平均表达量前50%的基因</span><br><span class="line">highly_exprs_genes &lt;- rawParse(data1, top_genes&#x3D;50, stats&#x3D;&quot;mean&quot;)</span><br><span class="line">res&lt;-NULL</span><br><span class="line">for(comm_type in comm_list)&#123;</span><br><span class="line">  #comm_type &#x3D; &#39;cytokine&#39;   #测试循环代码的临时变量</span><br><span class="line">  res_cat &lt;- FindLR(highly_exprs_genes, datatype&#x3D;&#39;mean count&#39;, comm_type&#x3D;comm_type)</span><br><span class="line">  res_cat &lt;- res_cat[order(res_cat$cell_from_mean_exprs*res_cat$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">  write.csv(res_cat, paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.xls&#39;))</span><br><span class="line">  #pdf(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.pdf&#39;), width&#x3D;6, height&#x3D;7)</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_net.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  #绘制细胞通讯关系网络图</span><br><span class="line">  NetView(res_cat, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">          vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">  dev.off()</span><br><span class="line">  #绘制topPN的配体-受体圈图</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_circ.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  LRPlot(res_cat[1:PN,],datatype&#x3D;&#39;mean count&#39;,cell_col&#x3D;cell_col,link.arr.lwd&#x3D;res_cat$cell_from_mean_exprs[1:PN],link.arr.width&#x3D;res_cat$cell_to_mean_exprs[1:PN], text.vjust &#x3D; &quot;0.35cm&quot;)</span><br><span class="line">  dev.off()</span><br><span class="line">  res&lt;-rbind(res,res_cat)</span><br><span class="line">&#125;</span><br><span class="line">res &lt;- res[order(res$cell_from_mean_exprs*res$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">write.csv(res, &#39;LRpairs_Overview.xls&#39;)</span><br><span class="line">res.top &lt;- res[1:PN,]</span><br><span class="line">png(&#39;LRpairs_Overview_net.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">NetView(res, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">        vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">dev.off()</span><br><span class="line">png(&#39;LRpairs_Overview_circ.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">LRPlot(res.top, datatype&#x3D;&#39;mean count&#39;, link.arr.lwd&#x3D;res.top$cell_from_mean_exprs,</span><br><span class="line">       cell_col&#x3D;cell_col, link.arr.width&#x3D;res.top$cell_to_mean_exprs)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<h1 id="可视化结果"><a href="#可视化结果" class="headerlink" title="可视化结果"></a>可视化结果</h1>（1）检查点的圈图（LRpairs_Overview_checkpoint_circ）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_circ.png" alt="iTALK"><br>（2）检查点的网络图（LRpairs_Overview_checkpoint_net）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_net.png" alt="iTALK"></li>
+</ul>
+<blockquote>
+<p>还有LRpairs_Overview_growth factor、LRpairs_Overview_cytokine的结果就不一一展示。总是三个软件里面，这个使用效果最佳。</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-细胞互作软件（2）-cellphoneDB" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">细胞互作软件（2）-cellphoneDB</a>
+    </h1>
+  
+
+        
+        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/" class="archive-article-date">
+  	<time datetime="2020-12-07T08:42:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="CellPhoneDB的优势"><a href="#CellPhoneDB的优势" class="headerlink" title="CellPhoneDB的优势"></a>CellPhoneDB的优势</h1><blockquote>
+<p>CellPhoneDB的独特之处不是它的算法，而是他们开发的细胞通讯配体-受体数据库。他们的数据库不仅包含公共资源注释的受体和配体，还有人工挑选的参与细胞通讯的特定蛋白质家族。他们的数据库还考虑了配体和受体的亚基结构，这是大多数据库和研究没有涉及的，这点对于准确研究多亚基复合物介导的细胞通讯很关键。</p>
+</blockquote>
+<blockquote>
+<p>网页版使用：<a href="https://www.cellphonedb.org/explore-sc-rna-seq" target="_blank" rel="noopener">https://www.cellphonedb.org/explore-sc-rna-seq</a></p>
+</blockquote>
+<ul>
+<li>我采用Linux下的包来使用cellphoneDB<blockquote>
+<p>数据是示例数据</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda install cellphonedb</span><br><span class="line">conda activate hcy</span><br><span class="line">conda install cellphonedb</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>conda 似乎是不能直接下载的，找不到相关包</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install cellphonedb</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
+检查是否安装成功<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb</span><br></pre></td></tr></table></figure>
+<img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/1.png" alt="celltalker示例图"></li>
+<li>创建测试数据的文件夹来输入数据和生成文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir test_cellphoneDB</span><br><span class="line">cd test_cellphoneDB&#x2F;</span><br></pre></td></tr></table></figure></li>
+<li>激活Python环境再使用软件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#创建cpdb-venv环境</span><br><span class="line">python -m venv cpdb-venv</span><br><span class="line"></span><br><span class="line">#激活环境</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 下载表达矩阵和meta信息</span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt --output test_counts.txt</span><br><span class="line"></span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt --output test_meta.txt</span><br></pre></td></tr></table></figure>
+<p>由于我没有curl指令，用wget下载也是殊途同归</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt</span><br><span class="line"></span><br><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt</span><br></pre></td></tr></table></figure>
+<p>①运行statistical method的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method statistical_analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
+<p>②没有使用statistical method的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可以调试的参数说明：<blockquote>
+<p>可选参数：<br>~ Optional Method parameters:</p>
+</blockquote>
+</li>
+</ul>
+<p>–counts-data: [ensembl | gene_name | hgnc_symbol] counts data 中的基因标识符类型</p>
+<p>–project-name: 项目名称，在输出文件夹中创建具有此名称的子文件夹</p>
+<p>–iterations: 统计分析迭代次数[1000]</p>
+<p>–threshold: 表达特定的配体/受体的细胞%</p>
+<p>–result-precision: 结果中保留的小数位数[3]</p>
+<p>–output-path: 输出文件路径 [out]</p>
+<p>–output-format: 结果文件的输出格式(如果没有扩展名，将添加到文件名中) [txt]</p>
+<p>–means-result-name: Means结果文件名[means]</p>
+<p>–significant-means-result-name: 有显著意义的means 结果文件名 [significant_means]</p>
+<p>–deconvoluted-result-name: Deconvoluted 结果文件名 [deconvoluted]</p>
+<p>–verbose/–quiet: 打印或隐藏CellPhoneDB日志 [verbose]</p>
+<p>–subsampling: 使二次抽样</p>
+<p>–subsampling-log: 启用非对数转换数据输入的子采样log1p !!强制!!</p>
+<p>–subsampling-num-pc: 子抽样NumPC参数(要使用的pc数量) [100]</p>
+<p>–subsampling-num-cells: 要取样到的细胞数 [1/3 of cells]</p>
+<p>~ Optional Method Statistical parameters</p>
+<p>–pvalues-result-name: P-values 结果文件名 [pvalues]</p>
+<p>–pvalue: P-value阈值 [0.05]</p>
+<p>–debug-seed: 调试随机种子-1，要禁用它，请使用一个值&gt;=0 [-1]</p>
+<p>–threads: 要使用的线程数 &gt;=1 [-1]</p>
+<h1 id="可视化结果，点图"><a href="#可视化结果，点图" class="headerlink" title="可视化结果，点图"></a>可视化结果，点图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot dot_plot --rows in&#x2F;rows.txt --columns in&#x2F;columns.txt</span><br><span class="line">cellphonedb plot dot_plot</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/plot_00.png" alt="cellphoneDB"></p>
+<h1 id="可视化结果，热图"><a href="#可视化结果，热图" class="headerlink" title="可视化结果，热图"></a>可视化结果，热图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot heatmap_plot test_meta.txt</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/2.png" alt="cellphoneDB"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-细胞互作软件（1）-celltalker" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -324,303 +619,9 @@
 
 
   
-    <article id="post-HD5文件解析为csv-tsv" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/">HD5文件解析为csv/tst</a>
-    </h1>
-  
-
-        
-        <a href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/" class="archive-article-date">
-  	<time datetime="2020-11-18T12:05:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#① HD5格式文件</p>
-<blockquote>
-<p>科普一下h5的基本格式介绍：H5文件是层次数据格式第5代的版本(Hierarchical Data Format，HDF5)，h5格式主要有两个主要概念：dataset和group。 Dataset是类似于数组的数据集，而group是类似文件夹一样的容器，存放dataset和其他group。为了有直观地印象，可以把H5文件想想成一个文件系统，一个h5的最顶层是‘/’，然后是不同的组‘group’，每个组下面是数据‘dataset’，格式类似如下：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+-- &#x2F;</span><br><span class="line">|   +-- group1</span><br><span class="line">|   |   +-- dataset1</span><br><span class="line">|   |   |   +-- attribute1</span><br><span class="line">|   |   |   +-- attribute2</span><br><span class="line">|   |   |   +-- ...</span><br><span class="line">|   |   |</span><br><span class="line">|   |   +-- dataset2</span><br><span class="line">|   |   |   +-- attribute1</span><br><span class="line">|   |   |   +-- attribute2</span><br><span class="line">|   |   |   +-- ...</span><br></pre></td></tr></table></figure>
-<p>###② （由于我想要的是表达矩阵此项是采用的方法一）解析为CSV or TSV文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;google Downloads&#x2F;ruxianCANCER&#x2F;&quot;)</span><br><span class="line">#加载读取H5文件的包</span><br><span class="line">library(hdf5r)</span><br><span class="line"></span><br><span class="line">bm &lt;- H5File$new(&quot;CLL-pilot1_fresh_channel1_raw_feature_bc_matrix.h5&quot;, mode &#x3D; &quot;r&quot;)</span><br><span class="line">bm$ls()</span><br><span class="line"></span><br><span class="line">TestMatrix &lt;- bm[[&quot;matrix&quot;]]</span><br><span class="line">TestMatrix$ls()</span><br><span class="line"></span><br><span class="line">#将所有的信息导出来</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 1细胞barcode：</span><br><span class="line">barcodes &lt;- TestMatrix[[&quot;barcodes&quot;]]</span><br><span class="line">barcodes[1:5]</span><br><span class="line"></span><br><span class="line">### 2reads数</span><br><span class="line">data &lt;- TestMatrix[[&quot;data&quot;]]</span><br><span class="line">data[1:10]</span><br><span class="line"></span><br><span class="line">### 3</span><br><span class="line">features &lt;- TestMatrix[[&quot;features&quot;]]</span><br><span class="line">features[1:2]</span><br><span class="line"></span><br><span class="line">### 4 基因索引号</span><br><span class="line">indices &lt;- TestMatrix[[&quot;indices&quot;]]</span><br><span class="line">indices[1:10]</span><br><span class="line">[1] 33664 33662 33661 33659 33658 33657 33655 33654 33653 33652</span><br><span class="line"></span><br><span class="line">### 5、</span><br><span class="line">indptr &lt;- TestMatrix[[&quot;indptr&quot;]]</span><br><span class="line">indptr[1:10]</span><br><span class="line">[1]    0  785 1466 2010 2942 4605 5569 5678 6374 7096</span><br><span class="line"></span><br><span class="line">### 6 矩阵shape（33694个基因，378000个细胞）</span><br><span class="line">shape &lt;- TestMatrix[[&quot;shape&quot;]]</span><br><span class="line">shape[1:2]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#文件1 barcodes</span><br><span class="line">barcodes &lt;- barcodes[]</span><br><span class="line">write.csv(barcodes, file &#x3D; &quot;G:&#x2F;google Downloads&#x2F;ruxianCANCER&#x2F;test1&#x2F;barcodes.csv&quot;) </span><br><span class="line">#再手动重命名为.tsv格式</span><br><span class="line"></span><br><span class="line">####### 文件2 genes.tsv 的生成 ####### </span><br><span class="line">genes &lt;- genes[]</span><br><span class="line">gene_names &lt;- gene_names[]</span><br><span class="line">df &lt;- data.frame(gene_names, row.names &#x3D; c(genes))</span><br><span class="line">write.csv(df, file &#x3D; &quot;genes.csv&quot;) #再手动重命名为.tsv格式</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>文件3 matrix.mtx 比较特殊，列名是基因的索引号，表示该基因在该细胞中的reads数。第二列没有现成的变量可以一次性填进去，需要进行一些转化和运算：</p>
-</blockquote>
-<ul>
-<li>第一列是indices，作为row.names;</li>
-<li>第三列是data，也就是reads数;</li>
-<li>第二列是细胞的编号，如1，1，1，2，2，2，2，2，2，3，4，……，33694。这些数字表示即第1个细胞至第33694个细胞。如第一行为33688 1 2 则表示33688号基因在细胞1中的reads数为2。</li>
-<li>indptr是一个递增数列，a2-a1 = 细胞cell1的数量。因此也就是说数字1要重复a2-a1次；数字2要重复a3-a2次，以此类推。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">####### 文件3 matrix.csv 的生成 ####### </span><br><span class="line">#转换读取方式</span><br><span class="line">indices &lt;- indices[]</span><br><span class="line">indptr &lt;- indptr[]</span><br><span class="line">data &lt;- data[]</span><br><span class="line"></span><br><span class="line">length(data) #54</span><br><span class="line">length(indices) #54</span><br><span class="line">length(indptr) #54</span><br><span class="line"></span><br><span class="line">indptr1 &lt;- indptr[2:length(indptr)]</span><br><span class="line">indptr2 &lt;- indptr[1:length(indptr)-1]</span><br><span class="line">cell_numb &lt;- indptr1 - indptr2</span><br><span class="line"></span><br><span class="line">column2_of_file3 &lt;- rep(c(1:length(indptr1)),c(cell_numb)) # rep函数万岁</span><br><span class="line"></span><br><span class="line">df &lt;- data.frame(indices, column2_of_file3, data)</span><br><span class="line"></span><br><span class="line">save(df, file &#x3D; &quot;G:&#x2F;google Downloads&#x2F;ruxianCANCER&#x2F;test1&#x2F;df_test1.RData&quot;)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>#③ 正确方法：R包rhdf5、hdf5r都可以用来打开文件，这里我使用rhdf5包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#提取表达矩阵</span><br><span class="line">library(rhdf5)</span><br><span class="line"></span><br><span class="line">hd5 &lt;- h5read(&#39;CLL-pilot1_fresh_channel1_raw_feature_bc_matrix.h5&#39;,&#39;&#x2F;&#39;) </span><br><span class="line"></span><br><span class="line">#这里的‘&#x2F;’可以替换为‘matrix’，这样数据的结构就会少一层</span><br><span class="line">library(Matrix)</span><br><span class="line"></span><br><span class="line">barcodes &lt;- hd5$matrix$barcodes</span><br><span class="line">barcodes &lt;- gsub(&#39;-1&#39;,&#39;&#39;,barcodes) #为了去除barcode中的‘-1’</span><br><span class="line">counts &lt;- hd5$matrix$data</span><br><span class="line">gene_id &lt;- hd5$matrix$features$id</span><br><span class="line">indices &lt;- hd5$matrix$indices</span><br><span class="line">indptr &lt;- hd5$matrix$indptr</span><br><span class="line">shape &lt;- hd5$matrix$shape</span><br><span class="line"></span><br><span class="line">#用Matrix包的函数轻松转化为表达矩阵</span><br><span class="line">mat &lt;- sparseMatrix(i &#x3D; indices[] + 1, p &#x3D; indptr[],x &#x3D; as.numeric(x &#x3D; counts[]), </span><br><span class="line">                    dims &#x3D;shape[],dimnames&#x3D;list(gene_id,barcodes), giveCsparse &#x3D; FALSE)</span><br><span class="line">mat[500:510,1:30]</span><br></pre></td></tr></table></figure>
-<p>###mat文件结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mat[500:510,1:30]</span><br><span class="line">11 x 30 sparse Matrix of class &quot;dgTMatrix&quot;</span><br><span class="line">   [[ suppressing 30 column names ‘AAACCTGAGAAACCAT’, ‘AAACCTGAGAAACCGC’, ‘AAACCTGAGAAACCTA’ ... ]]</span><br><span class="line">                                                                           </span><br><span class="line">ENSG00000117305 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000179163 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000188822 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000232557 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000189266 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000188529 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000225315 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000142661 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000230703 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000142677 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000185436 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-生物信息基础小测" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/">生物信息基础小测</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/" class="archive-article-date">
-  	<time datetime="2020-10-13T05:17:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>#试卷题目<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/2.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/3.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/1.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/4.png" alt="第一题"></li>
-<li>#参考答案<blockquote>
-<p>##单选第一题(C)</p>
-</blockquote>
-</li>
-</ul>
-<blockquote>
-<ul>
-<li>测序深度，测序得到的碱基总量（bp）与基因组大小（Genome）的比值：90×500×2（双端测序）÷人类基因组大小（3000）= 30×<br>（PS：人体基因组的大小约为30亿个碱基对,即3000Mbp） 因此30×。</li>
-</ul>
-</blockquote>
-<blockquote>
-<p>##单选第二题(B)</p>
-<ol>
-<li>blastn：是将给定的核酸序列与核酸数据库中的序列进行比对；</li>
-<li>Blastp：是使用蛋白质序列与蛋白质数据库中的序列进行比对。作用：可以寻找较远源地序列；</li>
-<li>Blastx：将给定的核酸序列按照六种阅读框架将其翻译成蛋白质与蛋白质数据库中的序列进行比对。作用：对分析新序列和EST很有用；</li>
-<li>Tblastn：将给定的氨基酸序列与核酸数据库中的序列（双链）按不同的阅读框进行比对。作用：对于寻找数据库中序列没有标注的新编码区很有用；</li>
-<li>Tblastx：只在特殊情况下使用，它将DNA被检索的序列和核酸序列数据库中的序列按不同的阅读框全部翻译成蛋白质序列，然后进行蛋白质序列比对。<blockquote>
-<p>EST：Expressed Sequence Tag的缩写，意思是表达序列标签，指从一个随机选择的cDNA 克隆，进行5’端和3’端单一次测序挑选出来获得的短的cDNA 部分序列。</p>
-</blockquote>
-</li>
-</ol>
-</blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>六种阅读框架：一段DNA或RNA序列有多种不同读取方式，因此可能同时存在许多不同的开放阅读框架。开放阅读框包含一段可以编码蛋白的碱基序列，不能被终止子打断。 当一个新基因被识别，其DNA序列被解读，人们仍旧无法搞清相应的蛋白序列是什么。这是因为在没有其它信息的前提下，DNA序列可以按六种框架阅读和翻译（核酸有两条链，每条链三种，对应三种不同的起始密码子）。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>一个DNA顺序可能有3种阅读框，但只有一种具有编码的作用，称为开放阅读框（open reading frame or ORF）。有的阅读框因终止密码出现频繁故不能生成蛋白，这种阅读框称为封闭阅读框（block reading frame）。若一个顺序所有的三个阅读框都是封闭的，则它无编码蛋白的功能。一个翻译成蛋白的顺序有一个阅读框，开始于AUG起始密码子，通过一系列有义密码子，直到终止密码子结束。通常3个阅读框中总有封闭阅读框的存在。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>##单选第三题(A)</p>
-</blockquote>
-<blockquote>
-<p>##单选第四题(C)<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/5.png" alt="第一题"></p>
-</blockquote>
-<blockquote>
-<p>##多选第一题(ABCD)</p>
-</blockquote>
-<blockquote>
-<p>##多选第二题(ABCD)</p>
-</blockquote>
-<blockquote>
-<p>##多选第三题(ABC)</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<ul>
-<li>Glimmer是用于原核生物基因组预测的工具，只要输入原核生物基因组即可得到其基因信息。不过该软件最终结果只是基因的位置信息，需要额外程序将基因从基因组上提取出来，并翻译成对应的氨基酸序列。</li>
-<li>GeneMark：GeneMark软件包是专为原核基因组和病毒基因组以及元基因组分析而设计的，可以预测基因，以及蛋白质编码区阅读框的位移。</li>
-<li>GenScan是一个gene识别软件，主要是通过已知生物的基因结构特征来识别新的基因（parse）。</li>
-<li>Augusust是一款预测真核生物基因结构的软件组装得到基因组序列之后，进一步的工作就是探究基因结构。</li>
-</ul>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>##判断题第一题（对）<br>100PE=paired end 100bp</p>
-<p>100SE=single end 100bp</p>
-<p>50PE=paired end 50bp</p>
-<p>50SE=single end 50bp<br>##判断题第二题（错）<br>BLAST（基本局部比对工具）</p>
-</blockquote>
-<blockquote>
-<p>CLUSTALW是一种渐进的多序列比对方法，先将多个序列两两比对构建距离矩阵，反应序列之间两两关系；然后根据距离矩阵计算产生系统进化指导树，对关系密切的序列进行加权；然后从最紧密的两条序列开始，逐步引入临近的序列并不断重新构建比对，直到所有序列都被加入为止</p>
-</blockquote>
-<blockquote>
-<p>CLUSTALX－是CLUSTAL多重序列比对程序的Windows版本。</p>
-</blockquote>
-<blockquote>
-<p>##填空第一题（n = (L - K) + 1）<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/6.jpg" alt="第一题"></p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-感知机的损失函数的推导" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">感知机的损失函数的推导</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/" class="archive-article-date">
-  	<time datetime="2020-10-06T20:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>感知机的数学模型为sign(wixi+b)，其中w=(w1,w2,…,wn)是权重向量，xi=（x1i,x2i,…,xni)是一个样本点，从符号很容易理解，它们都是定义在Rn空间的(如果难以理解，可以简单的理解为样本点有n个维度，相应的权重向量也须有n个维度和它相匹配).<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/1.jpg" alt="感知机模型"></p>
-</blockquote>
-<ul>
-<li>其中损失函数的推导，其实初中就学过，整理如下：<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/2.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/3.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/4.jpg" alt="感知机模型"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
     </nav>
   
 
