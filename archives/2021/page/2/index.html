@@ -6,12 +6,12 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Biomagic</title>
+  <title>Archives: 2021 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/page/4/index.html">
+<meta property="og:url" content="http://yoursite.com/archives/2021/page/2/index.html">
 <meta property="og:site_name" content="Biomagic">
 <meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
 <meta property="og:locale" content="en_US">
@@ -151,456 +151,76 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-GSVA使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
     
-      <header class="article-header">
-        
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2021" class="archive-year">2021</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/" class="archive-article-date">
+  	<time datetime="2021-01-04T06:28:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-04</time>
+</a>
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/">GSVA使用</a>
+      <a class="archive-article-title" href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/">空间转录组分析（1）-Seurat V4</a>
     </h1>
   
 
-        
-        <a href="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/" class="archive-article-date">
-  	<time datetime="2020-11-18T12:16:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#GSVA简介</p>
-<blockquote>
-<p>Gene Set Variation Analysis，被称为基因集变异分析,是一种非参数的无监督分析方法，主要用来评估芯片核转录组的基因集富集结果。主要是通过将基因在不同样品间的表达量矩阵转化成基因集在样品间的表达量矩阵，从而来评估不同的代谢通路在不同样品间是否富集。其实就是研究这些感兴趣的基因集在不同样品间的差异，或者寻找比较重要的基因集，作为一种分析方法，主要是是为了从生物信息学的角度去解释导致表型差异的原因。它的主要输入文件为表达量的矩阵和基因集的文件，通过gsva的方法就可以得出结果；既可以处理芯片的结果，也可以处理转录组的结果。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;Monocle处理&#x2F;&quot;)</span><br><span class="line">genecount &lt;- read.csv(&quot;TTCAll_DNBcount_raw(labelled_pseudotime).csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line">names(genecount) &lt;- genecount[1,]</span><br><span class="line">genecount &lt;- genecount[-1,]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">index_deg &lt;- which(rownames(genecount) %in% Deg_all)</span><br><span class="line"></span><br><span class="line">genecount_deg &lt;- genecount[index_deg,]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>这里是为了求平均，使分组数据更直观，免得1400多样本</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">genecount_deg &#x3D; genecount</span><br><span class="line">index1 &lt;- names(genecount_deg) &#x3D;&#x3D;1</span><br><span class="line">index2 &lt;- names(genecount_deg) &#x3D;&#x3D;2</span><br><span class="line">index3 &lt;- names(genecount_deg) &#x3D;&#x3D;3</span><br><span class="line">index4 &lt;- names(genecount_deg) &#x3D;&#x3D;4</span><br><span class="line">index5 &lt;- names(genecount_deg) &#x3D;&#x3D;5</span><br><span class="line">index6 &lt;- names(genecount_deg) &#x3D;&#x3D;6</span><br><span class="line">index7 &lt;- names(genecount_deg) &#x3D;&#x3D;7</span><br><span class="line">index8 &lt;- names(genecount_deg) &#x3D;&#x3D;8</span><br><span class="line"></span><br><span class="line">genecount_1 &lt;- genecount_deg[,index1]</span><br><span class="line">genecount_2 &lt;- genecount_deg[,index2]</span><br><span class="line">genecount_3 &lt;- genecount_deg[,index3]</span><br><span class="line">genecount_4 &lt;- genecount_deg[,index4]</span><br><span class="line">genecount_5 &lt;- genecount_deg[,index5]</span><br><span class="line">genecount_6 &lt;- genecount_deg[,index6]</span><br><span class="line">genecount_7 &lt;- genecount_deg[,index7]</span><br><span class="line">genecount_8 &lt;- genecount_deg[,index8]</span><br><span class="line"></span><br><span class="line">Cluster1 &lt;- apply(genecount_1,1,mean)</span><br><span class="line">Cluster2 &lt;- apply(genecount_2,1,mean)</span><br><span class="line">Cluster3 &lt;- apply(genecount_3,1,mean)</span><br><span class="line">Cluster4 &lt;- apply(genecount_4,1,mean)</span><br><span class="line">Cluster5 &lt;- apply(genecount_5,1,mean)</span><br><span class="line">Cluster6 &lt;- apply(genecount_6,1,mean)</span><br><span class="line">Cluster7 &lt;- apply(genecount_7,1,mean)</span><br><span class="line">Cluster8 &lt;- apply(genecount_8,1,mean)</span><br><span class="line"></span><br><span class="line">deg_mathix &lt;-data.frame(Cluster1,Cluster2,Cluster3,Cluster4,Cluster5,Cluster6,Cluster7,Cluster8)</span><br><span class="line">deg_mathix &lt;- as.data.frame(t(deg_mathix))</span><br></pre></td></tr></table></figure>
-<ul>
-<li>提前按照好包<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">#need package GSVA</span><br><span class="line">library(GSVA)</span><br><span class="line"></span><br><span class="line">library(GSEABase)</span><br><span class="line"></span><br><span class="line">library(limma)</span><br><span class="line">#设置工作路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;GSVA&#x2F;&quot;)</span><br><span class="line">getwd()</span><br><span class="line">#构建GMT文件，我采用的是免疫的</span><br><span class="line">geneSets &lt;- getGmt(&quot;immune.gmt&quot;)</span><br><span class="line">#geneSets &lt;- getGmt(&quot;Data&#x2F;kegg.v7.1.symbols.gmt&quot;)</span><br><span class="line"></span><br><span class="line">mydata &lt;- read.csv(file &#x3D; &quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;Monocle处理&#x2F;TTCAll_DNBcount_raw(labelled_pseudotime).csv&quot;,header &#x3D; T)</span><br><span class="line">name &#x3D; mydata[,1]</span><br><span class="line">index &lt;- duplicated(mydata[,1])</span><br><span class="line">fildup &#x3D; mydata[!index,]</span><br><span class="line">exp &#x3D; fildup[,-1]</span><br><span class="line">row.names(exp) &#x3D; fildup[,1]</span><br><span class="line"></span><br><span class="line">exp &lt;- exp[-1,]</span><br><span class="line"></span><br><span class="line">mydata&#x3D; as.matrix(deg_mathix)</span><br><span class="line">mydata&#x3D;round(mydata)</span><br><span class="line">#这一步很耗时</span><br><span class="line">Es &lt;- gsva(mydata, geneSets, parallel.sz&#x3D;1,kcdf&#x3D;&quot;Poisson&quot;)</span><br><span class="line"></span><br><span class="line">pheatmap::pheatmap(Es,angle_col &#x3D; 0,cluster_cols &#x3D; F,cluster_rows &#x3D; T,</span><br><span class="line">                   color &#x3D; colorRampPalette(c(&quot;#B0E0E6&quot;,&quot;#FFF0F5&quot;,&quot;#FF4500&quot;),</span><br><span class="line">                                            border_color &#x3D; NA))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">library(pheatmap)</span><br><span class="line">pheatmap(Es, cluster_cols &#x3D; F, cluster_rows &#x3D; F, border&#x3D;FALSE,</span><br><span class="line">         color &#x3D; colorRampPalette(c(&quot;#B0E0E6&quot;,&quot;#FFF0F5&quot;,&quot;#FF4500&quot;))(50),</span><br><span class="line">         scale &#x3D; &quot;row&quot;,show_colnames &#x3D;T,show_rownames &#x3D; T,</span><br><span class="line">         main &#x3D; &quot;Expression in 8 different Pseudotime GSVA&quot;, angle_col &#x3D; 0,</span><br><span class="line">         treeheight_col &#x3D; 9,</span><br><span class="line">         fontsize &#x3D; 14,</span><br><span class="line">         fontsize_row &#x3D; 13,</span><br><span class="line">         fontsize_col &#x3D; 13)</span><br></pre></td></tr></table></figure></li>
-<li>最后结果热图展示<blockquote>
-<p>取平均了的数据<br><img src="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/1.png" alt="GSVA"></p>
-<blockquote>
-<p>未取平均的数据<br><img src="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/2.png" alt="GSVA"></p>
-</blockquote>
-</blockquote>
-</li>
-</ul>
+        <div class="article-info info-on-right">
+          
+          
 
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
-    <article id="post-HD5文件解析为csv-tsv" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
     
-      <header class="article-header">
-        
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-01-04T05:41:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-04</time>
+</a>
+        </div>
+    	 
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/">HD5文件解析为csv/tst</a>
+      <a class="archive-article-title" href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/">Logistics回归分析</a>
     </h1>
   
 
-        
-        <a href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/" class="archive-article-date">
-  	<time datetime="2020-11-18T12:05:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#① HD5格式文件</p>
-<blockquote>
-<p>科普一下h5的基本格式介绍：H5文件是层次数据格式第5代的版本(Hierarchical Data Format，HDF5)，h5格式主要有两个主要概念：dataset和group。 Dataset是类似于数组的数据集，而group是类似文件夹一样的容器，存放dataset和其他group。为了有直观地印象，可以把H5文件想想成一个文件系统，一个h5的最顶层是‘/’，然后是不同的组‘group’，每个组下面是数据‘dataset’，格式类似如下：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+-- &#x2F;</span><br><span class="line">|   +-- group1</span><br><span class="line">|   |   +-- dataset1</span><br><span class="line">|   |   |   +-- attribute1</span><br><span class="line">|   |   |   +-- attribute2</span><br><span class="line">|   |   |   +-- ...</span><br><span class="line">|   |   |</span><br><span class="line">|   |   +-- dataset2</span><br><span class="line">|   |   |   +-- attribute1</span><br><span class="line">|   |   |   +-- attribute2</span><br><span class="line">|   |   |   +-- ...</span><br></pre></td></tr></table></figure>
-<p>###② （由于我想要的是表达矩阵此项是采用的方法一）解析为CSV or TSV文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;google Downloads&#x2F;ruxianCANCER&#x2F;&quot;)</span><br><span class="line">#加载读取H5文件的包</span><br><span class="line">library(hdf5r)</span><br><span class="line"></span><br><span class="line">bm &lt;- H5File$new(&quot;CLL-pilot1_fresh_channel1_raw_feature_bc_matrix.h5&quot;, mode &#x3D; &quot;r&quot;)</span><br><span class="line">bm$ls()</span><br><span class="line"></span><br><span class="line">TestMatrix &lt;- bm[[&quot;matrix&quot;]]</span><br><span class="line">TestMatrix$ls()</span><br><span class="line"></span><br><span class="line">#将所有的信息导出来</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 1细胞barcode：</span><br><span class="line">barcodes &lt;- TestMatrix[[&quot;barcodes&quot;]]</span><br><span class="line">barcodes[1:5]</span><br><span class="line"></span><br><span class="line">### 2reads数</span><br><span class="line">data &lt;- TestMatrix[[&quot;data&quot;]]</span><br><span class="line">data[1:10]</span><br><span class="line"></span><br><span class="line">### 3</span><br><span class="line">features &lt;- TestMatrix[[&quot;features&quot;]]</span><br><span class="line">features[1:2]</span><br><span class="line"></span><br><span class="line">### 4 基因索引号</span><br><span class="line">indices &lt;- TestMatrix[[&quot;indices&quot;]]</span><br><span class="line">indices[1:10]</span><br><span class="line">[1] 33664 33662 33661 33659 33658 33657 33655 33654 33653 33652</span><br><span class="line"></span><br><span class="line">### 5、</span><br><span class="line">indptr &lt;- TestMatrix[[&quot;indptr&quot;]]</span><br><span class="line">indptr[1:10]</span><br><span class="line">[1]    0  785 1466 2010 2942 4605 5569 5678 6374 7096</span><br><span class="line"></span><br><span class="line">### 6 矩阵shape（33694个基因，378000个细胞）</span><br><span class="line">shape &lt;- TestMatrix[[&quot;shape&quot;]]</span><br><span class="line">shape[1:2]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#文件1 barcodes</span><br><span class="line">barcodes &lt;- barcodes[]</span><br><span class="line">write.csv(barcodes, file &#x3D; &quot;G:&#x2F;google Downloads&#x2F;ruxianCANCER&#x2F;test1&#x2F;barcodes.csv&quot;) </span><br><span class="line">#再手动重命名为.tsv格式</span><br><span class="line"></span><br><span class="line">####### 文件2 genes.tsv 的生成 ####### </span><br><span class="line">genes &lt;- genes[]</span><br><span class="line">gene_names &lt;- gene_names[]</span><br><span class="line">df &lt;- data.frame(gene_names, row.names &#x3D; c(genes))</span><br><span class="line">write.csv(df, file &#x3D; &quot;genes.csv&quot;) #再手动重命名为.tsv格式</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>文件3 matrix.mtx 比较特殊，列名是基因的索引号，表示该基因在该细胞中的reads数。第二列没有现成的变量可以一次性填进去，需要进行一些转化和运算：</p>
-</blockquote>
-<ul>
-<li>第一列是indices，作为row.names;</li>
-<li>第三列是data，也就是reads数;</li>
-<li>第二列是细胞的编号，如1，1，1，2，2，2，2，2，2，3，4，……，33694。这些数字表示即第1个细胞至第33694个细胞。如第一行为33688 1 2 则表示33688号基因在细胞1中的reads数为2。</li>
-<li>indptr是一个递增数列，a2-a1 = 细胞cell1的数量。因此也就是说数字1要重复a2-a1次；数字2要重复a3-a2次，以此类推。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">####### 文件3 matrix.csv 的生成 ####### </span><br><span class="line">#转换读取方式</span><br><span class="line">indices &lt;- indices[]</span><br><span class="line">indptr &lt;- indptr[]</span><br><span class="line">data &lt;- data[]</span><br><span class="line"></span><br><span class="line">length(data) #54</span><br><span class="line">length(indices) #54</span><br><span class="line">length(indptr) #54</span><br><span class="line"></span><br><span class="line">indptr1 &lt;- indptr[2:length(indptr)]</span><br><span class="line">indptr2 &lt;- indptr[1:length(indptr)-1]</span><br><span class="line">cell_numb &lt;- indptr1 - indptr2</span><br><span class="line"></span><br><span class="line">column2_of_file3 &lt;- rep(c(1:length(indptr1)),c(cell_numb)) # rep函数万岁</span><br><span class="line"></span><br><span class="line">df &lt;- data.frame(indices, column2_of_file3, data)</span><br><span class="line"></span><br><span class="line">save(df, file &#x3D; &quot;G:&#x2F;google Downloads&#x2F;ruxianCANCER&#x2F;test1&#x2F;df_test1.RData&quot;)</span><br></pre></td></tr></table></figure>
+        <div class="article-info info-on-right">
+          
+          
 
-
-
-<p>#③ 正确方法：R包rhdf5、hdf5r都可以用来打开文件，这里我使用rhdf5包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#提取表达矩阵</span><br><span class="line">library(rhdf5)</span><br><span class="line"></span><br><span class="line">hd5 &lt;- h5read(&#39;CLL-pilot1_fresh_channel1_raw_feature_bc_matrix.h5&#39;,&#39;&#x2F;&#39;) </span><br><span class="line"></span><br><span class="line">#这里的‘&#x2F;’可以替换为‘matrix’，这样数据的结构就会少一层</span><br><span class="line">library(Matrix)</span><br><span class="line"></span><br><span class="line">barcodes &lt;- hd5$matrix$barcodes</span><br><span class="line">barcodes &lt;- gsub(&#39;-1&#39;,&#39;&#39;,barcodes) #为了去除barcode中的‘-1’</span><br><span class="line">counts &lt;- hd5$matrix$data</span><br><span class="line">gene_id &lt;- hd5$matrix$features$id</span><br><span class="line">indices &lt;- hd5$matrix$indices</span><br><span class="line">indptr &lt;- hd5$matrix$indptr</span><br><span class="line">shape &lt;- hd5$matrix$shape</span><br><span class="line"></span><br><span class="line">#用Matrix包的函数轻松转化为表达矩阵</span><br><span class="line">mat &lt;- sparseMatrix(i &#x3D; indices[] + 1, p &#x3D; indptr[],x &#x3D; as.numeric(x &#x3D; counts[]), </span><br><span class="line">                    dims &#x3D;shape[],dimnames&#x3D;list(gene_id,barcodes), giveCsparse &#x3D; FALSE)</span><br><span class="line">mat[500:510,1:30]</span><br></pre></td></tr></table></figure>
-<p>###mat文件结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mat[500:510,1:30]</span><br><span class="line">11 x 30 sparse Matrix of class &quot;dgTMatrix&quot;</span><br><span class="line">   [[ suppressing 30 column names ‘AAACCTGAGAAACCAT’, ‘AAACCTGAGAAACCGC’, ‘AAACCTGAGAAACCTA’ ... ]]</span><br><span class="line">                                                                           </span><br><span class="line">ENSG00000117305 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000179163 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000188822 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000232557 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000189266 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000188529 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000225315 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000142661 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000230703 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000142677 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br><span class="line">ENSG00000185436 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
+        </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
-    <article id="post-生物信息基础小测" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
+  
+    </div></section>
+  
+
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/">生物信息基础小测</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/" class="archive-article-date">
-  	<time datetime="2020-10-13T05:17:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>#试卷题目<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/2.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/3.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/1.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/4.png" alt="第一题"></li>
-<li>#参考答案<blockquote>
-<p>##单选第一题(C)</p>
-</blockquote>
-</li>
-</ul>
-<blockquote>
-<ul>
-<li>测序深度，测序得到的碱基总量（bp）与基因组大小（Genome）的比值：90×500×2（双端测序）÷人类基因组大小（3000）= 30×<br>（PS：人体基因组的大小约为30亿个碱基对,即3000Mbp） 因此30×。</li>
-</ul>
-</blockquote>
-<blockquote>
-<p>##单选第二题(B)</p>
-<ol>
-<li>blastn：是将给定的核酸序列与核酸数据库中的序列进行比对；</li>
-<li>Blastp：是使用蛋白质序列与蛋白质数据库中的序列进行比对。作用：可以寻找较远源地序列；</li>
-<li>Blastx：将给定的核酸序列按照六种阅读框架将其翻译成蛋白质与蛋白质数据库中的序列进行比对。作用：对分析新序列和EST很有用；</li>
-<li>Tblastn：将给定的氨基酸序列与核酸数据库中的序列（双链）按不同的阅读框进行比对。作用：对于寻找数据库中序列没有标注的新编码区很有用；</li>
-<li>Tblastx：只在特殊情况下使用，它将DNA被检索的序列和核酸序列数据库中的序列按不同的阅读框全部翻译成蛋白质序列，然后进行蛋白质序列比对。<blockquote>
-<p>EST：Expressed Sequence Tag的缩写，意思是表达序列标签，指从一个随机选择的cDNA 克隆，进行5’端和3’端单一次测序挑选出来获得的短的cDNA 部分序列。</p>
-</blockquote>
-</li>
-</ol>
-</blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>六种阅读框架：一段DNA或RNA序列有多种不同读取方式，因此可能同时存在许多不同的开放阅读框架。开放阅读框包含一段可以编码蛋白的碱基序列，不能被终止子打断。 当一个新基因被识别，其DNA序列被解读，人们仍旧无法搞清相应的蛋白序列是什么。这是因为在没有其它信息的前提下，DNA序列可以按六种框架阅读和翻译（核酸有两条链，每条链三种，对应三种不同的起始密码子）。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>一个DNA顺序可能有3种阅读框，但只有一种具有编码的作用，称为开放阅读框（open reading frame or ORF）。有的阅读框因终止密码出现频繁故不能生成蛋白，这种阅读框称为封闭阅读框（block reading frame）。若一个顺序所有的三个阅读框都是封闭的，则它无编码蛋白的功能。一个翻译成蛋白的顺序有一个阅读框，开始于AUG起始密码子，通过一系列有义密码子，直到终止密码子结束。通常3个阅读框中总有封闭阅读框的存在。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>##单选第三题(A)</p>
-</blockquote>
-<blockquote>
-<p>##单选第四题(C)<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/5.png" alt="第一题"></p>
-</blockquote>
-<blockquote>
-<p>##多选第一题(ABCD)</p>
-</blockquote>
-<blockquote>
-<p>##多选第二题(ABCD)</p>
-</blockquote>
-<blockquote>
-<p>##多选第三题(ABC)</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<ul>
-<li>Glimmer是用于原核生物基因组预测的工具，只要输入原核生物基因组即可得到其基因信息。不过该软件最终结果只是基因的位置信息，需要额外程序将基因从基因组上提取出来，并翻译成对应的氨基酸序列。</li>
-<li>GeneMark：GeneMark软件包是专为原核基因组和病毒基因组以及元基因组分析而设计的，可以预测基因，以及蛋白质编码区阅读框的位移。</li>
-<li>GenScan是一个gene识别软件，主要是通过已知生物的基因结构特征来识别新的基因（parse）。</li>
-<li>Augusust是一款预测真核生物基因结构的软件组装得到基因组序列之后，进一步的工作就是探究基因结构。</li>
-</ul>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>##判断题第一题（对）<br>100PE=paired end 100bp</p>
-<p>100SE=single end 100bp</p>
-<p>50PE=paired end 50bp</p>
-<p>50SE=single end 50bp<br>##判断题第二题（错）<br>BLAST（基本局部比对工具）</p>
-</blockquote>
-<blockquote>
-<p>CLUSTALW是一种渐进的多序列比对方法，先将多个序列两两比对构建距离矩阵，反应序列之间两两关系；然后根据距离矩阵计算产生系统进化指导树，对关系密切的序列进行加权；然后从最紧密的两条序列开始，逐步引入临近的序列并不断重新构建比对，直到所有序列都被加入为止</p>
-</blockquote>
-<blockquote>
-<p>CLUSTALX－是CLUSTAL多重序列比对程序的Windows版本。</p>
-</blockquote>
-<blockquote>
-<p>##填空第一题（n = (L - K) + 1）<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/6.jpg" alt="第一题"></p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-感知机的损失函数的推导" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">感知机的损失函数的推导</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/" class="archive-article-date">
-  	<time datetime="2020-10-06T20:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>感知机的数学模型为sign(wixi+b)，其中w=(w1,w2,…,wn)是权重向量，xi=（x1i,x2i,…,xni)是一个样本点，从符号很容易理解，它们都是定义在Rn空间的(如果难以理解，可以简单的理解为样本点有n个维度，相应的权重向量也须有n个维度和它相匹配).<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/1.jpg" alt="感知机模型"></p>
-</blockquote>
-<ul>
-<li>其中损失函数的推导，其实初中就学过，整理如下：<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/2.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/3.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/4.jpg" alt="感知机模型"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-GEO数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">GEO数据挖掘</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/" class="archive-article-date">
-  	<time datetime="2020-10-04T03:52:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>GEO数据库相关知识： <a href="https://wenku.baidu.com/view/907abb0c1711cc7931b716e4.html#" target="_blank" rel="noopener">GEO数据库简介</a></p>
-<p>GEO数据库数据下载： <a href="https://blog.csdn.net/weixin_43700050/article/details/99096980" target="_blank" rel="noopener">GEO数据下载及简介</a></p>
-<p>GEO官网： <a href="http://www.ncbi.nlm.nih.gov/geo" target="_blank" rel="noopener">GEO官网 in NCBI</a></p>
-<blockquote>
-<p>本次数据分析是为了验证TCGA的数据里的MGP基因在GEO数据里和耐药性相关基因的相关性分析，包含对<br>GEO数据的数据清洗，对GEO芯片样本对不同平台根据不同GPL测序芯片进行注释，以及差异分析，最后可视化数据绘制火山图</p>
-</blockquote>
-<ul>
-<li>样本采用的是GSE20842，测序平台参见数据信息<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;GEO&#x2F;&quot;)</span><br><span class="line">## 1.下载GSE数据,获得表达量矩阵</span><br><span class="line">#BiocManager::install(&quot;GEOquery&quot;)</span><br><span class="line">suppressPackageStartupMessages(library(GEOquery))</span><br><span class="line"></span><br><span class="line">#下载数据  </span><br><span class="line">gset &lt;- getGEO(&#39;GSE20842&#39;,destdir &#x3D; &quot;.&quot;,</span><br><span class="line">               AnnotGPL &#x3D; F,</span><br><span class="line">               getGPL &#x3D; F)#下载GSE数据</span><br><span class="line"></span><br><span class="line"># save(gset,file &#x3D; &#39;GSE6988.gset.Rdata&#39;)</span><br><span class="line"># a &lt;- load(&#39;GSE6988.gset.Rdata&#39;)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- read.table(file &#x3D; &#39;GSE20842_series_matrix.txt.gz&#39;,</span><br><span class="line">                      sep &#x3D; &#39;\t&#39;,</span><br><span class="line">                      header &#x3D; T,</span><br><span class="line">                      quote &#x3D; &#39;&#39;,</span><br><span class="line">                      fill &#x3D; T, </span><br><span class="line">                      comment.char &#x3D; &quot;!&quot;) #读取表达数据</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">rownames(exprSet) &#x3D; exprSet[,1] #将第一列作为行名</span><br><span class="line">exprSet &lt;- exprSet[-1,] #去掉第一行</span><br><span class="line"></span><br><span class="line">library(GEOquery)</span><br><span class="line">gpl &lt;- getGEO(&#39;GPL4133&#39;, destdir&#x3D;&quot;.&quot;)</span><br><span class="line"></span><br><span class="line">dim(gpl)</span><br><span class="line">colnames(Table(gpl)) #查一下列明</span><br><span class="line">head(Table(gpl))[,c(1,10)]</span><br><span class="line">ids&#x3D;Table(gpl)[,c(1,10)]</span><br><span class="line"></span><br><span class="line">##踩坑放松1:会不会有NA值，检查一下,没问题就不管那些个警告了</span><br><span class="line">tmpids &lt;- na.omit(ids)</span><br><span class="line">dim(tmpids)</span><br><span class="line">head(ids)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">exprSet &#x3D; exprSet[rownames(exprSet) %in% ids$ID,] #迭代，再次过滤</span><br><span class="line"></span><br><span class="line">ids &#x3D; ids[match(rownames(exprSet),ids$ID),]</span><br><span class="line">exprSet$X.ID_REF. &lt;- ids$GENE_SYMBOL</span><br><span class="line"></span><br><span class="line">#注释完成，解决重复和空</span><br><span class="line"></span><br><span class="line">index1 &lt;- duplicated(exprSet$X.ID_REF.)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- exprSet[!index1,]</span><br><span class="line"></span><br><span class="line">index2 &lt;- is.na(exprSet$X.ID_REF.)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- exprSet[!index2,]</span><br><span class="line">#对ids处理</span><br><span class="line">index1 &lt;- duplicated(ids$GENE_SYMBOL)</span><br><span class="line"></span><br><span class="line">ids &lt;- ids[!index1,]</span><br><span class="line"></span><br><span class="line">index2 &lt;- is.na(exprSet$Accession)</span><br><span class="line"></span><br><span class="line">exprSet &lt;- exprSet[!index2,]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">row.names(exprSet) &lt;- ids$GENE_SYMBOL</span><br><span class="line">exprSet1 &#x3D; exprSet[,-1]</span><br><span class="line">write.csv(exprSet1,&quot;exprSet_GSE20842_id_trans.csv&quot;)</span><br><span class="line"></span><br><span class="line">a &lt;- read.csv(&quot;DEGmeta.txt&quot;, sep &#x3D; &quot;\t&quot;, header &#x3D; F)</span><br><span class="line">### 4.差异表达</span><br><span class="line">library(DESeq2)</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">mycounts &lt;- read.csv(&quot;exprSet_DEG.csv&quot;, sep &#x3D; &quot;,&quot; ,header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">mycounts &lt;- as.matrix(mycounts)</span><br><span class="line"></span><br><span class="line">condition &lt;- factor(c(rep(&#39;Cancer&#39;,65),rep(&#39;Mucosa&#39;,65)), levels &#x3D; c(&#39;Cancer&#39;,&#39;Mucosa&#39;))</span><br><span class="line"></span><br><span class="line">colData &lt;- data.frame(row.names&#x3D;colnames(mycounts), condition)</span><br><span class="line"></span><br><span class="line">mycounts [str(exprSet) &#x3D;&#x3D; &quot;integers&quot;] &lt;- 0</span><br><span class="line">#调用包</span><br><span class="line">library(edgeR)</span><br><span class="line">library(limma)</span><br><span class="line"></span><br><span class="line">#读取清洗的数据，构造DGElist对象需要的东西，构建无重复的两个list进行差异分析</span><br><span class="line"></span><br><span class="line">#edgeR开始</span><br><span class="line"></span><br><span class="line">#规整化数据，可以用log2处理表达矩阵</span><br><span class="line">mycounts &lt;- round(mycounts)</span><br><span class="line">counts &lt;- Pstage</span><br><span class="line">#设置分组信息</span><br><span class="line">group &lt;- 1:2</span><br><span class="line"></span><br><span class="line">y &lt;- DGEList(counts&#x3D;counts, group &#x3D; group)</span><br><span class="line">keep &lt;- rowSums(cpm(y)&gt;1) &gt;&#x3D; 1</span><br><span class="line">y &lt;- y[keep, , keep.lib.sizes&#x3D;FALSE]</span><br><span class="line">y &lt;- calcNormFactors(y)</span><br><span class="line">y_bcv &lt;- y</span><br><span class="line">bcv &lt;- 0.4</span><br><span class="line">et &lt;- exactTest(y_bcv, dispersion &#x3D; bcv ^ 2)</span><br><span class="line">gene1 &lt;- decideTestsDGE(et, p.value &#x3D; 0.05, lfc &#x3D; 0)</span><br><span class="line">summary(gene1)</span><br><span class="line">write.csv(et$table,&quot;gene_exp.csv&quot;)</span><br><span class="line">#根据fdrtool计算qval的</span><br><span class="line">exp&lt;-read.csv(&quot;gene_exp.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">p&lt;-exp$PValue</span><br><span class="line"></span><br><span class="line">#install.packages(&quot;fdrtool&quot;)</span><br><span class="line">library(fdrtool)</span><br><span class="line">fdr&#x3D;fdrtool(p,statistic&#x3D;&quot;pvalue&quot;)</span><br><span class="line">qval&lt;-fdr$qval</span><br><span class="line">exp&lt;-cbind(exp,qval)</span><br><span class="line">write.csv(exp,&quot;exp_qvalue.csv&quot;)</span><br><span class="line"></span><br><span class="line">#筛选log2FC &gt;2 并且 adj&lt;0.05的差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">diffgene &lt;-subset(exp, qval &lt; 0.05 &amp; abs(logFC) &gt; 2)</span><br><span class="line">dim(diffgene)</span><br><span class="line">head(diffgene)</span><br><span class="line">write.csv(diffgene,file &#x3D; &quot;diffgene.csv&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a &lt;- read.table(&quot;chayi.txt&quot;, sep &#x3D; &quot;\t&quot;,header &#x3D; T)</span><br><span class="line"></span><br><span class="line">a &lt;- a[,-1]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#对ids处理</span><br><span class="line">index1 &lt;- duplicated(a$Gene.symbol)</span><br><span class="line"></span><br><span class="line">a &lt;- a[!index1,]</span><br><span class="line"></span><br><span class="line">index2 &lt;- is.na(a$Gene.symbol)</span><br><span class="line"></span><br><span class="line">a &lt;- a[!index2,]</span><br><span class="line"></span><br><span class="line">library(ggplot2)</span><br><span class="line">library(ggrepel)</span><br><span class="line">Dat &lt;- read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T)</span><br><span class="line">Dat &#x3D; a</span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$adj.P.Val &lt; 0.05 &amp; abs(Dat$logFC) &gt;&#x3D; 1, ifelse(Dat$logFC&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;logFC,y&#x3D;-log10(adj.P.Val),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;pink&quot;,&quot;green&quot;,&quot;grey&quot;))</span><br></pre></td></tr></table></figure></li>
-<li>差异基因火山图<br><img src="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/1.png" alt="火山图"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/04/GEO%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-  
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/archives/2021/">&amp;laquo; Prev</a><a class="page-number" href="/archives/2021/">1</a><span class="page-number current">2</span>
     </nav>
   
 
@@ -624,9 +244,9 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
+		isHome: false,
 		isPost: false,
-		isArchive: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
