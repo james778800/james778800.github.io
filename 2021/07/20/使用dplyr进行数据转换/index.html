@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Biomagic</title>
+  <title>使用dplyr进行数据转换 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/page/6/index.html">
+  <meta name="description" content="dplyr包主要用于数据清洗和整理，主要功能有：行选择、列选择、统计汇总、窗口函数、数据框交集等是非常高效、友好的数据处理包，生物信息数据的大型表格采用tidyverse进行处理，高效编辑且有用。该包是数据分析必学包之一。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用dplyr进行数据转换">
+<meta property="og:url" content="http://yoursite.com/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="dplyr包主要用于数据清洗和整理，主要功能有：行选择、列选择、统计汇总、窗口函数、数据框交集等是非常高效、友好的数据处理包，生物信息数据的大型表格采用tidyverse进行处理，高效编辑且有用。该包是数据分析必学包之一。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-20T12:11:25.000Z">
+<meta property="article:modified_time" content="2021-07-20T12:14:22.396Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
@@ -149,38 +151,51 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-盗版添柏岚Timberland-递归分形树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-使用dplyr进行数据转换" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
+    <h1 class="article-title" itemprop="name">
+      使用dplyr进行数据转换
     </h1>
   
 
         
-        <a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
-  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
+        <a href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
+  	<time datetime="2021-07-20T12:11:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-20</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <hr>
-<p>title: 盗版添柏岚Timberland(递归分形树)<br>date: 2020-07-14 10:43:33<br>tags:<br>#递归的关键思想：不断缩小，调用自身</p>
-<ul>
-<li>利用该逻辑思想可进行简化问题</li>
-<li>树的结构可以用递归进行实现：同时大黄靴知名品牌添柏岚的LOGO便是如此相似<br>。使用递归的思想可以来盗版其logo<br><img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/1.png" alt="logo实例"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def tree(branch_len):</span><br><span class="line">    if branch_len &gt; 10:</span><br><span class="line">        t.forward(branch_len)</span><br><span class="line">        t.right(20)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.left(40)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.right(20)</span><br><span class="line">        t.backward(branch_len)</span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line">t.left(90)</span><br><span class="line">t.penup()</span><br><span class="line">t.backward(100)</span><br><span class="line">t.pendown()</span><br><span class="line">t.pencolor(&quot;black&quot;)</span><br><span class="line">t.pensize(17)</span><br><span class="line">tree(150)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/2.png" alt="logo实例"></li>
-</ul>
-
+        <p>dplyr包主要用于数据清洗和整理，<br>主要功能有：行选择、列选择、统计汇总、窗口函数、数据框交集等是非常高效、友好的数据处理包，<br>生物信息数据的大型表格采用tidyverse进行处理，高效编辑且有用。<br>该包是数据分析必学包之一。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br><span class="line">#第四章 基本数据管理</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">irisx &lt;- iris</span><br><span class="line"></span><br><span class="line">#函数within修改数据框</span><br><span class="line">test1 &lt;- within(iris, &#123;width &lt;- NA</span><br><span class="line">width[iris$Sepal.Width &gt; 4] &lt;- &quot;BIG&quot;</span><br><span class="line">width[iris$Sepal.Width &gt;&#x3D; 3&amp; iris$Sepal.Width &lt;&#x3D;4] &lt;- &quot;MIDDLE&quot;</span><br><span class="line">width[iris$Sepal.Width &lt; 3] &lt;- &quot;SMALL&quot;&#125;)</span><br><span class="line"></span><br><span class="line">str(test1$width)</span><br><span class="line">#新增列为字符串类型,可转换为因子</span><br><span class="line">test1$width &lt;- as.factor(test1$width)</span><br><span class="line">levels(test1$width)</span><br><span class="line">rm(list &#x3D; ls())</span><br><span class="line">gc()</span><br><span class="line"></span><br><span class="line">#subset()函数</span><br><span class="line">newdata &lt;- subset(test1, test1$Sepal.Length &gt;4 &amp;test1$width &#x3D;&#x3D; &quot;BIG&quot;,</span><br><span class="line">                  select &#x3D; c(Sepal.Length,width))</span><br><span class="line"></span><br><span class="line">########</span><br><span class="line">#利用dplyr进行数据转换</span><br><span class="line"></span><br><span class="line">library(tidyverse)</span><br><span class="line">#install.packages(&quot;nycflights13&quot;)</span><br><span class="line">library(nycflights13)</span><br><span class="line">flights</span><br><span class="line">str(flights)</span><br><span class="line"></span><br><span class="line">#筛选filter()</span><br><span class="line">data &#x3D; flights</span><br><span class="line"></span><br><span class="line">filter(data, dest &#x3D;&#x3D; &quot;IAH&quot;, day !&#x3D; 1)</span><br><span class="line"></span><br><span class="line">table(is.na(data$distance))</span><br><span class="line">data_1 &lt;- na.omit(data)</span><br><span class="line"></span><br><span class="line">#3.2.4练习</span><br><span class="line">#a</span><br><span class="line">data</span><br><span class="line">filter(data, dep_delay &gt;&#x3D; 2)</span><br><span class="line">#b</span><br><span class="line">filter(data, dest &#x3D;&#x3D; &quot;IAH&quot;|dest &#x3D;&#x3D; &quot;HOU&quot;)</span><br><span class="line">#c</span><br><span class="line"></span><br><span class="line">#between()使用</span><br><span class="line"></span><br><span class="line">?between()</span><br><span class="line">filter(data, between(dep_time, 500, 600))</span><br><span class="line"></span><br><span class="line">table(is.na(data$dep_time))</span><br><span class="line"></span><br><span class="line">#arrange()排序</span><br><span class="line"></span><br><span class="line">arrange(flights, desc(month))%&gt;%arrange(.,desc(arr_time))</span><br><span class="line"></span><br><span class="line">arrange(flights, desc(month), desc(arr_time))</span><br><span class="line"></span><br><span class="line">arrange(flights, desc(month)&amp;desc(arr_time))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">arrange(flights, desc(distance&#x2F;air_time))</span><br><span class="line"></span><br><span class="line">test1 &lt;- within(data, &#123;speed &lt;- distance&#x2F;air_time&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">arrange(test1, desc(speed))</span><br><span class="line"></span><br><span class="line">#select()选择列</span><br><span class="line"></span><br><span class="line">select(data, year, month, day)</span><br><span class="line"></span><br><span class="line">select(data, -(year:day))</span><br><span class="line"></span><br><span class="line">#可匹配正则表达式的辅助函数</span><br><span class="line"></span><br><span class="line">#筛选的是tibble的列名</span><br><span class="line">select(data, starts_with(&quot;a&quot;))</span><br><span class="line"></span><br><span class="line">select(data, ends_with(&quot;e&quot;))</span><br><span class="line"></span><br><span class="line">select(data, contains(&quot;time&quot;))</span><br><span class="line"></span><br><span class="line">data</span><br><span class="line">#修改名字</span><br><span class="line">rename(data, tail_num &#x3D; tailnum)</span><br><span class="line"></span><br><span class="line">#everything()辅助select()将变量移至数据框开头</span><br><span class="line">select(data, minute, distance, everything())</span><br><span class="line"></span><br><span class="line">#one_of函数</span><br><span class="line">select(data, minute, distance, one_of())</span><br><span class="line">vars &lt;- c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;dep_delay&quot;, &quot;arr_delay&quot;)</span><br><span class="line">select(data, one_of(vars))</span><br><span class="line">#筛选变量可用此辅助进行</span><br><span class="line"></span><br><span class="line">#mutate添加新变量</span><br><span class="line">#mutate添加新列总是添加在数据集的最后</span><br><span class="line"></span><br><span class="line">flights_sml &lt;- select(flights,</span><br><span class="line">                      year:day,</span><br><span class="line">                      ends_with(&quot;delay&quot;),</span><br><span class="line">                      distance,</span><br><span class="line">                      air_time)</span><br><span class="line">mutate(flights_sml,</span><br><span class="line">       gain &#x3D; arr_delay - dep_delay,</span><br><span class="line">       speed &#x3D; distance &#x2F; air_time * 60)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mutate(flights_sml,</span><br><span class="line">       gain &#x3D; arr_delay - dep_delay,</span><br><span class="line">       hours &#x3D; air_time &#x2F; 60,</span><br><span class="line">       gain_per_hour &#x3D; gain &#x2F; hours)</span><br><span class="line"></span><br><span class="line">#仅保留新变量的方法transmute()</span><br><span class="line">data1 &lt;- transmute(flights_sml,</span><br><span class="line">       gain &#x3D; arr_delay - dep_delay,</span><br><span class="line">       hours &#x3D; air_time &#x2F; 60,</span><br><span class="line">       gain_per_hour &#x3D; gain &#x2F; hours)</span><br><span class="line"></span><br><span class="line"># %%求余，模运算符</span><br><span class="line">transmute(flights,</span><br><span class="line">          dep_time,</span><br><span class="line">          hour &#x3D; dep_time %&#x2F;% 100,</span><br><span class="line">          minute &#x3D; dep_time %% 100)</span><br><span class="line"></span><br><span class="line">#偏移函数</span><br><span class="line"></span><br><span class="line">x &lt;- 1:10</span><br><span class="line">x - lag(x)</span><br><span class="line">x !&#x3D; lead(x)</span><br><span class="line"></span><br><span class="line">#累加和滚动聚合</span><br><span class="line">x</span><br><span class="line">cumsum(x)</span><br><span class="line">#累加积</span><br><span class="line">cumprod(x)</span><br><span class="line">#计算累加均值</span><br><span class="line">cummean(x)</span><br><span class="line"></span><br><span class="line">#排秩</span><br><span class="line">y &lt;- c(1, 2, 2, NA, 3, 4)</span><br><span class="line">min_rank(y)</span><br><span class="line">min_rank(desc(y))</span><br><span class="line"></span><br><span class="line">row_number(y)</span><br><span class="line">dense_rank(y)</span><br><span class="line">percent_rank(y)</span><br><span class="line">cume_dist(y)</span><br><span class="line"></span><br><span class="line">#summarize()进行分组摘要</span><br><span class="line">summarise(flights, </span><br><span class="line">          delay &#x3D; mean(dep_delay, na.rm &#x3D; TRUE))</span><br><span class="line">by_dest &lt;- group_by(flights, dest)</span><br><span class="line">summarise(by_dest)</span><br><span class="line"></span><br><span class="line">#使用管道组合多种操作</span><br><span class="line">library(ggplot2)</span><br><span class="line"></span><br><span class="line">delays &lt;- flights %&gt;% group_by(dest) %&gt;%</span><br><span class="line">          summarise(</span><br><span class="line">            count &#x3D; n(),</span><br><span class="line">          dist &#x3D; mean(distance, na.rm &#x3D; T),</span><br><span class="line">          delay &#x3D; mean(arr_delay, na.rm &#x3D; T)</span><br><span class="line">          ) %&gt;%</span><br><span class="line">          filter(count &gt; 20, dest !&#x3D; &quot;ABQ&quot;)</span><br><span class="line"></span><br><span class="line">ggplot(data &#x3D; delays, mapping &#x3D; aes(x &#x3D; dist, y &#x3D; delay)) + </span><br><span class="line">  geom_point(aes(size &#x3D; count), alpha &#x3D; 1&#x2F;3) +</span><br><span class="line">  geom_smooth(se &#x3D; F)</span><br><span class="line"></span><br><span class="line">#探索na.rm(缺失值)</span><br><span class="line">flights %&gt;% </span><br><span class="line">  group_by(year, month, day) %&gt;% </span><br><span class="line">  summarise(mean &#x3D; mean(dep_delay))</span><br><span class="line">#可以在计算前去除缺失值</span><br><span class="line">flights %&gt;% </span><br><span class="line">  group_by(year, month, day) %&gt;% </span><br><span class="line">  summarise(mean &#x3D; mean(dep_delay, na.rm &#x3D; T))</span><br><span class="line"></span><br><span class="line">not_cancelled &lt;- flights %&gt;% filter(!is.na(dep_delay),</span><br><span class="line">                                    !is.na(arr_delay))</span><br><span class="line"></span><br><span class="line">not_cancelled %&gt;% group_by(year, month, day) %&gt;%</span><br><span class="line">                 summarize(mean &#x3D; mean(dep_delay))</span><br><span class="line"></span><br><span class="line">#计数</span><br><span class="line">delays &lt;- not_cancelled %&gt;% </span><br><span class="line">          group_by(tailnum) %&gt;%</span><br><span class="line">          summarize(</span><br><span class="line">            delay &#x3D; mean(arr_delay)</span><br><span class="line">          )</span><br><span class="line">delays$delay &lt;- round(delays$delay)</span><br><span class="line"></span><br><span class="line">ggplot(dada &#x3D; delays) +</span><br><span class="line">  geom_freqpoly(binwidth &#x3D; 10, aes(x &#x3D; delays$delay))</span><br><span class="line"></span><br><span class="line">str(delays)</span><br><span class="line"></span><br><span class="line">delays &lt;- rename(delays, hcynb &#x3D; delay)</span><br><span class="line"></span><br><span class="line">ggplot(dada &#x3D; delays, mapping &#x3D; aes(x &#x3D; delays$hcynb)) +</span><br><span class="line">  geom_freqpoly(binwidth &#x3D; 100)</span><br><span class="line"></span><br><span class="line">#航班数量，平均延误散点图</span><br><span class="line">delays &lt;- not_cancelled %&gt;%</span><br><span class="line">  group_by(tailnum) %&gt;%</span><br><span class="line">  summarize(</span><br><span class="line">    delay &#x3D; mean(arr_delay, na.rm &#x3D; T),</span><br><span class="line">    n &#x3D; n()</span><br><span class="line">  )</span><br><span class="line">ggplot(data &#x3D;delays, mapping &#x3D; aes(x &#x3D; n, y &#x3D; delay)) +</span><br><span class="line">  geom_point(alpha &#x3D; 1&#x2F;9)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#n()不需要任何参数可以返回当前分组的大小</span><br><span class="line">#n_distinct()可以返回唯一值的数量</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#ggplot2集成到dylyr pipeline中</span><br><span class="line"></span><br><span class="line">delays %&gt;% </span><br><span class="line">  filter(n &gt; 25) %&gt;%</span><br><span class="line">  ggplot(mapping &#x3D; aes(x &#x3D; n ,y &#x3D; delay)) +</span><br><span class="line">  geom_point(alpha &#x3D; 1&#x2F;8)</span><br><span class="line"></span><br><span class="line">rm(list &#x3D; ls())</span><br><span class="line"></span><br><span class="line">#返回计数情况</span><br><span class="line">not_cancelled %&gt;%</span><br><span class="line">  count(dest)</span><br><span class="line"></span><br><span class="line">not_cancelled %&gt;%</span><br><span class="line">  group_by(dest) %&gt;%</span><br><span class="line">  summarize(carriers &#x3D; n_distinct(carrier)) %&gt;%</span><br><span class="line">  arrange(desc(carriers))</span><br><span class="line"></span><br><span class="line">#多变量分组</span><br><span class="line">daily &lt;- group_by(flights, year, month, day)</span><br><span class="line">  (per_day &lt;- summarize(daily, flights &#x3D; n()))</span><br><span class="line"></span><br><span class="line">(per_month &lt;- summarize(per_day, flights &#x3D; sum(flights)))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(per_year &lt;- summarize(per_month, flights &#x3D; sum(flights)))</span><br><span class="line"></span><br><span class="line">#取消分组</span><br><span class="line">daily %&gt;% </span><br><span class="line">  ungroup() %&gt;%</span><br><span class="line">  summarize(flights &#x3D; n())</span><br><span class="line"></span><br><span class="line">#分组新变量</span><br><span class="line"></span><br><span class="line">#找出分组中最差的成员</span><br><span class="line">flights %&gt;%</span><br><span class="line">  group_by(year, month, day) %&gt;%</span><br><span class="line">  filter(rank(desc(arr_delay)) &lt; 10)</span><br><span class="line">#找出分组中大于某个阈值的所有分组</span><br><span class="line">popular_dests &lt;- flights %&gt;%</span><br><span class="line">  group_by(dest) %&gt;%</span><br><span class="line">  filter(n() &gt; 365)</span><br><span class="line"></span><br><span class="line">#针对数据进行标准化</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vars &lt;- c(year, month, day, dep_delay, arr_delay)</span><br><span class="line"></span><br><span class="line">popular_dests &lt;- select(popular_dests, year, month, day, dep_delay, arr_delay)  </span><br><span class="line">  </span><br><span class="line">popular_dests %&gt;% </span><br><span class="line">  filter(arr_delay &gt; 0) %&gt;%</span><br><span class="line">  mutate(prop_delay &#x3D; arr_delay &#x2F; sum(arr_delay)) %&gt;%</span><br><span class="line">  select(year:day, dest, arr_delay, prop_delay)</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">#数据模式的变体</span><br><span class="line">#install.packages(&quot;Lahman&quot;)</span><br><span class="line">#BiocManager::install(&quot;Lahman&quot;)</span><br><span class="line"></span><br><span class="line">library(Lahman)</span><br><span class="line">a &lt;- Batting</span><br><span class="line">str(a)</span><br><span class="line">#将dataframe转换为tibble</span><br><span class="line">batting &lt;- as_tibble(a)</span><br><span class="line">str(batting)</span><br><span class="line"></span><br><span class="line">batters &lt;- batting %&gt;% </span><br><span class="line">  group_by(playerID) %&gt;%</span><br><span class="line">  summarize(</span><br><span class="line">    ba &#x3D; sum(H, na.rm &#x3D; TRUE)&#x2F; sum(AB, na.rm &#x3D; TRUE),</span><br><span class="line">    ab &#x3D; sum(AB, na.rm &#x3D; TRUE)</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">batters %&gt;%</span><br><span class="line">  filter(ab &gt; 100) %&gt;%</span><br><span class="line">  ggplot(mapping &#x3D; aes(x &#x3D; ab, y &#x3D; ba)) +</span><br><span class="line">  geom_point() +</span><br><span class="line">  geom_smooth(se &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line">batters %&gt;%</span><br><span class="line">  arrange(desc(ba))</span><br></pre></td></tr></table></figure>
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -189,16 +204,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">生存风险得分模型的效能分析</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -218,403 +292,14 @@
 
 
 
-
-  
-    <article id="post-TCGA数据-3-生存分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(3):生存分析（bulk水平）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:30:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li><p>##生存分析的关键在与处理meta信息的数据<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="meta_new示例"></p>
-</li>
-<li><p>time属于自己做的，TCGA上没有</p>
-</li>
-<li><p>a.vital_status需要自己把Alive和Dead改成0 和 1</p>
-</li>
-<li><p>meta信息的样本和表达矩阵需要对应的上</p>
-</li>
-<li><p>##然后再使用以下包来进行分析：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;生存分析&#x2F;&quot;)</span><br><span class="line">########################################################################################</span><br><span class="line">options(stringsAsFactors &#x3D; F)</span><br><span class="line">########################################################################################</span><br><span class="line">library(survival)</span><br><span class="line">library(parallel)</span><br><span class="line">library(survminer)</span><br><span class="line">library(Cairo)</span><br></pre></td></tr></table></figure></li>
-<li><p>##读入整理的meta信息，以及转置后样本行数匹配的fpkm数据，因为需要合并制作生存分析的对象</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#Dead:0</span><br><span class="line">#Alive:1</span><br><span class="line"></span><br><span class="line">meta_data &lt;- read.csv(&quot;meta_new.csv&quot;,header &#x3D; T,check.names &#x3D; F)</span><br><span class="line">#meta_data &lt;- meta_data[,-1]</span><br><span class="line">fpkmdata &lt;- read.csv(&quot;FPKMexp_new.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">splots &lt;- list()</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>##转置，再将两个矩阵的ID列完全匹配合并，使用merge()，考验数据清洗的基本功，显然我搞了半天mmp，太憨了老夫</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">T_EXP &lt;- as.data.frame(t(fpkmdata))</span><br><span class="line">T_EXP$ID &lt;- row.names(T_EXP)</span><br><span class="line"></span><br><span class="line">write.csv(dddd,&quot;FPKM_T_exp.csv&quot;)</span><br><span class="line"></span><br><span class="line">meta1 &lt;- read.csv(&quot;FPKM_T_exp.csv&quot;,header &#x3D; T)</span><br><span class="line">meta2 &lt;- read.csv(&quot;meta_new.csv&quot;,header &#x3D; T)</span><br><span class="line"></span><br><span class="line">data1 &lt;- merge(x &#x3D; meta2, y &#x3D; T_EXP , by &#x3D; &quot;ID&quot;, all &#x3D; TRUE)</span><br><span class="line">meta_data &#x3D; data1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>##定义MGP基因（你研究的gene）的表达量的高低，和平均表达量比或者中位数比，来分组进行线性拟合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">group1&lt;-ifelse(meta_data$MGP&gt;mean(meta_data$MGP), &quot;High&quot;,&quot;Low&quot;)</span><br><span class="line">#group1&lt;-ifelse(meta_data$MGP&gt;median(meta_data$MGP), &quot;High&quot;,&quot;Low&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>##添加分组信息，绘制生存曲线</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sfit1&lt;-survfit(Surv(time,a.vital_status)~group1,data &#x3D; meta_data)</span><br><span class="line">ggsurvplot(sfit1,</span><br><span class="line">           legend.title &#x3D; NULL,</span><br><span class="line">           conf.int &#x3D; F,</span><br><span class="line">           pval &#x3D; T,</span><br><span class="line">           title &#x3D; &#39;Gene Entropy Level&#39;,</span><br><span class="line">           risk.table &#x3D; F,</span><br><span class="line">           palette &#x3D; c(&quot;#E7B800&quot;,&quot;#2E9FDF&quot;),</span><br><span class="line">           risk.table.col &#x3D; &#39;strata&#39;,</span><br><span class="line">           tables.height &#x3D; 0.2,</span><br><span class="line">           xlab &#x3D; &quot;Time In Days&quot;,</span><br><span class="line">           pval.method &#x3D; TRUE,</span><br><span class="line">           surv.median.line &#x3D; &quot;hv&quot;,</span><br><span class="line">           ncensor.plot &#x3D; T)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>1、按照中位数来分组的生存曲线：<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/2.png" alt="meta_new示例"><br>2、按照平均数数来分组的生存曲线：<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/3.png" alt="meta_new示例"></p>
-</blockquote>
-</li>
-<li><p>##然而这里两个生存分析的结果均不明显，选择直接网上下载</p>
-<blockquote>
-<p><a href="https://www.proteinatlas.org/" target="_blank" rel="noopener">https://www.proteinatlas.org/</a><br>#Human Protein Atlas 数据库<br>简称HPA数据库，它致力于提供全部24,000种人类蛋白质的组织和细胞分布信息，并免费提供公众查询。<br>创立这个数据库的瑞典 Knut &amp; Alice Wallenberg基金会使用特制的抗体，用免疫组化的技术，检查每一种蛋白质在48种人类正常组织，20种肿瘤组织，47个细胞系和12种血液细胞内的分布和表达，其结果用至少576张免疫组化染色图表示，并经专业人员阅读和标引。这些受检组织来自144个不同个体和216个肿瘤组织，保证染色结果具有充分的代表性。这是一个大规模蛋白质研究项目，主要目的是绘制人体组织和细胞中表达基因编码的蛋白位置。<br>举个栗子，查询明星基因pten的表达情况<br>在搜索栏输入基因名称。点击search。</p>
-</blockquote>
-</li>
-<li><p>还可以直接下载生存曲线哟！效果达到预期！真香！就是不高清……</p>
-<blockquote>
-<p><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/4.png" alt="meta_new示例"></p>
-</blockquote>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-TCGA数据-2-相关性分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(2):相关性分析（bulk水平）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:16:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#cor分析研究目的</p>
-<blockquote>
-<p>相关性分析就是为了研究我关注的基因和差异分析所得的基因的表达规律</p>
-</blockquote>
-<ul>
-<li>使用FPKM数据来进行？</li>
-<li>方法使用Spearman还是Pearson？</li>
-<li>是否需要取log？</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">library(tinyarray)</span><br><span class="line">BiocManager::install(&quot;tinyarray&quot;)</span><br><span class="line">library(dplyr)</span><br><span class="line">library(ggstatsplot)</span><br><span class="line">library(tidyr)</span><br><span class="line">library(Cairo)</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;相关性分析&#x2F;&quot;)</span><br><span class="line">exp&lt;-read.csv(file &#x3D; &quot;FPKM(CD274转置).csv&quot;,check.names &#x3D; F,stringsAsFactors &#x3D; F,row.names &#x3D; 1)</span><br><span class="line">exp&lt;-log(exp+1)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>读入的数据是转置注释的原始表达矩阵，行是样本，列是基因</li>
-<li>取对数保证表达量可比性，进行标准化</li>
-<li>FPKM来进行分析，counts只用来做差异分析</li>
-</ul>
-<blockquote>
-<p>批量相关分析（循环）</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- as.numeric(exp[,&quot;CD274&quot;])</span><br><span class="line">colnames &lt;- colnames(exp)</span><br><span class="line">cor_data_df &lt;- data.frame(colnames)</span><br><span class="line"></span><br><span class="line">for (i in 1:length(colnames))</span><br><span class="line">&#123;</span><br><span class="line">    test &lt;- cor.test(as.numeric(exp[,i]),y,type&#x3D;&quot;spearman&quot;)</span><br><span class="line">    cor_data_df[i,2] &lt;- test$estimate</span><br><span class="line">    cor_data_df[i,3] &lt;- test$p.value</span><br><span class="line">&#125;</span><br><span class="line">names(cor_data_df) &lt;- c(&quot;Symbol&quot;,&quot;correlation&quot;,&quot;pvalue&quot;)</span><br><span class="line">head(cor_data_df)</span><br><span class="line"></span><br><span class="line">cor_data_sig &lt;- cor_data_df %&gt;% </span><br><span class="line">    filter(pvalue &lt; 0.05) %&gt;% </span><br><span class="line">    arrange(desc(abs(correlation)))%&gt;% </span><br><span class="line">    dplyr::slice(1:500)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">CairoPDF(&quot;TLE2.pdf&quot;,height &#x3D; 12,width &#x3D; 12)</span><br><span class="line">ggscatterstats(data &#x3D;as.data.frame(exp), </span><br><span class="line">               y &#x3D; TLE2, </span><br><span class="line">               x &#x3D; CD274,</span><br><span class="line">               centrality.para &#x3D; &quot;mean&quot;,                              </span><br><span class="line">               margins &#x3D; &quot;both&quot;,                                         </span><br><span class="line">               xfill &#x3D; &quot;#CC79A7&quot;, </span><br><span class="line">               yfill &#x3D; &quot;#009E73&quot;, </span><br><span class="line">               marginal.type &#x3D; &quot;density&quot;,</span><br><span class="line">               title &#x3D; &quot;Relationship between PDL1 and MGP&quot;)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="表达矩阵示例"><br>#负相关和正相关基因都可以保留，来增加文章水分23333</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-TCGA数据-1-DESeq2差异分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(1):DESeq2差异分析（bulk水平）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:35:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>在具体搞差异分析代码之前,先整理一手TCGA数据相关背景知识，显然是我搬运百度。<br>#（一）TCGA背景知识</p>
-</blockquote>
-<ul>
-<li>肿瘤基因组图谱（TCGA）计划是由美国National Cancer Institute（NCI）和National Human Genome Research Institute（NHGRI）于2006年联合启动的项目，研究的癌症类型从最开始的多形性成胶质细胞瘤（GBM）到现在为止共有39种，涉及29种癌症器官，1万多个肿瘤样本，27万多份文件，当然其项目也将于2017年接近尾声。 网址：<a href="https://portal.gdc.cancer.gov/" target="_blank" rel="noopener">https://portal.gdc.cancer.gov/</a></li>
-</ul>
-<blockquote>
-<p>TCGA中数据类型主要有以下几种：</p>
-</blockquote>
-<ul>
-<li>Clinical：病人的一般情况、诊治情况、TNM分期、肿瘤病理、生存情况等</li>
-<li>mRNA：mRNA芯片或者RNA-Seq测得的mRNA表达量</li>
-<li>microRNA：microRNA芯片或者microRNA-Seq测得的microRNA表达量</li>
-<li>Copy Number：SNP芯片得到的肿瘤组织比对正常组织的染色体上各片段的比值</li>
-<li>Mutation：肿瘤组织测序结果相对参考基因组的核苷酸突变，包括插入和缺失等变化</li>
-<li>Protein：蛋白芯片测序得到的约200种常见癌症相关蛋白的表达量</li>
-<li>Methylation：甲基化芯片测得的DNA甲基化数据</li>
-</ul>
-<p>###其中mRNA-Seq，miRNA-Seq以及Methylation Array被广泛使用</p>
-<blockquote>
-<p>mRNA-Seq数据分为3种：</p>
-</blockquote>
-<ul>
-<li>HTSeq-Counts</li>
-<li>HTSeq-FPKM</li>
-<li>HTSeq-FPKM-UQ<h3 id="（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法"><a href="#（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法" class="headerlink" title="（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法"></a>（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法</h3></li>
-</ul>
-<p>#（二）差异分析背景知识</p>
-<blockquote>
-<p>参见 Bioconductor网站具体讲解：<a href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html" target="_blank" rel="noopener">http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html</a></p>
-<blockquote>
-<p>背景知识尤其重要，比如用FPKM做还是counts数据做呢？</p>
-<blockquote>
-<p>对于TCGA的样本需要取平均吗？（单细胞和bulk水平的区别）还有就是</p>
-<blockquote>
-<p>LogFC的定义，以及矫正后的qval的取值比较主观，如何定义阈值？</p>
-<blockquote>
-<p>正常样本数量和癌症样本数量不同会对其造成什么影响？<br>显然我想到这些问题，就是一句mmp……但是被师兄怒屌一顿，感觉变成老懂哥就完事了<br>#（三）差异分析基因列表制作</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;Normal&#x2F;&quot;)</span><br><span class="line">normal &lt;- read.csv(&quot;normal注释count表达矩阵.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;count&#x2F;&quot;)</span><br><span class="line">cancer &lt;- read.csv(&quot;count_data(注释).csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>此处的所读的两个矩阵，皆是我提前注释了的，所制成的行名是样本，列名是基因，且确保癌症和正常一样<br>同时删除了重复的，空的，因为要合并所以必须用统一注释方法。</p>
-</blockquote>
-<ul>
-<li><p>这里的代码是我在差异分析之前就做了。由于之前的Biobase的注释包有问题，于是用clusterProfiler注释。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#读取的是未注释的数据</span><br><span class="line">data &lt;- read.csv(&quot;TCGA_data_clean.csv&quot;)</span><br><span class="line">#注释表达矩阵</span><br><span class="line">library(&quot;biomaRt&quot;)</span><br><span class="line">library(&quot;clusterProfiler&quot;)</span><br><span class="line">BiocManager::install(&quot;clusterProfiler&quot;)</span><br><span class="line">install.packages(&quot;dplyr&quot;)</span><br><span class="line">library(&quot;org.Hs.eg.db&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>由于meta信息的基因编号的格式不同，为了方便提前替换“-”为“.”</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a&lt;- gsub(&quot;\\_\\d*&quot;, &quot;&quot;, data$Tags)</span><br><span class="line"></span><br><span class="line">ENSEMBL &lt;- gsub(&quot;\\.\\d*&quot;, &quot;&quot;, a)</span><br><span class="line"></span><br><span class="line">row.names(data) &lt;- ENSEMBL</span><br><span class="line"></span><br><span class="line">colnames(data)[1] &lt;- c(&quot;ensembl_gene_id&quot;)</span><br><span class="line"></span><br><span class="line">write.csv(data,&quot;data.csv&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>这里便是用clusterProfiler注释的四个参数，用bitr(),mapIds(),皆可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">eg &lt;- bitr(data$ensembl_gene_id, fromType&#x3D;&quot;ENSEMBL&quot;,</span><br><span class="line">                    toType&#x3D;&quot;SYMBOL&quot;, OrgDb&#x3D;&quot;org.Hs.eg.db&quot;,drop &#x3D; F)</span><br><span class="line"></span><br><span class="line">data$symbol &lt;- mapIds(org.Hs.eg.db, data$X, &quot;SYMBOL&quot;,&quot;ENSEMBL&quot;)</span><br><span class="line"></span><br><span class="line">data &lt;- read.csv(&quot;data.csv&quot;)</span><br><span class="line"></span><br><span class="line">#删除多余的列</span><br><span class="line">data &lt;- subset(data, select &#x3D; -c(X,X.1,X.2))</span><br><span class="line">#消除未注释和重复的行</span><br><span class="line">index3&lt;-is.na(data$symbol)</span><br><span class="line">b &lt;- data[!index3,]</span><br><span class="line"></span><br><span class="line">index4 &lt;- duplicated(b$symbol)</span><br><span class="line"></span><br><span class="line">gene_only &lt;- b[!index4,]</span><br><span class="line"></span><br><span class="line">rownames(gene_only) &lt;- gene_only$symbol</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注释工作完成之后，可以开始差异分析，回答之前所提出的问题，<br>差异分析使用counts数据做，单细胞取平均而bulk水平不需要。</p>
-</blockquote>
-</li>
-<li><p>制作DESeq需要的几个元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">library(tidyverse)</span><br><span class="line">library(DESeq2)</span><br><span class="line">#差异分析，制作列表</span><br><span class="line">names(cancer) &lt;- rep(&quot;cancer&quot;,448)</span><br><span class="line">names(normal) &lt;- rep(&quot;normal&quot;,40)</span><br><span class="line">Deflist &lt;- data.frame(normal,cancer)</span><br><span class="line">mycounts &lt;- Deflist</span><br><span class="line"></span><br><span class="line">condition &lt;- factor(c(rep(&quot;cancer&quot;,448),rep(&quot;normal&quot;,40)), levels &#x3D; c(&quot;cancer&quot;,&quot;normal&quot;))</span><br><span class="line"></span><br><span class="line">colData &lt;- data.frame(row.names&#x3D;colnames(mycounts), condition)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>DESeqDataSetFromMatrix(mycounts, colData, design= ~ condition)这就是上一步骤制作的需要的三个元素</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#构建DESeq对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(mycounts, colData, design&#x3D; ~ condition)</span><br><span class="line">dds &lt;- DESeq(dds)</span><br><span class="line">dds</span><br><span class="line"></span><br><span class="line">#查看分析结果</span><br><span class="line">res&#x3D; results(dds)</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">head(res)</span><br><span class="line">summary(res)</span><br><span class="line">#所有结果先进行输出</span><br><span class="line">write.csv(res,file&#x3D;&quot;All_results.csv&quot;)</span><br></pre></td></tr></table></figure>
-<p>对差异分析的结果设置阈值，筛选表达量统计水平上的差异基因，code可回答之前的mmp问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">table(res$padj&lt;0.05)</span><br><span class="line"></span><br><span class="line">diff_gene_deseq2 &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 1)</span><br><span class="line">#或</span><br><span class="line">#&gt; diff_gene_deseq2 &lt;-subset(res,padj &lt; 0.05 &amp; (log2FoldChange &gt; 1 | log2FoldChange &lt; -1))</span><br><span class="line">dim(diff_gene_deseq2)</span><br><span class="line">head(diff_gene_deseq2)</span><br><span class="line">write.csv(diff_gene_deseq2,file&#x3D; &quot;DEG_treat_vs_control.csv&quot;)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>每一个步骤都要记得保存文件，给大家看看得出的差异分析列表<br><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="示例"><br>对分析结果进行可视化：（绘制火山图）</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">library(ggplot2)</span><br><span class="line">library(ggrepel)</span><br><span class="line"></span><br><span class="line">Dat &lt;- read.csv(&quot;All_results.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$padj &lt; 0.05 &amp; abs(Dat$log2FoldChange) &gt;&#x3D; 1, ifelse(Dat$log2FoldChange&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;log2FoldChange,y&#x3D;-log10(padj),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;#DC143C&quot;,&quot;#00008B&quot;,&quot;#808080&quot;))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/2.png" alt="示例"></p>
-</li>
-</ul>
-<blockquote>
-<p>然后竟然发现自己需要研究的目标基因，在一顿分析后不是差异基因，转而使用北京大学张泽民老师课题组工具：GEPIA2、网页自动分析，不用<br>自己跑数据，虽然会有些许问题，但是确实香~所以直接把他们的结果下着可视化23333</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#GEPIA2数据</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;&quot;)</span><br><span class="line">data_diff &lt;- read.table(&quot;table_degenes.txt&quot;,sep &#x3D; &quot;\t&quot;,header &#x3D; T)</span><br><span class="line">Dat &#x3D; data_diff</span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$X.5 &lt; 0.05 &amp; abs(Dat$X.4) &gt;&#x3D; 1, ifelse(Dat$X.4&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;X.4,y&#x3D;-log10(X.5),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;#DC143C&quot;,&quot;#00008B&quot;,&quot;#808080&quot;))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/3.png" alt="示例"><br>#真香！</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-递归可视化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#递归的关键思想：不断缩小，调用自身</p>
-<ul>
-<li>利用该逻辑思想可进行简化问题</li>
-<li>1、画一个螺旋缩小正方形<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">def drawSpiral(t,lineLen):</span><br><span class="line">    if lineLen &gt; 0:</span><br><span class="line">        t.forward(lineLen)</span><br><span class="line">        t.right(90)</span><br><span class="line">        drawSpiral(t,lineLen - 5)</span><br><span class="line">drawSpiral(t,100)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/1.png" alt="螺旋结构展示"></li>
-<li>2、画一个五角星<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">t.pencolor(&quot;green&quot;)</span><br><span class="line">t.pensize(3)</span><br><span class="line">for i in  range(5):</span><br><span class="line">    t.forward(100)</span><br><span class="line">    t.right(144)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/2.png" alt="螺旋结构展示"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/5/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &amp;raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -637,8 +322,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
