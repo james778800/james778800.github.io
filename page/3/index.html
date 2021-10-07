@@ -151,6 +151,106 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Lasso-cox-TCGA数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">Lasso_cox_TCGA数据挖掘(1)</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/" class="archive-article-date">
+  	<time datetime="2021-04-12T06:40:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Lasso-cox-TCGA数据挖掘"><a href="#Lasso-cox-TCGA数据挖掘" class="headerlink" title="Lasso_cox_TCGA数据挖掘"></a>Lasso_cox_TCGA数据挖掘</h1><blockquote>
+<p>LASSO 回归的特点是在拟合广义线性模型的同时进行变量筛选（variable selection）和复杂度调整（regularization）。 因此，不论目标因变量（dependent/response varaible）是连续的（continuous），还是二元或者多元离散的（discrete），都可以用 LASSO 回归建模然后预测。 这里的变量筛选是指不把所有的变量都放入模型中进行拟合，而是有选择的把变量放入模型从而得到更好的性能参数。 复杂度调整是指通过一系列参数控制模型的复杂度，从而避免过度拟合（overfitting）。 对于线性模型来说，复杂度与模型的变量数有直接关系，变量数越多，模型复杂度就越高。 更多的变量在拟合时往往可以给出一个看似更好的模型，但是同时也面临过度拟合的危险。此时如果用全新的数据去验证模型（validation），通常效果很差。 一般来说，变量数大于数据点数量很多，或者某一个离散变量有太多独特值时，都有可能过度拟合。<br><a href="https://cosx.org/2016/10/data-mining-1-lasso/" target="_blank" rel="noopener">（LASSO回归示例）</a></p>
+</blockquote>
+<ul>
+<li><p>#研究目的</p>
+<blockquote>
+<p>探究TCGA——COAD的RNAseq数据与临床信息中生存相关的关键基因。（简称：筛选与生存相关的基因）</p>
+</blockquote>
+</li>
+<li><p>###导入数据及数据格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">#加载相关的包</span><br><span class="line">library(glmnet)</span><br><span class="line">library(survival)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#生存数据</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;生存分析&#x2F;&quot;)</span><br><span class="line">data_clinical &lt;- read.csv(&quot;meta_new.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line">index3 &lt;- data_clinical$time &#x3D;&#x3D; 0</span><br><span class="line">data_clinical &lt;- data_clinical[!index3,]</span><br><span class="line">data_clinical$vital_status &lt;- gsub(&quot;Dead&quot;, 1 ,data_clinical$vital_status)</span><br><span class="line">data_clinical$vital_status &lt;- gsub(&quot;Alive&quot;, 0 ,data_clinical$vital_status)</span><br><span class="line">data_clinical$vital_status &lt;- as.double(data_clinical$a.vital_status)</span><br><span class="line">data_clinical$days_to_death &lt;- as.double(data_clinical$time)</span><br><span class="line">data_clinical &lt;- na.omit(data_clinical)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>临床信息的文件示例<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/2.png" alt="图1"></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#设置因变量</span><br><span class="line">y &lt;- data.matrix(Surv(time &#x3D; data_clinical$days_to_death, event &#x3D; data_clinical$vital_status))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#全表达谱</span><br><span class="line">marker.exp &lt;- read.csv(&quot;G:&#x2F;TCGA&#x2F;cancer注释FPKM表达矩阵.csv&quot;, header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">#筛选纳入生存的病人</span><br><span class="line">names(marker.exp) &lt;- substr(names(marker.exp),1, 12)</span><br><span class="line">GENEALL &lt;- names(marker.exp)</span><br><span class="line">index1 &lt;- which(GENEALL%in%data_clinical$ID)</span><br><span class="line">exp &lt;- marker.exp[,index1]</span><br><span class="line">duplicated(names(exp))</span><br><span class="line">duplicated(data_clinical$ID)</span><br><span class="line">test2 &lt;- names(exp)</span><br><span class="line">index2 &lt;- which(data_clinical$ID%in%test2)</span><br><span class="line">index2 &lt;- which(test2%in%data_clinical$ID)</span><br><span class="line">index2</span><br><span class="line">exp &lt;- exp[,index2]</span><br><span class="line"></span><br><span class="line">#筛选基因并且构建筛选基因的表达矩阵</span><br><span class="line">DNBgene &lt;- read.csv(&quot;E:&#x2F;TEX_marker.txt&quot;, header &#x3D; F, sep &#x3D; &quot;\t&quot;)</span><br><span class="line">index4 &lt;- which(rownames(exp) %in% DNBgene$V1)</span><br><span class="line">exp_DNB &lt;- exp[index4,]</span><br><span class="line">#marker.exp &#x3D; as.matrix(exp)</span><br><span class="line">#index3 &lt;- is.na(exp[1,])</span><br><span class="line">#exp &lt;- na.omit(exp)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>提取后的表达矩阵文件示例<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/1.png" alt="图2"></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#构建模型</span><br><span class="line">fit &lt;- glmnet(x &#x3D; t(exp_DNB), y, family &#x3D; &quot;cox&quot;,alpha &#x3D; 1)</span><br><span class="line"></span><br><span class="line">plot(fit, xvar &#x3D; &quot;lambda&quot;, label &#x3D; T)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>lasso模型构建过程文件展示<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/3.png" alt="图3"></p>
+<blockquote>
+<p>可以从筛选变量的过程观察到对生存显著相关的基因（序号作为展示），同时可以观察到变量最后筛选为几个了<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/4.png" alt="图4"><br>多变量同样可以进行筛选，但需要进一步交叉验证 </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#进行交叉验证</span><br><span class="line"></span><br><span class="line">lasso_fit &lt;- cv.glmnet(x &#x3D; t(exp_DNB), y, family &#x3D; &quot;cox&quot;,</span><br><span class="line">                       type.measure &#x3D; &quot;deviance&quot;)</span><br><span class="line"></span><br><span class="line">plot(lasso_fit)</span><br></pre></td></tr></table></figure></li>
+<li><p>lasso交叉验证图<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/5.png" alt="图5"><br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/6.png" alt="图6"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#筛选变量</span><br><span class="line">coefficient &lt;- coef(lasso_fit, s &#x3D; lasso_fit$lambda.min)</span><br><span class="line">Active.Index &lt;- which(as.numeric(coefficient) !&#x3D; 0)</span><br><span class="line">active.coefficient &lt;- as.numeric(coefficient)[Active.Index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sig_gene_muti_cox &lt;- rownames(coefficient)[Active.Index]</span><br><span class="line">sig_gene_muti_cox</span><br><span class="line">sig_gene_muti_cox &lt;- as.data.frame(sig_gene_muti_cox)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/7.png" alt="图7"></p>
+</li>
+<li><p>友情提醒：为保证实验可重复性，一定要设置噢~</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set.seed(77)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Pytorch的Hello-World" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -530,130 +630,9 @@
 
 
   
-    <article id="post-细胞互作软件（2）-cellphoneDB" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">细胞互作软件（2）-cellphoneDB</a>
-    </h1>
-  
-
-        
-        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/" class="archive-article-date">
-  	<time datetime="2020-12-07T08:42:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="CellPhoneDB的优势"><a href="#CellPhoneDB的优势" class="headerlink" title="CellPhoneDB的优势"></a>CellPhoneDB的优势</h1><blockquote>
-<p>CellPhoneDB的独特之处不是它的算法，而是他们开发的细胞通讯配体-受体数据库。他们的数据库不仅包含公共资源注释的受体和配体，还有人工挑选的参与细胞通讯的特定蛋白质家族。他们的数据库还考虑了配体和受体的亚基结构，这是大多数据库和研究没有涉及的，这点对于准确研究多亚基复合物介导的细胞通讯很关键。</p>
-</blockquote>
-<blockquote>
-<p>网页版使用：<a href="https://www.cellphonedb.org/explore-sc-rna-seq" target="_blank" rel="noopener">https://www.cellphonedb.org/explore-sc-rna-seq</a></p>
-</blockquote>
-<ul>
-<li>我采用Linux下的包来使用cellphoneDB<blockquote>
-<p>数据是示例数据</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda install cellphonedb</span><br><span class="line">conda activate hcy</span><br><span class="line">conda install cellphonedb</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>conda 似乎是不能直接下载的，找不到相关包</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install cellphonedb</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-检查是否安装成功<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb</span><br></pre></td></tr></table></figure>
-<img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/1.png" alt="celltalker示例图"></li>
-<li>创建测试数据的文件夹来输入数据和生成文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir test_cellphoneDB</span><br><span class="line">cd test_cellphoneDB&#x2F;</span><br></pre></td></tr></table></figure></li>
-<li>激活Python环境再使用软件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#创建cpdb-venv环境</span><br><span class="line">python -m venv cpdb-venv</span><br><span class="line"></span><br><span class="line">#激活环境</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 下载表达矩阵和meta信息</span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt --output test_counts.txt</span><br><span class="line"></span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt --output test_meta.txt</span><br></pre></td></tr></table></figure>
-<p>由于我没有curl指令，用wget下载也是殊途同归</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt</span><br><span class="line"></span><br><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt</span><br></pre></td></tr></table></figure>
-<p>①运行statistical method的例子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method statistical_analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
-<p>②没有使用statistical method的例子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
-<ul>
-<li>可以调试的参数说明：<blockquote>
-<p>可选参数：<br>~ Optional Method parameters:</p>
-</blockquote>
-</li>
-</ul>
-<p>–counts-data: [ensembl | gene_name | hgnc_symbol] counts data 中的基因标识符类型</p>
-<p>–project-name: 项目名称，在输出文件夹中创建具有此名称的子文件夹</p>
-<p>–iterations: 统计分析迭代次数[1000]</p>
-<p>–threshold: 表达特定的配体/受体的细胞%</p>
-<p>–result-precision: 结果中保留的小数位数[3]</p>
-<p>–output-path: 输出文件路径 [out]</p>
-<p>–output-format: 结果文件的输出格式(如果没有扩展名，将添加到文件名中) [txt]</p>
-<p>–means-result-name: Means结果文件名[means]</p>
-<p>–significant-means-result-name: 有显著意义的means 结果文件名 [significant_means]</p>
-<p>–deconvoluted-result-name: Deconvoluted 结果文件名 [deconvoluted]</p>
-<p>–verbose/–quiet: 打印或隐藏CellPhoneDB日志 [verbose]</p>
-<p>–subsampling: 使二次抽样</p>
-<p>–subsampling-log: 启用非对数转换数据输入的子采样log1p !!强制!!</p>
-<p>–subsampling-num-pc: 子抽样NumPC参数(要使用的pc数量) [100]</p>
-<p>–subsampling-num-cells: 要取样到的细胞数 [1/3 of cells]</p>
-<p>~ Optional Method Statistical parameters</p>
-<p>–pvalues-result-name: P-values 结果文件名 [pvalues]</p>
-<p>–pvalue: P-value阈值 [0.05]</p>
-<p>–debug-seed: 调试随机种子-1，要禁用它，请使用一个值&gt;=0 [-1]</p>
-<p>–threads: 要使用的线程数 &gt;=1 [-1]</p>
-<h1 id="可视化结果，点图"><a href="#可视化结果，点图" class="headerlink" title="可视化结果，点图"></a>可视化结果，点图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot dot_plot --rows in&#x2F;rows.txt --columns in&#x2F;columns.txt</span><br><span class="line">cellphonedb plot dot_plot</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/plot_00.png" alt="cellphoneDB"></p>
-<h1 id="可视化结果，热图"><a href="#可视化结果，热图" class="headerlink" title="可视化结果，热图"></a>可视化结果，热图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot heatmap_plot test_meta.txt</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/2.png" alt="cellphoneDB"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
     </nav>
   
 

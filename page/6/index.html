@@ -151,6 +151,80 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-sierpinski-递归三角形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
+  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#递归的关键思想：不断缩小，调用自身<br><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/1.png" alt="实例"></p>
+<ul>
+<li>注意三角形绘制顺序是左上右！<blockquote>
+<p>谢尔宾斯基三角形（英语：Sierpinski triangle）是一种分形，<br>由波兰数学家谢尔宾斯基在1915年提出。它是自相似集的例子。它的豪斯多夫维是<br>log(3)/log(2) ≈ 1.585。</p>
+<ul>
+<li>先作一个正三角形，挖去一个“中心三角形”（即以原三角形各边的中点为顶点的三角形），<br>然后在剩下的小三角形中又挖去一个“中心三角形”，我们用黑色三角形代表挖去的面积，那么白三角形为剩下的面积（我们称白三角形为谢尔宾斯基三角形）。如果用上面的方法无限连续地作下去，则谢尔宾斯基三角形的面积越趋近于零，而它的周长越趋近于无限大（如图）。<br>若设操作次数为n（每挖去一次中心三角形算一次操作），<br>则剩余三角形面积公式为：4的n次方分之3的n次方。<br>将边长为1的等边三角形区域，均分成四个小等边三角形，去掉中间一个，<br>然后再对每个小等边三角形进行相同的操作得……，这样的操作不断继续下<br>去直到无穷，最终所得的极限图形称为谢尔宾斯基垫片。谢尔宾斯基垫片的<br>极限图形的面积趋于零，而小图形的数目趋于无穷，作为小图形的边的线段数目<br>趋于无穷，实际上是一个线集。操作n次后边长r=(1/2)n，三角形个数N(r)=3<br>n，根据公式N(r)=1/rD，3n=2Dr，D=ln3/ln2=1.585。所以谢尔宾斯基垫片是1.585。<br>它比普通的一维直线占据了更多空间，但还是没有二维正方形占据的那么多，可以用等比数列的知识求出他的面积是0。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def sierpinski(degree,points):</span><br><span class="line">    colormap &#x3D; [&quot;blue&quot;,&quot;red&quot;,&quot;green&quot;,&quot;white&quot;,&quot;yellow&quot;,&quot;orange&quot;]</span><br><span class="line">    drawTriangle(points,colormap[degree])</span><br><span class="line">    if degree &gt; 0:</span><br><span class="line">        sierpinski(degree -1,</span><br><span class="line">                   &#123;&quot;left&quot;:points[&quot;left&quot;],</span><br><span class="line">                    &quot;top&quot;:getMid(points[&quot;left&quot;],points[&quot;top&quot;]),</span><br><span class="line">                    &quot;right&quot;:getMid(points[&quot;left&quot;],points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;top&quot;]),</span><br><span class="line">                    &quot;top&quot;: points[&quot;top&quot;],</span><br><span class="line">                    &quot;right&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;top&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;right&quot;: points[&quot;right&quot;]&#125;)</span><br><span class="line">def drawTriangle(points,color):</span><br><span class="line">    t.fillcolor(color)</span><br><span class="line">    t.penup()</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.pendown()</span><br><span class="line">    t.begin_fill()</span><br><span class="line">    t.goto(points[&quot;left&quot;])</span><br><span class="line">    t.goto(points[&quot;right&quot;])</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.end_fill()</span><br><span class="line"></span><br><span class="line">def getMid(p1,p2):</span><br><span class="line">    return ((p1[0]+p2[0])&#x2F;2,(p1[1]+p2[1])&#x2F;2)</span><br><span class="line"></span><br><span class="line">t &#x3D;  turtle.Turtle()</span><br><span class="line"></span><br><span class="line">points &#x3D;&#123;&#39;left&#39;:(-200,-100),</span><br><span class="line">         &#39;top&#39;:(0,200),</span><br><span class="line">         &#39;right&#39;:(200,-100)&#125;</span><br><span class="line">sierpinski(5,points)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/2.png" alt="logo实例"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-盗版添柏岚Timberland-递归分形树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -541,79 +615,9 @@
 
 
   
-    <article id="post-递归可视化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#递归的关键思想：不断缩小，调用自身</p>
-<ul>
-<li>利用该逻辑思想可进行简化问题</li>
-<li>1、画一个螺旋缩小正方形<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">def drawSpiral(t,lineLen):</span><br><span class="line">    if lineLen &gt; 0:</span><br><span class="line">        t.forward(lineLen)</span><br><span class="line">        t.right(90)</span><br><span class="line">        drawSpiral(t,lineLen - 5)</span><br><span class="line">drawSpiral(t,100)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/1.png" alt="螺旋结构展示"></li>
-<li>2、画一个五角星<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">t.pencolor(&quot;green&quot;)</span><br><span class="line">t.pensize(3)</span><br><span class="line">for i in  range(5):</span><br><span class="line">    t.forward(100)</span><br><span class="line">    t.right(144)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/2.png" alt="螺旋结构展示"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/5/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/5/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/7/">Next &amp;raquo;</a>
     </nav>
   
 

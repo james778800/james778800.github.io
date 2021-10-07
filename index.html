@@ -151,6 +151,141 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-一致性聚类实践" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/">一致性聚类实践</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+  	<time datetime="2021-10-07T09:04:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##一致性聚类概要：</p>
+<blockquote>
+<p>一致性聚类是一种为确定数据集中可能的聚类的数量和成员提供定量证据的方法，在转录组层面，可以根据基因表达对样本进行分型。一致性聚类方法包括从一组项目中进行次抽样，例如微阵列，并确定特定簇计数（k）的簇。然后，对共识值，两个项目占在同一子样本中发生的次数中有相同的聚类，计算并存储在每个k的对称一致矩阵中。</p>
+</blockquote>
+<blockquote>
+<p>本实践的包用的是：ConsensusClusterPlus</p>
+</blockquote>
+<p>ConsensusClusterPlus官方教程文档： <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/ConsensusClusterPlus/inst/doc/ConsensusClusterPlus.pdf" target="_blank" rel="noopener">官方教程文档</a></p>
+<ul>
+<li>Bioconductor可以下载该包<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BiocManager::install(&quot;ConsensusClusterPlus&quot;)</span><br><span class="line">library(ConsensusClusterPlus)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>该包的应用十分简单，但其中关于聚类的方法需要了解。（但是实际情况则根据聚类的效果来选择。）</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>clusterAlg此参数是在聚类中的选择聚类算法。</p>
+</blockquote>
+<ul>
+<li>其中聚类的方法包括：<blockquote>
+<p>1、HC</p>
+</blockquote>
+</li>
+</ul>
+<p>系谱聚类（HC: Hierarchical Clustering)<br>基本思想：</p>
+<p>1、开始时，将每个样本作为一类。</p>
+<p>2、规定某种度量作为样本之间距离以及类距离之间的度量，并且计算之。（hculster里边的dist方法以及method属性）</p>
+<p>3、将距离最短的两个类合并为一个类。</p>
+<p>4、重复2-3，即不断合并最近的两个类，每次减少一个类，直到所有的样本合并为一个类。</p>
+<p>点与点的距离和类与类之间距离的计算可以参考R-modeling关于距离的介绍。</p>
+<ul>
+<li>系谱聚类思想博文引用： <a href="https://www.jianshu.com/p/fc772a29570a" target="_blank" rel="noopener">系谱聚类思想博文引用</a></li>
+</ul>
+<blockquote>
+<p>2、KM</p>
+</blockquote>
+<p>K-Means算法的基本思想是初始随机给定K个簇中心，按照最邻近原则把待分类样本点分到各个簇。然后按平均法重新计算各个簇的质心(这个点可以不是样本点)，从而确定新的簇心。一直迭代，直到簇心的移动距离小于某个给定的值。</p>
+<p>K-Means聚类算法主要分为三个步骤：</p>
+<p>(1)第一步是为待聚类的点寻找聚类中心</p>
+<p>(2)第二步是计算每个点到聚类中心的距离，将每个点聚类到离该点最近的聚类中去</p>
+<p>(3)第三步是计算每个聚类中所有点的坐标平均值，并将这个平均值作为新的聚类中心</p>
+<p>反复执行(2)、(3)，直到聚类中心不再进行大范围移动或者聚类次数达到要求为止</p>
+<ul>
+<li>K-Means算法博文引用： <a href="https://blog.csdn.net/u013524655/article/details/40989469" target="_blank" rel="noopener">K-Means算法博文引用</a></li>
+</ul>
+<blockquote>
+<p>3、PAM</p>
+</blockquote>
+<blockquote>
+<p>PAM（Partition Around Medoids）是K-medoid（K中心点划分）的基础算法，基本流程如下：首先随机选择k个对象作为中心，把每个对象分配给离它最近的中心。然后随机地选择一个非中心对象替换中心对象，计算分配后的距离改进量。聚类的过程就是不断迭代，进行中心对象和非中心对象的反复替换过程，直到目标函数不再有改进为止。</p>
+</blockquote>
+<pre><code>PAM算法如下：
+   (1) 随机选择K个观测值（每个都称为中心点）；
+   (2) 计算观测值到各个中心的距离/相异性；
+   (3) 把每个观测值分配到最近的中心点；
+   (4) 计算每个中心点到每个观测值的距离的总和（总成本）；
+   (5) 选择一个该类中不是中心的点，并和中心点互换；
+   (6) 重新把每个点分配到距它最近的中心点；
+   (7) 再次计算总成本；
+   (8) 如果总成本比步骤(4)计算的总成本少，把新的点作为中心点；
+   (9) 重复步骤(5)～(8)直到中心点不再改变。</code></pre><ul>
+<li>K-medoid算法博文引用： <a href="https://blog.csdn.net/sinat_19596835/article/details/78303744" target="_blank" rel="noopener">K-medoid算法引用</a></li>
+</ul>
+<p>###以下为一致性聚类代码实践：</p>
+<ul>
+<li>数据选用的是TCGA的GBM患者</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#输入文件为表达矩阵</span><br><span class="line">res &lt;- ConsensusClusterPlus(as.matrix(JW_exp1), </span><br><span class="line">                            maxK &#x3D; 10, </span><br><span class="line">                            reps &#x3D; 1000, </span><br><span class="line">                            pItem &#x3D; 0.75, </span><br><span class="line">                            pFeature &#x3D; 1, </span><br><span class="line">                            clusterAlg &#x3D; &quot;pam&quot;, </span><br><span class="line">                            corUse &#x3D; &quot;complete.obs&quot;, </span><br><span class="line">                            seed&#x3D;123456, plot&#x3D;&quot;png&quot;, </span><br><span class="line">                            writeTable&#x3D;T)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>选择的是pam算法<br>#输出的res文件包括：<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/1.png" alt="一致性聚类"></p>
+</blockquote>
+<p>#根据其值选择k值<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/4.png" alt="一致性聚类"><br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/5.png" alt="一致性聚类"></p>
+<p>#生成聚类的热图(部分展示)<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/2.png" alt="一致性聚类"><br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/3.png" alt="一致性聚类"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-使用dplyr进行数据转换" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -422,77 +557,9 @@
 
 
   
-    <article id="post-单因素COX生存风险分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">单因素COX生存风险分析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:17:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>针对构建的生存风险得分模型中的Riskscore与临床其他的癌症临床变量进行计算HR值，同时判断该变量是否为独立预后因子<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;F210406002&#x2F;Step11&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">meta_final &lt;- read.csv(&quot;meta_final_coxS.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">covariates &lt;- c(&quot;Stage&quot;, &quot;T&quot;, &quot;M&quot;, &quot;N&quot;, </span><br><span class="line">                &quot;Treatment&quot;, &quot;Riskscore&quot;, &quot;Age&quot;)</span><br><span class="line"></span><br><span class="line">univ_formulas &lt;- sapply(covariates,</span><br><span class="line">                        function(x) as.formula(paste(&quot;Surv(time, vital_status)~&quot;,x)))</span><br><span class="line"></span><br><span class="line">univ_models &lt;- lapply(univ_formulas, function(x)&#123;coxph(x, data &#x3D; meta_final)&#125;)</span><br></pre></td></tr></table></figure></li>
-<li>循环采用coxph（Surv（））进行批量分析，计算beta值，HR值，置信区间及wald.test的P value<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#Extract data</span><br><span class="line">a &lt;- summary(univ_models$T)</span><br><span class="line">a$coefficients</span><br><span class="line">p.value &lt;- signif(a$waid[&quot;pvalue&quot;], digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">univ_results &lt;- lapply(univ_models,</span><br><span class="line">                       function(x)&#123;</span><br><span class="line">                         x &lt;- summary(x)</span><br><span class="line">                         p.value &lt;- signif(x$waldtest[&quot;pvalue&quot;], digits &#x3D; 2)</span><br><span class="line">                         wald.test &lt;- signif(x$waldtest[&quot;test&quot;], digits &#x3D; 2)</span><br><span class="line">                         beta &lt;- signif(x$coef[1], digits &#x3D; 2);</span><br><span class="line">                         HR &lt;- signif(x$coef[2], digits &#x3D; 2);</span><br><span class="line">                         HR.confint.lower &lt;- signif(x$conf.int[ ,&quot;lower .95&quot;], 2)</span><br><span class="line">                         HR.confint.upper &lt;- signif(x$conf.int[ ,&quot;upper .95&quot;], 2)</span><br><span class="line">                         HR &lt;- paste0(HR, &quot; (&quot;,</span><br><span class="line">                                     HR.confint.lower, &quot;-&quot;, HR.confint.upper, &quot;) &quot;)</span><br><span class="line">                         res &lt;- c(beta, HR, wald.test, p.value,HR.confint.lower,HR.confint.upper)</span><br><span class="line">                         names(res) &lt;- c(&quot;beta&quot;, &quot;HR(95% CI for HR)&quot;, &quot;wald.test&quot;,</span><br><span class="line">                                         &quot;p.value&quot;,&quot;HR.confint.lower&quot;,&quot;HR.confint.upper&quot;)</span><br><span class="line">                         return(res)</span><br><span class="line">                       &#125;)</span><br><span class="line"></span><br><span class="line">res &lt;- t(as.data.frame(univ_results, check.name &#x3D; F))</span><br><span class="line"></span><br><span class="line">write.csv(res, &quot;cox_单因素.csv&quot;)</span><br><span class="line">res &lt;- read.csv(&quot;cox_res.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br></pre></td></tr></table></figure></li>
-<li>forestplot包是目前做森林图比较好看的包，比前几期的森林图要nice多<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">library(forestplot)</span><br><span class="line">#install.packages(&quot;forestplot&quot;)</span><br><span class="line"></span><br><span class="line"># 森林图</span><br><span class="line"></span><br><span class="line">out_multi &lt;- read.csv(&quot;cox_res.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tabletext &lt;- cbind(c(NA,&quot;Risk Factors&quot;,rownames(out_multi)),</span><br><span class="line">                   c(NA,&quot;P value&quot;,out_multi$p.value),</span><br><span class="line">                   c(NA,&quot;Hazard Ratio(95% CI)&quot;,out_multi$HR.95..CI.for.HR.))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">forestplot(labeltext&#x3D;tabletext, </span><br><span class="line">           graph.pos&#x3D;3,  #为Pvalue箱线图所在的位置</span><br><span class="line">           col&#x3D;fpColors(box&#x3D;&quot;#D55E00&quot;, lines&#x3D;&quot;#CC79A7&quot;, zero &#x3D; &quot;gray50&quot;),</span><br><span class="line">           mean&#x3D;c(NA,NA,out_multi$HR),</span><br><span class="line">           lower&#x3D;c(NA,NA,out_multi$HR.confint.lower), #95%置信区间下限</span><br><span class="line">           upper&#x3D;c(NA,NA,out_multi$HR.confint.upper), #95%置信区间上限</span><br><span class="line">           boxsize&#x3D;0.5,lwd.ci&#x3D;2,   #箱子大小，线的宽度</span><br><span class="line">           ci.vertices.height &#x3D; 0.2,ci.vertices&#x3D;TRUE, #置信区间用线宽、高、型</span><br><span class="line">           zero&#x3D;1,lwd.zero&#x3D;1,      #zero线宽 基准线的位置</span><br><span class="line">           colgap&#x3D;unit(7,&quot;mm&quot;),    #列间隙</span><br><span class="line">           xticks &#x3D; c(0.5, 1,1.5,2,2.5,3), #横坐标刻度</span><br><span class="line">           lwd.xaxis&#x3D;1,            #X轴线宽</span><br><span class="line">           lineheight &#x3D; unit(1.5,&quot;cm&quot;), #固定行高</span><br><span class="line">           graphwidth &#x3D; unit(.3,&quot;npc&quot;), #图在表中的宽度比例</span><br><span class="line">           cex&#x3D;0.9, fn.ci_norm &#x3D; fpDrawCircleCI, #误差条显示方式</span><br><span class="line">           hrzl_lines&#x3D;list(&quot;2&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;),</span><br><span class="line">                           &quot;3&quot; &#x3D; gpar(lwd&#x3D;2, col&#x3D;&quot;black&quot;), #第三行顶部加黑线，引号内数字标记行位置</span><br><span class="line">                           &quot;10&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;)),#最后一行底部加黑线,&quot;16&quot;中数字为nrow(tabletext)+1</span><br><span class="line">           mar&#x3D;unit(rep(0.5, times &#x3D; 4), &quot;cm&quot;),#图形页边距</span><br><span class="line">           #fpTxtGp函数中的cex参数设置各个组件的大小</span><br><span class="line">           txt_gp&#x3D;fpTxtGp(label&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          ticks&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          xlab&#x3D;gpar(cex &#x3D; 1.25),</span><br><span class="line">                          title&#x3D;gpar(cex &#x3D; 1.2)),</span><br><span class="line">           xlab&#x3D;&quot;Hazard Ratio&quot;,</span><br><span class="line">           title &#x3D; &quot;Univariate cox regression analysis&quot;)</span><br></pre></td></tr></table></figure>
-<img src="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/1.png" alt="相关性图"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
     </nav>
   
 

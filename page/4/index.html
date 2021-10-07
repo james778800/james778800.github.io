@@ -151,6 +151,127 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-细胞互作软件（2）-cellphoneDB" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">细胞互作软件（2）-cellphoneDB</a>
+    </h1>
+  
+
+        
+        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/" class="archive-article-date">
+  	<time datetime="2020-12-07T08:42:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="CellPhoneDB的优势"><a href="#CellPhoneDB的优势" class="headerlink" title="CellPhoneDB的优势"></a>CellPhoneDB的优势</h1><blockquote>
+<p>CellPhoneDB的独特之处不是它的算法，而是他们开发的细胞通讯配体-受体数据库。他们的数据库不仅包含公共资源注释的受体和配体，还有人工挑选的参与细胞通讯的特定蛋白质家族。他们的数据库还考虑了配体和受体的亚基结构，这是大多数据库和研究没有涉及的，这点对于准确研究多亚基复合物介导的细胞通讯很关键。</p>
+</blockquote>
+<blockquote>
+<p>网页版使用：<a href="https://www.cellphonedb.org/explore-sc-rna-seq" target="_blank" rel="noopener">https://www.cellphonedb.org/explore-sc-rna-seq</a></p>
+</blockquote>
+<ul>
+<li>我采用Linux下的包来使用cellphoneDB<blockquote>
+<p>数据是示例数据</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda install cellphonedb</span><br><span class="line">conda activate hcy</span><br><span class="line">conda install cellphonedb</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>conda 似乎是不能直接下载的，找不到相关包</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install cellphonedb</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
+检查是否安装成功<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb</span><br></pre></td></tr></table></figure>
+<img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/1.png" alt="celltalker示例图"></li>
+<li>创建测试数据的文件夹来输入数据和生成文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir test_cellphoneDB</span><br><span class="line">cd test_cellphoneDB&#x2F;</span><br></pre></td></tr></table></figure></li>
+<li>激活Python环境再使用软件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#创建cpdb-venv环境</span><br><span class="line">python -m venv cpdb-venv</span><br><span class="line"></span><br><span class="line">#激活环境</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 下载表达矩阵和meta信息</span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt --output test_counts.txt</span><br><span class="line"></span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt --output test_meta.txt</span><br></pre></td></tr></table></figure>
+<p>由于我没有curl指令，用wget下载也是殊途同归</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt</span><br><span class="line"></span><br><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt</span><br></pre></td></tr></table></figure>
+<p>①运行statistical method的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method statistical_analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
+<p>②没有使用statistical method的例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可以调试的参数说明：<blockquote>
+<p>可选参数：<br>~ Optional Method parameters:</p>
+</blockquote>
+</li>
+</ul>
+<p>–counts-data: [ensembl | gene_name | hgnc_symbol] counts data 中的基因标识符类型</p>
+<p>–project-name: 项目名称，在输出文件夹中创建具有此名称的子文件夹</p>
+<p>–iterations: 统计分析迭代次数[1000]</p>
+<p>–threshold: 表达特定的配体/受体的细胞%</p>
+<p>–result-precision: 结果中保留的小数位数[3]</p>
+<p>–output-path: 输出文件路径 [out]</p>
+<p>–output-format: 结果文件的输出格式(如果没有扩展名，将添加到文件名中) [txt]</p>
+<p>–means-result-name: Means结果文件名[means]</p>
+<p>–significant-means-result-name: 有显著意义的means 结果文件名 [significant_means]</p>
+<p>–deconvoluted-result-name: Deconvoluted 结果文件名 [deconvoluted]</p>
+<p>–verbose/–quiet: 打印或隐藏CellPhoneDB日志 [verbose]</p>
+<p>–subsampling: 使二次抽样</p>
+<p>–subsampling-log: 启用非对数转换数据输入的子采样log1p !!强制!!</p>
+<p>–subsampling-num-pc: 子抽样NumPC参数(要使用的pc数量) [100]</p>
+<p>–subsampling-num-cells: 要取样到的细胞数 [1/3 of cells]</p>
+<p>~ Optional Method Statistical parameters</p>
+<p>–pvalues-result-name: P-values 结果文件名 [pvalues]</p>
+<p>–pvalue: P-value阈值 [0.05]</p>
+<p>–debug-seed: 调试随机种子-1，要禁用它，请使用一个值&gt;=0 [-1]</p>
+<p>–threads: 要使用的线程数 &gt;=1 [-1]</p>
+<h1 id="可视化结果，点图"><a href="#可视化结果，点图" class="headerlink" title="可视化结果，点图"></a>可视化结果，点图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot dot_plot --rows in&#x2F;rows.txt --columns in&#x2F;columns.txt</span><br><span class="line">cellphonedb plot dot_plot</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/plot_00.png" alt="cellphoneDB"></p>
+<h1 id="可视化结果，热图"><a href="#可视化结果，热图" class="headerlink" title="可视化结果，热图"></a>可视化结果，热图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot heatmap_plot test_meta.txt</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/2.png" alt="cellphoneDB"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-细胞互作软件（1）-celltalker" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -550,77 +671,9 @@
 
 
   
-    <article id="post-感知机的损失函数的推导" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">感知机的损失函数的推导</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/" class="archive-article-date">
-  	<time datetime="2020-10-06T20:30:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>感知机的数学模型为sign(wixi+b)，其中w=(w1,w2,…,wn)是权重向量，xi=（x1i,x2i,…,xni)是一个样本点，从符号很容易理解，它们都是定义在Rn空间的(如果难以理解，可以简单的理解为样本点有n个维度，相应的权重向量也须有n个维度和它相匹配).<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/1.jpg" alt="感知机模型"></p>
-</blockquote>
-<ul>
-<li>其中损失函数的推导，其实初中就学过，整理如下：<br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/2.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/3.jpg" alt="感知机模型"><br><img src="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/4.jpg" alt="感知机模型"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/07/%E6%84%9F%E7%9F%A5%E6%9C%BA%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E7%9A%84%E6%8E%A8%E5%AF%BC/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
     </nav>
   
 

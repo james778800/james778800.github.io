@@ -6,18 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Biomagic</title>
+  <title>一致性聚类实践 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="##一致性聚类概要：  一致性聚类是一种为确定数据集中可能的聚类的数量和成员提供定量证据的方法，在转录组层面，可以根据基因表达对样本进行分型。一致性聚类方法包括从一组项目中进行次抽样，例如微阵列，并确定特定簇计数（k）的簇。然后，对共识值，两个项目占在同一子样本中发生的次数中有相同的聚类，计算并存储在每个k的对称一致矩阵中。   本实践的包用的是：ConsensusClusterPlus  Con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一致性聚类实践">
+<meta property="og:url" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="##一致性聚类概要：  一致性聚类是一种为确定数据集中可能的聚类的数量和成员提供定量证据的方法，在转录组层面，可以根据基因表达对样本进行分型。一致性聚类方法包括从一组项目中进行次抽样，例如微阵列，并确定特定簇计数（k）的簇。然后，对共识值，两个项目占在同一子样本中发生的次数中有相同的聚类，计算并存储在每个k的对称一致矩阵中。   本实践的包用的是：ConsensusClusterPlus  Con">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/4.png">
+<meta property="og:image" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/5.png">
+<meta property="og:image" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/3.png">
+<meta property="article:published_time" content="2021-10-07T09:04:44.000Z">
+<meta property="article:modified_time" content="2021-10-07T11:09:11.815Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,295 +157,227 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-一致性聚类实践" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      一致性聚类实践
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+
+        
+        <a href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
   	<time datetime="2021-10-07T09:04:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-07</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/">一致性聚类实践</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##一致性聚类概要：</p>
+<blockquote>
+<p>一致性聚类是一种为确定数据集中可能的聚类的数量和成员提供定量证据的方法，在转录组层面，可以根据基因表达对样本进行分型。一致性聚类方法包括从一组项目中进行次抽样，例如微阵列，并确定特定簇计数（k）的簇。然后，对共识值，两个项目占在同一子样本中发生的次数中有相同的聚类，计算并存储在每个k的对称一致矩阵中。</p>
+</blockquote>
+<blockquote>
+<p>本实践的包用的是：ConsensusClusterPlus</p>
+</blockquote>
+<p>ConsensusClusterPlus官方教程文档： <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/ConsensusClusterPlus/inst/doc/ConsensusClusterPlus.pdf" target="_blank" rel="noopener">官方教程文档</a></p>
+<ul>
+<li>Bioconductor可以下载该包<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BiocManager::install(&quot;ConsensusClusterPlus&quot;)</span><br><span class="line">library(ConsensusClusterPlus)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>该包的应用十分简单，但其中关于聚类的方法需要了解。（但是实际情况则根据聚类的效果来选择。）</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>clusterAlg此参数是在聚类中的选择聚类算法。</p>
+</blockquote>
+<ul>
+<li>其中聚类的方法包括：<blockquote>
+<p>1、HC</p>
+</blockquote>
+</li>
+</ul>
+<p>系谱聚类（HC: Hierarchical Clustering)<br>基本思想：</p>
+<p>1、开始时，将每个样本作为一类。</p>
+<p>2、规定某种度量作为样本之间距离以及类距离之间的度量，并且计算之。（hculster里边的dist方法以及method属性）</p>
+<p>3、将距离最短的两个类合并为一个类。</p>
+<p>4、重复2-3，即不断合并最近的两个类，每次减少一个类，直到所有的样本合并为一个类。</p>
+<p>点与点的距离和类与类之间距离的计算可以参考R-modeling关于距离的介绍。</p>
+<ul>
+<li>系谱聚类思想博文引用： <a href="https://www.jianshu.com/p/fc772a29570a" target="_blank" rel="noopener">系谱聚类思想博文引用</a></li>
+</ul>
+<blockquote>
+<p>2、KM</p>
+</blockquote>
+<p>K-Means算法的基本思想是初始随机给定K个簇中心，按照最邻近原则把待分类样本点分到各个簇。然后按平均法重新计算各个簇的质心(这个点可以不是样本点)，从而确定新的簇心。一直迭代，直到簇心的移动距离小于某个给定的值。</p>
+<p>K-Means聚类算法主要分为三个步骤：</p>
+<p>(1)第一步是为待聚类的点寻找聚类中心</p>
+<p>(2)第二步是计算每个点到聚类中心的距离，将每个点聚类到离该点最近的聚类中去</p>
+<p>(3)第三步是计算每个聚类中所有点的坐标平均值，并将这个平均值作为新的聚类中心</p>
+<p>反复执行(2)、(3)，直到聚类中心不再进行大范围移动或者聚类次数达到要求为止</p>
+<ul>
+<li>K-Means算法博文引用： <a href="https://blog.csdn.net/u013524655/article/details/40989469" target="_blank" rel="noopener">K-Means算法博文引用</a></li>
+</ul>
+<blockquote>
+<p>3、PAM</p>
+</blockquote>
+<blockquote>
+<p>PAM（Partition Around Medoids）是K-medoid（K中心点划分）的基础算法，基本流程如下：首先随机选择k个对象作为中心，把每个对象分配给离它最近的中心。然后随机地选择一个非中心对象替换中心对象，计算分配后的距离改进量。聚类的过程就是不断迭代，进行中心对象和非中心对象的反复替换过程，直到目标函数不再有改进为止。</p>
+</blockquote>
+<pre><code>PAM算法如下：
+   (1) 随机选择K个观测值（每个都称为中心点）；
+   (2) 计算观测值到各个中心的距离/相异性；
+   (3) 把每个观测值分配到最近的中心点；
+   (4) 计算每个中心点到每个观测值的距离的总和（总成本）；
+   (5) 选择一个该类中不是中心的点，并和中心点互换；
+   (6) 重新把每个点分配到距它最近的中心点；
+   (7) 再次计算总成本；
+   (8) 如果总成本比步骤(4)计算的总成本少，把新的点作为中心点；
+   (9) 重复步骤(5)～(8)直到中心点不再改变。</code></pre><ul>
+<li>K-medoid算法博文引用： <a href="https://blog.csdn.net/sinat_19596835/article/details/78303744" target="_blank" rel="noopener">K-medoid算法引用</a></li>
+</ul>
+<p>###以下为一致性聚类代码实践：</p>
+<ul>
+<li>数据选用的是TCGA的GBM患者</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#输入文件为表达矩阵</span><br><span class="line">res &lt;- ConsensusClusterPlus(as.matrix(JW_exp1), </span><br><span class="line">                            maxK &#x3D; 10, </span><br><span class="line">                            reps &#x3D; 1000, </span><br><span class="line">                            pItem &#x3D; 0.75, </span><br><span class="line">                            pFeature &#x3D; 1, </span><br><span class="line">                            clusterAlg &#x3D; &quot;pam&quot;, </span><br><span class="line">                            corUse &#x3D; &quot;complete.obs&quot;, </span><br><span class="line">                            seed&#x3D;123456, plot&#x3D;&quot;png&quot;, </span><br><span class="line">                            writeTable&#x3D;T)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>选择的是pam算法<br>#输出的res文件包括：<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/1.png" alt="一致性聚类"></p>
+</blockquote>
+<p>#根据其值选择k值<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/4.png" alt="一致性聚类"><br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/5.png" alt="一致性聚类"></p>
+<p>#生成聚类的热图(部分展示)<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/2.png" alt="一致性聚类"><br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/3.png" alt="一致性聚类"></p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2021-07-20T12:11:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-20</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">使用dplyr进行数据转换</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/">使用dplyr进行数据转换</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T09:24:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/">生存风险得分模型的效能分析</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-w">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:18:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/">临床列线图及矫正曲线</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/22/%E5%A4%9A%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:17:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/22/%E5%A4%9A%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">多因素COX生存风险分析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:17:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">单因素COX生存风险分析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:16:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/">Starbasese数据库-爬虫</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:15:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">lncRNA-RNA相关性分析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-04-12T11:23:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/">Lasso_Cox之多基因生存分析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2021-04-12T07:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/">Lasso_Cox之森林图绘制</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/2/">Next &amp;raquo;</a>
-    </nav>
   
 
 
@@ -461,8 +401,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

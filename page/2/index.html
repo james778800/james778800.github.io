@@ -151,6 +151,74 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-单因素COX生存风险分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">单因素COX生存风险分析</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-05-22T08:17:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>针对构建的生存风险得分模型中的Riskscore与临床其他的癌症临床变量进行计算HR值，同时判断该变量是否为独立预后因子<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;F210406002&#x2F;Step11&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">meta_final &lt;- read.csv(&quot;meta_final_coxS.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">covariates &lt;- c(&quot;Stage&quot;, &quot;T&quot;, &quot;M&quot;, &quot;N&quot;, </span><br><span class="line">                &quot;Treatment&quot;, &quot;Riskscore&quot;, &quot;Age&quot;)</span><br><span class="line"></span><br><span class="line">univ_formulas &lt;- sapply(covariates,</span><br><span class="line">                        function(x) as.formula(paste(&quot;Surv(time, vital_status)~&quot;,x)))</span><br><span class="line"></span><br><span class="line">univ_models &lt;- lapply(univ_formulas, function(x)&#123;coxph(x, data &#x3D; meta_final)&#125;)</span><br></pre></td></tr></table></figure></li>
+<li>循环采用coxph（Surv（））进行批量分析，计算beta值，HR值，置信区间及wald.test的P value<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#Extract data</span><br><span class="line">a &lt;- summary(univ_models$T)</span><br><span class="line">a$coefficients</span><br><span class="line">p.value &lt;- signif(a$waid[&quot;pvalue&quot;], digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">univ_results &lt;- lapply(univ_models,</span><br><span class="line">                       function(x)&#123;</span><br><span class="line">                         x &lt;- summary(x)</span><br><span class="line">                         p.value &lt;- signif(x$waldtest[&quot;pvalue&quot;], digits &#x3D; 2)</span><br><span class="line">                         wald.test &lt;- signif(x$waldtest[&quot;test&quot;], digits &#x3D; 2)</span><br><span class="line">                         beta &lt;- signif(x$coef[1], digits &#x3D; 2);</span><br><span class="line">                         HR &lt;- signif(x$coef[2], digits &#x3D; 2);</span><br><span class="line">                         HR.confint.lower &lt;- signif(x$conf.int[ ,&quot;lower .95&quot;], 2)</span><br><span class="line">                         HR.confint.upper &lt;- signif(x$conf.int[ ,&quot;upper .95&quot;], 2)</span><br><span class="line">                         HR &lt;- paste0(HR, &quot; (&quot;,</span><br><span class="line">                                     HR.confint.lower, &quot;-&quot;, HR.confint.upper, &quot;) &quot;)</span><br><span class="line">                         res &lt;- c(beta, HR, wald.test, p.value,HR.confint.lower,HR.confint.upper)</span><br><span class="line">                         names(res) &lt;- c(&quot;beta&quot;, &quot;HR(95% CI for HR)&quot;, &quot;wald.test&quot;,</span><br><span class="line">                                         &quot;p.value&quot;,&quot;HR.confint.lower&quot;,&quot;HR.confint.upper&quot;)</span><br><span class="line">                         return(res)</span><br><span class="line">                       &#125;)</span><br><span class="line"></span><br><span class="line">res &lt;- t(as.data.frame(univ_results, check.name &#x3D; F))</span><br><span class="line"></span><br><span class="line">write.csv(res, &quot;cox_单因素.csv&quot;)</span><br><span class="line">res &lt;- read.csv(&quot;cox_res.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br></pre></td></tr></table></figure></li>
+<li>forestplot包是目前做森林图比较好看的包，比前几期的森林图要nice多<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">library(forestplot)</span><br><span class="line">#install.packages(&quot;forestplot&quot;)</span><br><span class="line"></span><br><span class="line"># 森林图</span><br><span class="line"></span><br><span class="line">out_multi &lt;- read.csv(&quot;cox_res.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tabletext &lt;- cbind(c(NA,&quot;Risk Factors&quot;,rownames(out_multi)),</span><br><span class="line">                   c(NA,&quot;P value&quot;,out_multi$p.value),</span><br><span class="line">                   c(NA,&quot;Hazard Ratio(95% CI)&quot;,out_multi$HR.95..CI.for.HR.))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">forestplot(labeltext&#x3D;tabletext, </span><br><span class="line">           graph.pos&#x3D;3,  #为Pvalue箱线图所在的位置</span><br><span class="line">           col&#x3D;fpColors(box&#x3D;&quot;#D55E00&quot;, lines&#x3D;&quot;#CC79A7&quot;, zero &#x3D; &quot;gray50&quot;),</span><br><span class="line">           mean&#x3D;c(NA,NA,out_multi$HR),</span><br><span class="line">           lower&#x3D;c(NA,NA,out_multi$HR.confint.lower), #95%置信区间下限</span><br><span class="line">           upper&#x3D;c(NA,NA,out_multi$HR.confint.upper), #95%置信区间上限</span><br><span class="line">           boxsize&#x3D;0.5,lwd.ci&#x3D;2,   #箱子大小，线的宽度</span><br><span class="line">           ci.vertices.height &#x3D; 0.2,ci.vertices&#x3D;TRUE, #置信区间用线宽、高、型</span><br><span class="line">           zero&#x3D;1,lwd.zero&#x3D;1,      #zero线宽 基准线的位置</span><br><span class="line">           colgap&#x3D;unit(7,&quot;mm&quot;),    #列间隙</span><br><span class="line">           xticks &#x3D; c(0.5, 1,1.5,2,2.5,3), #横坐标刻度</span><br><span class="line">           lwd.xaxis&#x3D;1,            #X轴线宽</span><br><span class="line">           lineheight &#x3D; unit(1.5,&quot;cm&quot;), #固定行高</span><br><span class="line">           graphwidth &#x3D; unit(.3,&quot;npc&quot;), #图在表中的宽度比例</span><br><span class="line">           cex&#x3D;0.9, fn.ci_norm &#x3D; fpDrawCircleCI, #误差条显示方式</span><br><span class="line">           hrzl_lines&#x3D;list(&quot;2&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;),</span><br><span class="line">                           &quot;3&quot; &#x3D; gpar(lwd&#x3D;2, col&#x3D;&quot;black&quot;), #第三行顶部加黑线，引号内数字标记行位置</span><br><span class="line">                           &quot;10&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;)),#最后一行底部加黑线,&quot;16&quot;中数字为nrow(tabletext)+1</span><br><span class="line">           mar&#x3D;unit(rep(0.5, times &#x3D; 4), &quot;cm&quot;),#图形页边距</span><br><span class="line">           #fpTxtGp函数中的cex参数设置各个组件的大小</span><br><span class="line">           txt_gp&#x3D;fpTxtGp(label&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          ticks&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          xlab&#x3D;gpar(cex &#x3D; 1.25),</span><br><span class="line">                          title&#x3D;gpar(cex &#x3D; 1.2)),</span><br><span class="line">           xlab&#x3D;&quot;Hazard Ratio&quot;,</span><br><span class="line">           title &#x3D; &quot;Univariate cox regression analysis&quot;)</span><br></pre></td></tr></table></figure>
+<img src="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/1.png" alt="相关性图"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Starbase数据库-爬虫" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -482,109 +550,9 @@
 
 
   
-    <article id="post-Lasso-cox-TCGA数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">Lasso_cox_TCGA数据挖掘(1)</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/" class="archive-article-date">
-  	<time datetime="2021-04-12T06:40:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Lasso-cox-TCGA数据挖掘"><a href="#Lasso-cox-TCGA数据挖掘" class="headerlink" title="Lasso_cox_TCGA数据挖掘"></a>Lasso_cox_TCGA数据挖掘</h1><blockquote>
-<p>LASSO 回归的特点是在拟合广义线性模型的同时进行变量筛选（variable selection）和复杂度调整（regularization）。 因此，不论目标因变量（dependent/response varaible）是连续的（continuous），还是二元或者多元离散的（discrete），都可以用 LASSO 回归建模然后预测。 这里的变量筛选是指不把所有的变量都放入模型中进行拟合，而是有选择的把变量放入模型从而得到更好的性能参数。 复杂度调整是指通过一系列参数控制模型的复杂度，从而避免过度拟合（overfitting）。 对于线性模型来说，复杂度与模型的变量数有直接关系，变量数越多，模型复杂度就越高。 更多的变量在拟合时往往可以给出一个看似更好的模型，但是同时也面临过度拟合的危险。此时如果用全新的数据去验证模型（validation），通常效果很差。 一般来说，变量数大于数据点数量很多，或者某一个离散变量有太多独特值时，都有可能过度拟合。<br><a href="https://cosx.org/2016/10/data-mining-1-lasso/" target="_blank" rel="noopener">（LASSO回归示例）</a></p>
-</blockquote>
-<ul>
-<li><p>#研究目的</p>
-<blockquote>
-<p>探究TCGA——COAD的RNAseq数据与临床信息中生存相关的关键基因。（简称：筛选与生存相关的基因）</p>
-</blockquote>
-</li>
-<li><p>###导入数据及数据格式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">#加载相关的包</span><br><span class="line">library(glmnet)</span><br><span class="line">library(survival)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#生存数据</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;生存分析&#x2F;&quot;)</span><br><span class="line">data_clinical &lt;- read.csv(&quot;meta_new.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line">index3 &lt;- data_clinical$time &#x3D;&#x3D; 0</span><br><span class="line">data_clinical &lt;- data_clinical[!index3,]</span><br><span class="line">data_clinical$vital_status &lt;- gsub(&quot;Dead&quot;, 1 ,data_clinical$vital_status)</span><br><span class="line">data_clinical$vital_status &lt;- gsub(&quot;Alive&quot;, 0 ,data_clinical$vital_status)</span><br><span class="line">data_clinical$vital_status &lt;- as.double(data_clinical$a.vital_status)</span><br><span class="line">data_clinical$days_to_death &lt;- as.double(data_clinical$time)</span><br><span class="line">data_clinical &lt;- na.omit(data_clinical)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>临床信息的文件示例<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/2.png" alt="图1"></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#设置因变量</span><br><span class="line">y &lt;- data.matrix(Surv(time &#x3D; data_clinical$days_to_death, event &#x3D; data_clinical$vital_status))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#全表达谱</span><br><span class="line">marker.exp &lt;- read.csv(&quot;G:&#x2F;TCGA&#x2F;cancer注释FPKM表达矩阵.csv&quot;, header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">#筛选纳入生存的病人</span><br><span class="line">names(marker.exp) &lt;- substr(names(marker.exp),1, 12)</span><br><span class="line">GENEALL &lt;- names(marker.exp)</span><br><span class="line">index1 &lt;- which(GENEALL%in%data_clinical$ID)</span><br><span class="line">exp &lt;- marker.exp[,index1]</span><br><span class="line">duplicated(names(exp))</span><br><span class="line">duplicated(data_clinical$ID)</span><br><span class="line">test2 &lt;- names(exp)</span><br><span class="line">index2 &lt;- which(data_clinical$ID%in%test2)</span><br><span class="line">index2 &lt;- which(test2%in%data_clinical$ID)</span><br><span class="line">index2</span><br><span class="line">exp &lt;- exp[,index2]</span><br><span class="line"></span><br><span class="line">#筛选基因并且构建筛选基因的表达矩阵</span><br><span class="line">DNBgene &lt;- read.csv(&quot;E:&#x2F;TEX_marker.txt&quot;, header &#x3D; F, sep &#x3D; &quot;\t&quot;)</span><br><span class="line">index4 &lt;- which(rownames(exp) %in% DNBgene$V1)</span><br><span class="line">exp_DNB &lt;- exp[index4,]</span><br><span class="line">#marker.exp &#x3D; as.matrix(exp)</span><br><span class="line">#index3 &lt;- is.na(exp[1,])</span><br><span class="line">#exp &lt;- na.omit(exp)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>提取后的表达矩阵文件示例<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/1.png" alt="图2"></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#构建模型</span><br><span class="line">fit &lt;- glmnet(x &#x3D; t(exp_DNB), y, family &#x3D; &quot;cox&quot;,alpha &#x3D; 1)</span><br><span class="line"></span><br><span class="line">plot(fit, xvar &#x3D; &quot;lambda&quot;, label &#x3D; T)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>lasso模型构建过程文件展示<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/3.png" alt="图3"></p>
-<blockquote>
-<p>可以从筛选变量的过程观察到对生存显著相关的基因（序号作为展示），同时可以观察到变量最后筛选为几个了<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/4.png" alt="图4"><br>多变量同样可以进行筛选，但需要进一步交叉验证 </p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#进行交叉验证</span><br><span class="line"></span><br><span class="line">lasso_fit &lt;- cv.glmnet(x &#x3D; t(exp_DNB), y, family &#x3D; &quot;cox&quot;,</span><br><span class="line">                       type.measure &#x3D; &quot;deviance&quot;)</span><br><span class="line"></span><br><span class="line">plot(lasso_fit)</span><br></pre></td></tr></table></figure></li>
-<li><p>lasso交叉验证图<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/5.png" alt="图5"><br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/6.png" alt="图6"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#筛选变量</span><br><span class="line">coefficient &lt;- coef(lasso_fit, s &#x3D; lasso_fit$lambda.min)</span><br><span class="line">Active.Index &lt;- which(as.numeric(coefficient) !&#x3D; 0)</span><br><span class="line">active.coefficient &lt;- as.numeric(coefficient)[Active.Index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sig_gene_muti_cox &lt;- rownames(coefficient)[Active.Index]</span><br><span class="line">sig_gene_muti_cox</span><br><span class="line">sig_gene_muti_cox &lt;- as.data.frame(sig_gene_muti_cox)</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/7.png" alt="图7"></p>
-</li>
-<li><p>友情提醒：为保证实验可重复性，一定要设置噢~</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set.seed(77)</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
     </nav>
   
 
