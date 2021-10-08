@@ -151,6 +151,102 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-细胞互作软件（3）-iTALK" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/">细胞互作软件（3）-iTALK</a>
+    </h1>
+  
+
+        
+        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/" class="archive-article-date">
+  	<time datetime="2020-12-07T08:42:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="iTALK"><a href="#iTALK" class="headerlink" title="iTALK"></a>iTALK</h1><blockquote>
+<p>iTALK的特点 </p>
+</blockquote>
+<blockquote>
+<p>集成了多种差异分析和可视化方法；<br>将配体-受体注释为4大类：细胞因子、生长因子、免疫检查点和其他；<br>配体-受体分析的中间数据和最终结果都可以轻松导出。</p>
+</blockquote>
+<ul>
+<li><p>能够用devtools在线安装的，就直接用，我的是scater无限报错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">library(devtools)</span><br><span class="line">install_github(&quot;Coolgenome&#x2F;iTALK&quot;, build_vignettes &#x3D; TRUE)</span><br><span class="line">install.packages(&quot;ps&quot;)</span><br><span class="line">install.packages(&quot;scater&quot;)</span><br><span class="line">BiocManager::install(&quot;scater&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>采用和下载celltalker一样的离线安装模式进行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">devtools::install_local(&quot;G:&#x2F;&#x2F;R-3.6.2&#x2F;library&#x2F;iTALK-master.zip&quot;)</span><br><span class="line">devtools::install_github(&#39;arc85&#x2F;celltalker&#39;)</span><br><span class="line">install.packages(&quot;G:&#x2F;&#x2F;google Downloads&#x2F;iTALK-master&#x2F;&quot;,repos&#x3D;NULL,type&#x3D;&quot;source&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>iTALK也可以无缝对接Seurat的对象，读取其中的meta信息和count数据</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(iTALK)</span><br><span class="line">library(Seurat)</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>由于celltalker的折磨，不愉快的开始，iTALK分析<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;肿瘤组织样本CD8&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">genecount &lt;- read.csv(&quot;Genecount_TTC.csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">genemeta &lt;- read.csv(&quot;TTC_monocleMeta.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">TTC &lt;- CreateSeuratObject(genecount,</span><br><span class="line">                          meta.data &#x3D; genemeta,</span><br><span class="line">                          project &#x3D; &quot;TTC&quot;,</span><br><span class="line">                          min.cells &#x3D; 5,</span><br><span class="line">                          min.features  &#x3D; 200)</span><br></pre></td></tr></table></figure>
+<h1 id="这里是正式开始iTALK的对象的构建"><a href="#这里是正式开始iTALK的对象的构建" class="headerlink" title="这里是正式开始iTALK的对象的构建"></a>这里是正式开始iTALK的对象的构建</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">##准备iTALK输入文件</span><br><span class="line"># 输入文件格式为数据框，行为细胞名称，列为基因名和细胞注释信息，基因名命名的列值为表达数据。</span><br><span class="line"># 细胞注释信息必选“cell_type”，值为细胞类型注释信息；可选“compare_group”，值为细胞的样本分组信息。</span><br><span class="line"></span><br><span class="line">cell.meta &lt;- subset(TTC@meta.data, select&#x3D;c(&quot;sampleType&quot;,&quot;pseudotime&quot;))</span><br><span class="line"></span><br><span class="line">names(cell.meta) &lt;- c(&quot;compare_group&quot;, &quot;cell_type&quot;)</span><br><span class="line"></span><br><span class="line">cell.expr &lt;- data.frame(t(as.matrix(TTC@assays$RNA@counts)), check.names&#x3D;F)</span><br><span class="line">data.italk &lt;- merge(cell.expr, cell.meta, by&#x3D;0)</span><br><span class="line">rownames(data.italk) &lt;- data.italk$Row.names</span><br><span class="line">data.italk &lt;- data.italk[,-1]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>可以查看构建的italk对象</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.italk[1:5,c(1:2,18027:18028)]</span><br></pre></td></tr></table></figure></li>
+<li>选择可视化的一些参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">##设置绘图颜色和其他变量</span><br><span class="line">mycolor &lt;- c(&quot;#92D0E6&quot;,&quot;#F5949B&quot;,&quot;#E11E24&quot;,&quot;#FBB96F&quot;,&quot;#007AB8&quot;,&quot;#A2D184&quot;,&quot;#00A04E&quot;,&quot;#BC5627&quot;,&quot;#0080BD&quot;,&quot;#EBC379&quot;,&quot;#A74D9D&quot;)</span><br><span class="line">cell_type &lt;- unique(data.italk$cell_type)</span><br><span class="line">cell_col &lt;- structure(mycolor[1:length(cell_type)], names&#x3D;cell_type)</span><br><span class="line">#通讯类型变量</span><br><span class="line">comm_list&lt;-c(&#39;growth factor&#39;,&#39;other&#39;,&#39;cytokine&#39;,&#39;checkpoint&#39;)</span><br><span class="line">#圈图展示配体-受体对的数量</span><br><span class="line">PN&#x3D;20</span><br></pre></td></tr></table></figure></li>
+<li>新建生成的文件夹，可视化输出文件方便<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##&#x3D;&#x3D;细胞通讯关系概览&#x3D;&#x3D;##</span><br><span class="line">dir.create(&#39;iTALK&#x2F;Overview&#39;)</span><br><span class="line">setwd(&quot;iTALK&#x2F;Overview&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>我这里只有一种组织，癌组织TTC，如果有细分的可以换的<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#实际上一个样本之内的细胞才能通讯，这里提取一组样本分析是为了克服单细胞数据稀疏性造成的误差</span><br><span class="line">data1 &lt;- subset(data.italk, subset&#x3D;data.italk$compare_group&#x3D;&#x3D;&quot;TTC&quot;)</span><br></pre></td></tr></table></figure></li>
+<li>分析并生成图片<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#寻找高表达的配体受体基因,top_genes&#x3D;50代表提取平均表达量前50%的基因</span><br><span class="line">highly_exprs_genes &lt;- rawParse(data1, top_genes&#x3D;50, stats&#x3D;&quot;mean&quot;)</span><br><span class="line">res&lt;-NULL</span><br><span class="line">for(comm_type in comm_list)&#123;</span><br><span class="line">  #comm_type &#x3D; &#39;cytokine&#39;   #测试循环代码的临时变量</span><br><span class="line">  res_cat &lt;- FindLR(highly_exprs_genes, datatype&#x3D;&#39;mean count&#39;, comm_type&#x3D;comm_type)</span><br><span class="line">  res_cat &lt;- res_cat[order(res_cat$cell_from_mean_exprs*res_cat$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">  write.csv(res_cat, paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.xls&#39;))</span><br><span class="line">  #pdf(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.pdf&#39;), width&#x3D;6, height&#x3D;7)</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_net.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  #绘制细胞通讯关系网络图</span><br><span class="line">  NetView(res_cat, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">          vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">  dev.off()</span><br><span class="line">  #绘制topPN的配体-受体圈图</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_circ.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  LRPlot(res_cat[1:PN,],datatype&#x3D;&#39;mean count&#39;,cell_col&#x3D;cell_col,link.arr.lwd&#x3D;res_cat$cell_from_mean_exprs[1:PN],link.arr.width&#x3D;res_cat$cell_to_mean_exprs[1:PN], text.vjust &#x3D; &quot;0.35cm&quot;)</span><br><span class="line">  dev.off()</span><br><span class="line">  res&lt;-rbind(res,res_cat)</span><br><span class="line">&#125;</span><br><span class="line">res &lt;- res[order(res$cell_from_mean_exprs*res$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">write.csv(res, &#39;LRpairs_Overview.xls&#39;)</span><br><span class="line">res.top &lt;- res[1:PN,]</span><br><span class="line">png(&#39;LRpairs_Overview_net.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">NetView(res, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">        vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">dev.off()</span><br><span class="line">png(&#39;LRpairs_Overview_circ.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">LRPlot(res.top, datatype&#x3D;&#39;mean count&#39;, link.arr.lwd&#x3D;res.top$cell_from_mean_exprs,</span><br><span class="line">       cell_col&#x3D;cell_col, link.arr.width&#x3D;res.top$cell_to_mean_exprs)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<h1 id="可视化结果"><a href="#可视化结果" class="headerlink" title="可视化结果"></a>可视化结果</h1>（1）检查点的圈图（LRpairs_Overview_checkpoint_circ）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_circ.png" alt="iTALK"><br>（2）检查点的网络图（LRpairs_Overview_checkpoint_net）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_net.png" alt="iTALK"></li>
+</ul>
+<blockquote>
+<p>还有LRpairs_Overview_growth factor、LRpairs_Overview_cytokine的结果就不一一展示。总是三个软件里面，这个使用效果最佳。</p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-细胞互作软件（2）-cellphoneDB" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -501,147 +597,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/11/18/HD5%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E4%B8%BAcsv-tsv/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-生物信息基础小测" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/">生物信息基础小测</a>
-    </h1>
-  
-
-        
-        <a href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/" class="archive-article-date">
-  	<time datetime="2020-10-13T05:17:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-10-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>#试卷题目<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/2.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/3.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/1.png" alt="第一题"><br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/4.png" alt="第一题"></li>
-<li>#参考答案<blockquote>
-<p>##单选第一题(C)</p>
-</blockquote>
-</li>
-</ul>
-<blockquote>
-<ul>
-<li>测序深度，测序得到的碱基总量（bp）与基因组大小（Genome）的比值：90×500×2（双端测序）÷人类基因组大小（3000）= 30×<br>（PS：人体基因组的大小约为30亿个碱基对,即3000Mbp） 因此30×。</li>
-</ul>
-</blockquote>
-<blockquote>
-<p>##单选第二题(B)</p>
-<ol>
-<li>blastn：是将给定的核酸序列与核酸数据库中的序列进行比对；</li>
-<li>Blastp：是使用蛋白质序列与蛋白质数据库中的序列进行比对。作用：可以寻找较远源地序列；</li>
-<li>Blastx：将给定的核酸序列按照六种阅读框架将其翻译成蛋白质与蛋白质数据库中的序列进行比对。作用：对分析新序列和EST很有用；</li>
-<li>Tblastn：将给定的氨基酸序列与核酸数据库中的序列（双链）按不同的阅读框进行比对。作用：对于寻找数据库中序列没有标注的新编码区很有用；</li>
-<li>Tblastx：只在特殊情况下使用，它将DNA被检索的序列和核酸序列数据库中的序列按不同的阅读框全部翻译成蛋白质序列，然后进行蛋白质序列比对。<blockquote>
-<p>EST：Expressed Sequence Tag的缩写，意思是表达序列标签，指从一个随机选择的cDNA 克隆，进行5’端和3’端单一次测序挑选出来获得的短的cDNA 部分序列。</p>
-</blockquote>
-</li>
-</ol>
-</blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>六种阅读框架：一段DNA或RNA序列有多种不同读取方式，因此可能同时存在许多不同的开放阅读框架。开放阅读框包含一段可以编码蛋白的碱基序列，不能被终止子打断。 当一个新基因被识别，其DNA序列被解读，人们仍旧无法搞清相应的蛋白序列是什么。这是因为在没有其它信息的前提下，DNA序列可以按六种框架阅读和翻译（核酸有两条链，每条链三种，对应三种不同的起始密码子）。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>一个DNA顺序可能有3种阅读框，但只有一种具有编码的作用，称为开放阅读框（open reading frame or ORF）。有的阅读框因终止密码出现频繁故不能生成蛋白，这种阅读框称为封闭阅读框（block reading frame）。若一个顺序所有的三个阅读框都是封闭的，则它无编码蛋白的功能。一个翻译成蛋白的顺序有一个阅读框，开始于AUG起始密码子，通过一系列有义密码子，直到终止密码子结束。通常3个阅读框中总有封闭阅读框的存在。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>##单选第三题(A)</p>
-</blockquote>
-<blockquote>
-<p>##单选第四题(C)<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/5.png" alt="第一题"></p>
-</blockquote>
-<blockquote>
-<p>##多选第一题(ABCD)</p>
-</blockquote>
-<blockquote>
-<p>##多选第二题(ABCD)</p>
-</blockquote>
-<blockquote>
-<p>##多选第三题(ABC)</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<ul>
-<li>Glimmer是用于原核生物基因组预测的工具，只要输入原核生物基因组即可得到其基因信息。不过该软件最终结果只是基因的位置信息，需要额外程序将基因从基因组上提取出来，并翻译成对应的氨基酸序列。</li>
-<li>GeneMark：GeneMark软件包是专为原核基因组和病毒基因组以及元基因组分析而设计的，可以预测基因，以及蛋白质编码区阅读框的位移。</li>
-<li>GenScan是一个gene识别软件，主要是通过已知生物的基因结构特征来识别新的基因（parse）。</li>
-<li>Augusust是一款预测真核生物基因结构的软件组装得到基因组序列之后，进一步的工作就是探究基因结构。</li>
-</ul>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>##判断题第一题（对）<br>100PE=paired end 100bp</p>
-<p>100SE=single end 100bp</p>
-<p>50PE=paired end 50bp</p>
-<p>50SE=single end 50bp<br>##判断题第二题（错）<br>BLAST（基本局部比对工具）</p>
-</blockquote>
-<blockquote>
-<p>CLUSTALW是一种渐进的多序列比对方法，先将多个序列两两比对构建距离矩阵，反应序列之间两两关系；然后根据距离矩阵计算产生系统进化指导树，对关系密切的序列进行加权；然后从最紧密的两条序列开始，逐步引入临近的序列并不断重新构建比对，直到所有序列都被加入为止</p>
-</blockquote>
-<blockquote>
-<p>CLUSTALX－是CLUSTAL多重序列比对程序的Windows版本。</p>
-</blockquote>
-<blockquote>
-<p>##填空第一题（n = (L - K) + 1）<br><img src="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/6.jpg" alt="第一题"></p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/10/13/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80%E5%B0%8F%E6%B5%8B/">展开全文 >></a>
         </p>
       
 

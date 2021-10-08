@@ -6,18 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Biomagic</title>
+  <title>药物敏感性预测实践 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/page/7/index.html">
+  <meta name="description" content="（1）药物敏感性分析工具概要 “我们最近描述了一种在多个独立临床试验中可靠预测化疗反应的方法。该方法的工作原理是从一组非常大的癌细胞系的基因表达和药物敏感性数据中建立统计模型，然后将这些模型应用于原发性肿瘤活检的基因表达数据。在这里，为了促进这种方法的开发和采用，我们创建了一个名为PRrophytic的R包。这也扩展了前面描述的管道，允许在用户友好的R环境中预测许多癌症药物的临床药物反应。我们开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="药物敏感性预测实践">
+<meta property="og:url" content="http://yoursite.com/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="（1）药物敏感性分析工具概要 “我们最近描述了一种在多个独立临床试验中可靠预测化疗反应的方法。该方法的工作原理是从一组非常大的癌细胞系的基因表达和药物敏感性数据中建立统计模型，然后将这些模型应用于原发性肿瘤活检的基因表达数据。在这里，为了促进这种方法的开发和采用，我们创建了一个名为PRrophytic的R包。这也扩展了前面描述的管道，允许在用户友好的R环境中预测许多癌症药物的临床药物反应。我们开发">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/2.png">
+<meta property="article:published_time" content="2021-10-08T13:55:12.000Z">
+<meta property="article:modified_time" content="2021-10-08T14:15:04.176Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,109 +154,78 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-TCGA数据-1-DESeq2差异分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-药物敏感性预测实践" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(1):DESeq2差异分析（bulk水平）</a>
+    <h1 class="article-title" itemprop="name">
+      药物敏感性预测实践
     </h1>
   
 
         
-        <a href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:35:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
+        <a href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+  	<time datetime="2021-10-08T13:55:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <blockquote>
-<p>在具体搞差异分析代码之前,先整理一手TCGA数据相关背景知识，显然是我搬运百度。<br>#（一）TCGA背景知识</p>
+        <h1 id="（1）药物敏感性分析工具概要"><a href="#（1）药物敏感性分析工具概要" class="headerlink" title="（1）药物敏感性分析工具概要"></a>（1）药物敏感性分析工具概要</h1><blockquote>
+<p>“我们最近描述了一种在多个独立临床试验中可靠预测化疗反应的方法。该方法的工作原理是从一组非常大的癌细胞系的基因表达和药物敏感性数据中建立统计模型，然后将这些模型应用于原发性肿瘤活检的基因表达数据。在这里，为了促进这种方法的开发和采用，我们创建了一个名为PRrophytic的R包。这也扩展了前面描述的管道，允许在用户友好的R环境中预测许多癌症药物的临床药物反应。我们开发了其他几个重要的用例；作为一个例子，我们已经表明，通过对大量肿瘤血液学细胞系的训练模型，可以改善多发性骨髓瘤中硼替佐米敏感性的预测。我们还表明，该软件包有助于使用几种不同类别的数据进行模型开发和预测。”</p>
+</blockquote>
+<blockquote>
+<p>在我们看来就是可以根据基因表达数据联系到药物敏感性预测。</p>
 </blockquote>
 <ul>
-<li>肿瘤基因组图谱（TCGA）计划是由美国National Cancer Institute（NCI）和National Human Genome Research Institute（NHGRI）于2006年联合启动的项目，研究的癌症类型从最开始的多形性成胶质细胞瘤（GBM）到现在为止共有39种，涉及29种癌症器官，1万多个肿瘤样本，27万多份文件，当然其项目也将于2017年接近尾声。 网址：<a href="https://portal.gdc.cancer.gov/" target="_blank" rel="noopener">https://portal.gdc.cancer.gov/</a></li>
+<li>pRRophetic来源文献： <a href="https://doi.org/10.1371/journal.pone.0107468" target="_blank" rel="noopener">pRRophetic来源文献</a></li>
 </ul>
-<blockquote>
-<p>TCGA中数据类型主要有以下几种：</p>
-</blockquote>
+<h1 id="（2）pRRophetic安装"><a href="#（2）pRRophetic安装" class="headerlink" title="（2）pRRophetic安装"></a>（2）pRRophetic安装</h1><p>我们先安装它的依赖包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BiocManager::install(c(&#39;sva&#39;, &#39;car&#39;, &#39;genefilter&#39;, &#39;preprocessCore&#39;, &#39;ridge&#39;))</span><br></pre></td></tr></table></figure>
 <ul>
-<li>Clinical：病人的一般情况、诊治情况、TNM分期、肿瘤病理、生存情况等</li>
-<li>mRNA：mRNA芯片或者RNA-Seq测得的mRNA表达量</li>
-<li>microRNA：microRNA芯片或者microRNA-Seq测得的microRNA表达量</li>
-<li>Copy Number：SNP芯片得到的肿瘤组织比对正常组织的染色体上各片段的比值</li>
-<li>Mutation：肿瘤组织测序结果相对参考基因组的核苷酸突变，包括插入和缺失等变化</li>
-<li>Protein：蛋白芯片测序得到的约200种常见癌症相关蛋白的表达量</li>
-<li>Methylation：甲基化芯片测得的DNA甲基化数据</li>
+<li>在此可以看见ridge,岭回归的包作回归预测。</li>
 </ul>
-<p>###其中mRNA-Seq，miRNA-Seq以及Methylation Array被广泛使用</p>
-<blockquote>
-<p>mRNA-Seq数据分为3种：</p>
+<h1 id="（3）pRRophetic分析"><a href="#（3）pRRophetic分析" class="headerlink" title="（3）pRRophetic分析"></a>（3）pRRophetic分析</h1><blockquote>
+<p>我们本次分析的数据采用的是CGGA数据库的表达矩阵来进行药物敏感性预测，其中分组是根据BULK分析那一套的riskscore的风险高低分组，我们希望能看到根据riskscore分组的组内在药物敏感性上也有一定差异，可以深入讨论。</p>
 </blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">library(pRRophetic)</span><br><span class="line"></span><br><span class="line">predictedPtype &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Bortezomib&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype2 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;DMOG&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype3 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;CMK&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype4 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Doxorubicin&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype5 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Paclitaxel&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype6 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;AKT.inhibitor.VIII&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype7 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Etoposide&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype8 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Gefitinib&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br></pre></td></tr></table></figure>
 <ul>
-<li>HTSeq-Counts</li>
-<li>HTSeq-FPKM</li>
-<li>HTSeq-FPKM-UQ<h3 id="（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法"><a href="#（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法" class="headerlink" title="（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法"></a>（！）前两个比较好理解，第三个跟第二个的区别在于不同的标准化方法</h3></li>
+<li>这里核心预测步骤可以选择不同的药物，以上我们选用了八个药物，该包还有很多其他的化疗药物。根据分析需求进行选择。（有时间再改成批量药物敏感性预测）</li>
 </ul>
-<p>#（二）差异分析背景知识</p>
-<blockquote>
-<p>参见 Bioconductor网站具体讲解：<a href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html" target="_blank" rel="noopener">http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html</a></p>
-<blockquote>
-<p>背景知识尤其重要，比如用FPKM做还是counts数据做呢？</p>
-<blockquote>
-<p>对于TCGA的样本需要取平均吗？（单细胞和bulk水平的区别）还有就是</p>
-<blockquote>
-<p>LogFC的定义，以及矫正后的qval的取值比较主观，如何定义阈值？</p>
-<blockquote>
-<p>正常样本数量和癌症样本数量不同会对其造成什么影响？<br>显然我想到这些问题，就是一句mmp……但是被师兄怒屌一顿，感觉变成老懂哥就完事了<br>#（三）差异分析基因列表制作</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;Normal&#x2F;&quot;)</span><br><span class="line">normal &lt;- read.csv(&quot;normal注释count表达矩阵.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;count&#x2F;&quot;)</span><br><span class="line">cancer &lt;- read.csv(&quot;count_data(注释).csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>此处的所读的两个矩阵，皆是我提前注释了的，所制成的行名是样本，列名是基因，且确保癌症和正常一样<br>同时删除了重复的，空的，因为要合并所以必须用统一注释方法。</p>
-</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#八类药物敏感性预测结果合并</span><br><span class="line">DRUG_CCGA &lt;- data.frame(&quot;Bortezomib&quot; &#x3D; predictedPtype,</span><br><span class="line">                        &quot;DMOG&quot; &#x3D; predictedPtype2,</span><br><span class="line">                        &quot;CMK&quot; &#x3D; predictedPtype3,</span><br><span class="line">                        &quot;Doxorubicin&quot; &#x3D; predictedPtype4,</span><br><span class="line">                        &quot;Paclitaxel&quot; &#x3D; predictedPtype5,</span><br><span class="line">                        &quot;AKT.inhibitor.VIII&quot; &#x3D; predictedPtype6,</span><br><span class="line">                        &quot;Etoposide&quot; &#x3D; predictedPtype7,</span><br><span class="line">                        &quot;Gefitinib&quot;&#x3D;  predictedPtype8)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/1.png" alt="药物敏感性预测结果"></p>
+<h1 id="（4）分析结果可视化及统计分析"><a href="#（4）分析结果可视化及统计分析" class="headerlink" title="（4）分析结果可视化及统计分析"></a>（4）分析结果可视化及统计分析</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">BOX_obj1 &lt;- read.csv(&quot;E:&#x2F;GDT210707002&#x2F;Step10&#x2F;CGGAgroup_exp.csv&quot;,</span><br><span class="line">                     header &#x3D; T,</span><br><span class="line">                     row.names &#x3D; 1,</span><br><span class="line">                     check.names &#x3D; F)</span><br><span class="line"></span><br><span class="line">GROUP1 &lt;- as.data.frame(t(BOX_obj1))</span><br><span class="line"></span><br><span class="line">###箱线图</span><br><span class="line">DRUG_CCGA_group &lt;- cbind(&quot;Group&quot; &#x3D; GROUP1$group, DRUG_CCGA)</span><br><span class="line"></span><br><span class="line">#加载数据规整的包</span><br><span class="line">library(reshape2)</span><br><span class="line">library(knitr)</span><br><span class="line"></span><br><span class="line">mydata&lt;-melt(DRUG_CCGA_group,</span><br><span class="line">             id.vars&#x3D;c(&quot;Group&quot;),</span><br><span class="line">             variable.name&#x3D;&quot;Drug&quot;,value.name&#x3D;&quot;Estimated_IC50&quot;)</span><br><span class="line"></span><br><span class="line">#去除缺失</span><br><span class="line">index_na &lt;- is.na(mydata$Var)</span><br><span class="line">mydata &lt;- mydata[!index_na,]</span><br><span class="line"></span><br><span class="line">#install.packages(&quot;ggsignif&quot;)</span><br><span class="line">#加载统计分析的包</span><br><span class="line">library(&quot;ggsignif&quot;)</span><br><span class="line">library(ggpubr)</span><br><span class="line"></span><br><span class="line">compaired &lt;- list(c(&quot;Group1&quot;,&quot;Group2&quot;))</span><br><span class="line">mydata$Riskscore &lt;- as.factor(mydata$Riskscore)</span><br><span class="line">mydata$Var &lt;- as.numeric(mydata$Var)</span><br><span class="line">mydata &lt;- na.omit(mydata)</span><br><span class="line"></span><br><span class="line">#ggboxplot(mydata,x &#x3D; &quot;Type&quot;,y &#x3D; &quot;Var&quot;, fill &#x3D; &quot;Group&quot;)+</span><br><span class="line">#  stat_compare_means(comparisons &#x3D; compaired,method &#x3D; &quot;t.test&quot;,</span><br><span class="line">#                     step_increase &#x3D; 0.0,map_signif_level &#x3D; T,na.rm &#x3D; F,</span><br><span class="line">#                     paired &#x3D; F,aes(label &#x3D; ..p.signif..))</span><br><span class="line"></span><br><span class="line">ggplot(mydata, aes(x &#x3D; Drug, y &#x3D; Estimated_IC50)) +</span><br><span class="line">  geom_boxplot(aes(fill &#x3D; Group))+</span><br><span class="line">  scale_fill_manual(values &#x3D; c(&quot;navy&quot;,&quot;yellow&quot;))+</span><br><span class="line">  stat_compare_means(label &#x3D; &quot;p.signif&quot;, ref.group &#x3D; &quot;.all.&quot;)+</span><br><span class="line">  theme_light()+theme(panel.border &#x3D; element_blank(),panel.grid.major &#x3D; element_blank(),</span><br><span class="line">                   panel.grid.minor &#x3D; element_blank(),</span><br><span class="line">                   axis.line &#x3D; element_line(colour &#x3D; &quot;black&quot;))</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>这里的代码是我在差异分析之前就做了。由于之前的Biobase的注释包有问题，于是用clusterProfiler注释。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#读取的是未注释的数据</span><br><span class="line">data &lt;- read.csv(&quot;TCGA_data_clean.csv&quot;)</span><br><span class="line">#注释表达矩阵</span><br><span class="line">library(&quot;biomaRt&quot;)</span><br><span class="line">library(&quot;clusterProfiler&quot;)</span><br><span class="line">BiocManager::install(&quot;clusterProfiler&quot;)</span><br><span class="line">install.packages(&quot;dplyr&quot;)</span><br><span class="line">library(&quot;org.Hs.eg.db&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>由于meta信息的基因编号的格式不同，为了方便提前替换“-”为“.”</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a&lt;- gsub(&quot;\\_\\d*&quot;, &quot;&quot;, data$Tags)</span><br><span class="line"></span><br><span class="line">ENSEMBL &lt;- gsub(&quot;\\.\\d*&quot;, &quot;&quot;, a)</span><br><span class="line"></span><br><span class="line">row.names(data) &lt;- ENSEMBL</span><br><span class="line"></span><br><span class="line">colnames(data)[1] &lt;- c(&quot;ensembl_gene_id&quot;)</span><br><span class="line"></span><br><span class="line">write.csv(data,&quot;data.csv&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>这里便是用clusterProfiler注释的四个参数，用bitr(),mapIds(),皆可</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">eg &lt;- bitr(data$ensembl_gene_id, fromType&#x3D;&quot;ENSEMBL&quot;,</span><br><span class="line">                    toType&#x3D;&quot;SYMBOL&quot;, OrgDb&#x3D;&quot;org.Hs.eg.db&quot;,drop &#x3D; F)</span><br><span class="line"></span><br><span class="line">data$symbol &lt;- mapIds(org.Hs.eg.db, data$X, &quot;SYMBOL&quot;,&quot;ENSEMBL&quot;)</span><br><span class="line"></span><br><span class="line">data &lt;- read.csv(&quot;data.csv&quot;)</span><br><span class="line"></span><br><span class="line">#删除多余的列</span><br><span class="line">data &lt;- subset(data, select &#x3D; -c(X,X.1,X.2))</span><br><span class="line">#消除未注释和重复的行</span><br><span class="line">index3&lt;-is.na(data$symbol)</span><br><span class="line">b &lt;- data[!index3,]</span><br><span class="line"></span><br><span class="line">index4 &lt;- duplicated(b$symbol)</span><br><span class="line"></span><br><span class="line">gene_only &lt;- b[!index4,]</span><br><span class="line"></span><br><span class="line">rownames(gene_only) &lt;- gene_only$symbol</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注释工作完成之后，可以开始差异分析，回答之前所提出的问题，<br>差异分析使用counts数据做，单细胞取平均而bulk水平不需要。</p>
-</blockquote>
-</li>
-<li><p>制作DESeq需要的几个元素</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">library(tidyverse)</span><br><span class="line">library(DESeq2)</span><br><span class="line">#差异分析，制作列表</span><br><span class="line">names(cancer) &lt;- rep(&quot;cancer&quot;,448)</span><br><span class="line">names(normal) &lt;- rep(&quot;normal&quot;,40)</span><br><span class="line">Deflist &lt;- data.frame(normal,cancer)</span><br><span class="line">mycounts &lt;- Deflist</span><br><span class="line"></span><br><span class="line">condition &lt;- factor(c(rep(&quot;cancer&quot;,448),rep(&quot;normal&quot;,40)), levels &#x3D; c(&quot;cancer&quot;,&quot;normal&quot;))</span><br><span class="line"></span><br><span class="line">colData &lt;- data.frame(row.names&#x3D;colnames(mycounts), condition)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>DESeqDataSetFromMatrix(mycounts, colData, design= ~ condition)这就是上一步骤制作的需要的三个元素</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#构建DESeq对象</span><br><span class="line">dds &lt;- DESeqDataSetFromMatrix(mycounts, colData, design&#x3D; ~ condition)</span><br><span class="line">dds &lt;- DESeq(dds)</span><br><span class="line">dds</span><br><span class="line"></span><br><span class="line">#查看分析结果</span><br><span class="line">res&#x3D; results(dds)</span><br><span class="line">res &#x3D; res[order(res$pvalue),]</span><br><span class="line">head(res)</span><br><span class="line">summary(res)</span><br><span class="line">#所有结果先进行输出</span><br><span class="line">write.csv(res,file&#x3D;&quot;All_results.csv&quot;)</span><br></pre></td></tr></table></figure>
-<p>对差异分析的结果设置阈值，筛选表达量统计水平上的差异基因，code可回答之前的mmp问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">table(res$padj&lt;0.05)</span><br><span class="line"></span><br><span class="line">diff_gene_deseq2 &lt;-subset(res, padj &lt; 0.05 &amp; abs(log2FoldChange) &gt; 1)</span><br><span class="line">#或</span><br><span class="line">#&gt; diff_gene_deseq2 &lt;-subset(res,padj &lt; 0.05 &amp; (log2FoldChange &gt; 1 | log2FoldChange &lt; -1))</span><br><span class="line">dim(diff_gene_deseq2)</span><br><span class="line">head(diff_gene_deseq2)</span><br><span class="line">write.csv(diff_gene_deseq2,file&#x3D; &quot;DEG_treat_vs_control.csv&quot;)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>每一个步骤都要记得保存文件，给大家看看得出的差异分析列表<br><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="示例"><br>对分析结果进行可视化：（绘制火山图）</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">library(ggplot2)</span><br><span class="line">library(ggrepel)</span><br><span class="line"></span><br><span class="line">Dat &lt;- read.csv(&quot;All_results.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$padj &lt; 0.05 &amp; abs(Dat$log2FoldChange) &gt;&#x3D; 1, ifelse(Dat$log2FoldChange&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;log2FoldChange,y&#x3D;-log10(padj),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;#DC143C&quot;,&quot;#00008B&quot;,&quot;#808080&quot;))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/2.png" alt="示例"></p>
-</li>
+<li>最后药物敏感性预测的箱线图：</li>
 </ul>
-<blockquote>
-<p>然后竟然发现自己需要研究的目标基因，在一顿分析后不是差异基因，转而使用北京大学张泽民老师课题组工具：GEPIA2、网页自动分析，不用<br>自己跑数据，虽然会有些许问题，但是确实香~所以直接把他们的结果下着可视化23333</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#GEPIA2数据</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;&quot;)</span><br><span class="line">data_diff &lt;- read.table(&quot;table_degenes.txt&quot;,sep &#x3D; &quot;\t&quot;,header &#x3D; T)</span><br><span class="line">Dat &#x3D; data_diff</span><br><span class="line">Dat$threshold &#x3D; factor(ifelse(Dat$X.5 &lt; 0.05 &amp; abs(Dat$X.4) &gt;&#x3D; 1, ifelse(Dat$X.4&gt;&#x3D; 1 ,&#39;Up&#39;,&#39;Down&#39;),&#39;NoSignifi&#39;),levels&#x3D;c(&#39;Up&#39;,&#39;Down&#39;,&#39;NoSignifi&#39;))</span><br><span class="line"></span><br><span class="line">ggplot(Dat,aes(x&#x3D;X.4,y&#x3D;-log10(X.5),color&#x3D;threshold))+</span><br><span class="line">  geom_point()+#修改x轴名称</span><br><span class="line">  geom_vline(xintercept&#x3D;c(-1,1),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5) +#添加横线|FoldChange|&gt;2</span><br><span class="line">  geom_hline(yintercept &#x3D; -log10(0.05),lty&#x3D;3,col&#x3D;&quot;black&quot;,lwd&#x3D;0.5)+</span><br><span class="line">  theme_bw()+</span><br><span class="line">  ylab(&#39;-log10 (p-adj)&#39;)+</span><br><span class="line">  xlab(&#39;log2 (FoldChange)&#39;)+</span><br><span class="line">  scale_color_manual(values&#x3D;c(&quot;#DC143C&quot;,&quot;#00008B&quot;,&quot;#808080&quot;))</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/3.png" alt="示例"><br>#真香！</p>
+<p><img src="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/2.png" alt="药物敏感性预测结果"></p>
 
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -260,16 +234,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">一致性聚类实践</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -289,302 +322,14 @@
 
 
 
-
-  
-    <article id="post-递归可视化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#递归的关键思想：不断缩小，调用自身</p>
-<ul>
-<li>利用该逻辑思想可进行简化问题</li>
-<li>1、画一个螺旋缩小正方形<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">def drawSpiral(t,lineLen):</span><br><span class="line">    if lineLen &gt; 0:</span><br><span class="line">        t.forward(lineLen)</span><br><span class="line">        t.right(90)</span><br><span class="line">        drawSpiral(t,lineLen - 5)</span><br><span class="line">drawSpiral(t,100)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/1.png" alt="螺旋结构展示"></li>
-<li>2、画一个五角星<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">t.pencolor(&quot;green&quot;)</span><br><span class="line">t.pensize(3)</span><br><span class="line">for i in  range(5):</span><br><span class="line">    t.forward(100)</span><br><span class="line">    t.right(144)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/2.png" alt="螺旋结构展示"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-后缀表达式计算" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">栈的应用-后缀表达式计算</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:20:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#后缀表达式计算</p>
-<blockquote>
-<p>正如中缀转后缀中所提到的、需要考虑运算的优先级，小学我们曾学过，先乘除后加减嘛23333333</p>
-</blockquote>
-<p><img src="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.png" alt="后缀表达式计算示例"></p>
-<p>##代码实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def postfixEval(postfixExpr):</span><br><span class="line">        operandStack &#x3D; Stack()</span><br><span class="line">        tokenList&#x3D; list(postfixExpr)</span><br><span class="line"></span><br><span class="line">        for token in tokenList:</span><br><span class="line">            if token in &quot;0123456789&quot;:</span><br><span class="line">                operandStack.push(int(token))</span><br><span class="line">            else:</span><br><span class="line">                operand2 &#x3D; operandStack.pop()</span><br><span class="line">                operand1 &#x3D; operandStack.pop()</span><br><span class="line">                result &#x3D; doMath(token,operand1,operand2)</span><br><span class="line">                operandStack.push(result)</span><br><span class="line">        return operandStack.pop()</span><br><span class="line">def doMath(op,op1,op2):</span><br><span class="line">    if op &#x3D;&#x3D; &quot;*&quot;:</span><br><span class="line">      return op1*op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;&#x2F;&quot;:</span><br><span class="line">      return op1&#x2F;op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;+&quot;:</span><br><span class="line">      return op1+op2</span><br><span class="line">    else:</span><br><span class="line">      return op1-op2</span><br><span class="line"></span><br><span class="line">print(postfixEval(&quot;789*+&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;后缀表达式计算.py</span><br><span class="line">79</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-中缀表达式变后缀表达式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#中缀表达式变后缀表达式</p>
-<blockquote>
-<p>和读取括号是否匹配类似，一层层读（），根据栈的数据结构的特性“先进后出”<br>，也就是说最里面的括号在中缀表达式里运算最先运算</p>
-</blockquote>
-<p>这里的代码的一些Tips：</p>
-<blockquote>
-<blockquote>
-<p>将括号替换为运算符，并且将运算符排序，与数字近的先运算，同时也要考虑运算的优先级</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def infixToPostfix(infixexpr):</span><br><span class="line">    prec &#x3D; &#123;&#125;</span><br><span class="line">    prec[&quot;*&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;&#x2F;&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;+&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;-&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;(&quot;] &#x3D; 1</span><br><span class="line">    opStack &#x3D; Stack()</span><br><span class="line">    postfixList &#x3D; []</span><br><span class="line">    tokenList &#x3D; list(infixexpr)</span><br><span class="line">    #以下的问题出现，改成上面</span><br><span class="line">    #tokenList &#x3D; infixexpr.split()</span><br><span class="line">    for token in tokenList:</span><br><span class="line">        if token in &quot;ABCDEFGHIJKLMNOPQRSTVUWXYZ&quot; or token in &quot;0123456789&quot;:</span><br><span class="line">            postfixList.append(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            opStack.push(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;)&quot;:</span><br><span class="line">            topToken &#x3D; opStack.pop()</span><br><span class="line">            while  topToken !&#x3D; &quot;(&quot;:</span><br><span class="line">                postfixList.append(topToken)</span><br><span class="line">                topToken &#x3D; opStack.pop()</span><br><span class="line">        else:</span><br><span class="line">            while(not opStack.isEmpty()) and \</span><br><span class="line">                    (prec([opStack.peek()]) &gt;&#x3D; prec[token]):</span><br><span class="line">                postfixList.append(opStack.pop())</span><br><span class="line">            opStack.push(token)</span><br><span class="line">    while not opStack.isEmpty():</span><br><span class="line">        postfixList.append(opStack.pop())</span><br><span class="line">    return &quot; &quot; .join(postfixList)</span><br><span class="line"></span><br><span class="line">print(infixToPostfix(&quot;A+B&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;中缀表达式变后缀表达式.py</span><br><span class="line">A B +</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-二进制转换" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">栈的应用-二进制转换</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:08:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#栈的应用-二进制转换</p>
-<blockquote>
-<p>高中就学过2的幂次方累加就是嘛，然后所得的余数应该的位置和栈数据结构形式一样</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<p>可以拆解为：计算和字符串排序</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def divideBy2(decNumber):</span><br><span class="line">    remstack &#x3D; Stack()</span><br><span class="line"></span><br><span class="line">    while decNumber &gt; 0:</span><br><span class="line">        rem &#x3D; decNumber % 2</span><br><span class="line">        remstack.push(rem)</span><br><span class="line">        decNumber &#x3D;decNumber &#x2F;&#x2F; 2</span><br><span class="line"></span><br><span class="line">    binString &#x3D; &quot;&quot;</span><br><span class="line">    while not remstack.isEmpty():</span><br><span class="line">        binString &#x3D; binString + str(remstack.pop())</span><br><span class="line">    return binString</span><br><span class="line"></span><br><span class="line">print(divideBy2(77))</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>输出结果</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;二进制转换.py</span><br><span class="line">1001101</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/6/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">Next &amp;raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -607,8 +352,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

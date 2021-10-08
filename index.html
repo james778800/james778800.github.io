@@ -151,6 +151,96 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-药物敏感性预测实践" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/">药物敏感性预测实践</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+  	<time datetime="2021-10-08T13:55:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="（1）药物敏感性分析工具概要"><a href="#（1）药物敏感性分析工具概要" class="headerlink" title="（1）药物敏感性分析工具概要"></a>（1）药物敏感性分析工具概要</h1><blockquote>
+<p>“我们最近描述了一种在多个独立临床试验中可靠预测化疗反应的方法。该方法的工作原理是从一组非常大的癌细胞系的基因表达和药物敏感性数据中建立统计模型，然后将这些模型应用于原发性肿瘤活检的基因表达数据。在这里，为了促进这种方法的开发和采用，我们创建了一个名为PRrophytic的R包。这也扩展了前面描述的管道，允许在用户友好的R环境中预测许多癌症药物的临床药物反应。我们开发了其他几个重要的用例；作为一个例子，我们已经表明，通过对大量肿瘤血液学细胞系的训练模型，可以改善多发性骨髓瘤中硼替佐米敏感性的预测。我们还表明，该软件包有助于使用几种不同类别的数据进行模型开发和预测。”</p>
+</blockquote>
+<blockquote>
+<p>在我们看来就是可以根据基因表达数据联系到药物敏感性预测。</p>
+</blockquote>
+<ul>
+<li>pRRophetic来源文献： <a href="https://doi.org/10.1371/journal.pone.0107468" target="_blank" rel="noopener">pRRophetic来源文献</a></li>
+</ul>
+<h1 id="（2）pRRophetic安装"><a href="#（2）pRRophetic安装" class="headerlink" title="（2）pRRophetic安装"></a>（2）pRRophetic安装</h1><p>我们先安装它的依赖包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BiocManager::install(c(&#39;sva&#39;, &#39;car&#39;, &#39;genefilter&#39;, &#39;preprocessCore&#39;, &#39;ridge&#39;))</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在此可以看见ridge,岭回归的包作回归预测。</li>
+</ul>
+<h1 id="（3）pRRophetic分析"><a href="#（3）pRRophetic分析" class="headerlink" title="（3）pRRophetic分析"></a>（3）pRRophetic分析</h1><blockquote>
+<p>我们本次分析的数据采用的是CGGA数据库的表达矩阵来进行药物敏感性预测，其中分组是根据BULK分析那一套的riskscore的风险高低分组，我们希望能看到根据riskscore分组的组内在药物敏感性上也有一定差异，可以深入讨论。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">library(pRRophetic)</span><br><span class="line"></span><br><span class="line">predictedPtype &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Bortezomib&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype2 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;DMOG&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype3 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;CMK&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype4 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Doxorubicin&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype5 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Paclitaxel&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype6 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;AKT.inhibitor.VIII&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype7 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Etoposide&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br><span class="line"></span><br><span class="line">predictedPtype8 &lt;- pRRopheticPredict(as.matrix(CGGA_exp), &quot;Gefitinib&quot;,&quot;blood&quot;,selection&#x3D;1)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这里核心预测步骤可以选择不同的药物，以上我们选用了八个药物，该包还有很多其他的化疗药物。根据分析需求进行选择。（有时间再改成批量药物敏感性预测）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#八类药物敏感性预测结果合并</span><br><span class="line">DRUG_CCGA &lt;- data.frame(&quot;Bortezomib&quot; &#x3D; predictedPtype,</span><br><span class="line">                        &quot;DMOG&quot; &#x3D; predictedPtype2,</span><br><span class="line">                        &quot;CMK&quot; &#x3D; predictedPtype3,</span><br><span class="line">                        &quot;Doxorubicin&quot; &#x3D; predictedPtype4,</span><br><span class="line">                        &quot;Paclitaxel&quot; &#x3D; predictedPtype5,</span><br><span class="line">                        &quot;AKT.inhibitor.VIII&quot; &#x3D; predictedPtype6,</span><br><span class="line">                        &quot;Etoposide&quot; &#x3D; predictedPtype7,</span><br><span class="line">                        &quot;Gefitinib&quot;&#x3D;  predictedPtype8)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/1.png" alt="药物敏感性预测结果"></p>
+<h1 id="（4）分析结果可视化及统计分析"><a href="#（4）分析结果可视化及统计分析" class="headerlink" title="（4）分析结果可视化及统计分析"></a>（4）分析结果可视化及统计分析</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">BOX_obj1 &lt;- read.csv(&quot;E:&#x2F;GDT210707002&#x2F;Step10&#x2F;CGGAgroup_exp.csv&quot;,</span><br><span class="line">                     header &#x3D; T,</span><br><span class="line">                     row.names &#x3D; 1,</span><br><span class="line">                     check.names &#x3D; F)</span><br><span class="line"></span><br><span class="line">GROUP1 &lt;- as.data.frame(t(BOX_obj1))</span><br><span class="line"></span><br><span class="line">###箱线图</span><br><span class="line">DRUG_CCGA_group &lt;- cbind(&quot;Group&quot; &#x3D; GROUP1$group, DRUG_CCGA)</span><br><span class="line"></span><br><span class="line">#加载数据规整的包</span><br><span class="line">library(reshape2)</span><br><span class="line">library(knitr)</span><br><span class="line"></span><br><span class="line">mydata&lt;-melt(DRUG_CCGA_group,</span><br><span class="line">             id.vars&#x3D;c(&quot;Group&quot;),</span><br><span class="line">             variable.name&#x3D;&quot;Drug&quot;,value.name&#x3D;&quot;Estimated_IC50&quot;)</span><br><span class="line"></span><br><span class="line">#去除缺失</span><br><span class="line">index_na &lt;- is.na(mydata$Var)</span><br><span class="line">mydata &lt;- mydata[!index_na,]</span><br><span class="line"></span><br><span class="line">#install.packages(&quot;ggsignif&quot;)</span><br><span class="line">#加载统计分析的包</span><br><span class="line">library(&quot;ggsignif&quot;)</span><br><span class="line">library(ggpubr)</span><br><span class="line"></span><br><span class="line">compaired &lt;- list(c(&quot;Group1&quot;,&quot;Group2&quot;))</span><br><span class="line">mydata$Riskscore &lt;- as.factor(mydata$Riskscore)</span><br><span class="line">mydata$Var &lt;- as.numeric(mydata$Var)</span><br><span class="line">mydata &lt;- na.omit(mydata)</span><br><span class="line"></span><br><span class="line">#ggboxplot(mydata,x &#x3D; &quot;Type&quot;,y &#x3D; &quot;Var&quot;, fill &#x3D; &quot;Group&quot;)+</span><br><span class="line">#  stat_compare_means(comparisons &#x3D; compaired,method &#x3D; &quot;t.test&quot;,</span><br><span class="line">#                     step_increase &#x3D; 0.0,map_signif_level &#x3D; T,na.rm &#x3D; F,</span><br><span class="line">#                     paired &#x3D; F,aes(label &#x3D; ..p.signif..))</span><br><span class="line"></span><br><span class="line">ggplot(mydata, aes(x &#x3D; Drug, y &#x3D; Estimated_IC50)) +</span><br><span class="line">  geom_boxplot(aes(fill &#x3D; Group))+</span><br><span class="line">  scale_fill_manual(values &#x3D; c(&quot;navy&quot;,&quot;yellow&quot;))+</span><br><span class="line">  stat_compare_means(label &#x3D; &quot;p.signif&quot;, ref.group &#x3D; &quot;.all.&quot;)+</span><br><span class="line">  theme_light()+theme(panel.border &#x3D; element_blank(),panel.grid.major &#x3D; element_blank(),</span><br><span class="line">                   panel.grid.minor &#x3D; element_blank(),</span><br><span class="line">                   axis.line &#x3D; element_line(colour &#x3D; &quot;black&quot;))</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最后药物敏感性预测的箱线图：</li>
+</ul>
+<p><img src="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/2.png" alt="药物敏感性预测结果"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-一致性聚类实践" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -461,73 +551,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多因素COX生存风险分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/05/22/%E5%A4%9A%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">多因素COX生存风险分析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/05/22/%E5%A4%9A%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:17:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>曾经做过代码更清晰，二更</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">#多因素回归分析</span><br><span class="line"></span><br><span class="line">model_muti &lt;- coxph(Surv(time, vital_status) ~ Stage +  </span><br><span class="line">                      Treatment+ Riskscore + Age, data &#x3D; meta_final)</span><br><span class="line"></span><br><span class="line">ggforest(model_muti)</span><br><span class="line"></span><br><span class="line">a &lt;-summary(model_muti)</span><br><span class="line">a$waldtest[&quot;pvalue&quot;]</span><br><span class="line">#1.载入包</span><br><span class="line">library(tableone) </span><br><span class="line">#install.packages(&quot;tableone&quot;)</span><br><span class="line">library(survival)</span><br><span class="line">##画森林图的包</span><br><span class="line">library(forestplot)</span><br><span class="line">library(stringr)</span><br><span class="line"></span><br><span class="line">#一-2 multi1：提取：变量+HR+95%CI+95%CI</span><br><span class="line">mul_cox1 &lt;- summary(model_muti)</span><br><span class="line">colnames(mul_cox1$conf.int)</span><br><span class="line">multi1&lt;-as.data.frame(round(mul_cox1$conf.int[, c(1,2, 3, 4)], 2))</span><br><span class="line">#一-3、multi2：提取：HR(95%CI)和P</span><br><span class="line">multi2&lt;-ShowRegTable(model_muti, </span><br><span class="line">                     exp&#x3D;TRUE, </span><br><span class="line">                     digits&#x3D;2, </span><br><span class="line">                     pDigits &#x3D;3,</span><br><span class="line">                     printToggle &#x3D; TRUE, </span><br><span class="line">                     quote&#x3D;FALSE, </span><br><span class="line">                     ciFun&#x3D;confint)</span><br><span class="line">#一-4.将两次提取结果合并成表；取名result</span><br><span class="line">result &lt;-cbind(multi1,multi2);result</span><br><span class="line">#一-5.行名转为表格第一列，并给予命名&quot;Characteristics&quot;</span><br><span class="line">result&lt;-tibble::rownames_to_column(result, var &#x3D; &quot;Characteristics&quot;);result</span><br><span class="line"></span><br><span class="line">#write.csv(result, &quot;cox_muti.csv&quot;)</span><br><span class="line">cox_muti &lt;- read.csv(&quot;cox_muti.csv&quot;,header &#x3D; T, row.names &#x3D; 1)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">tabletext2 &lt;- cbind(c(NA,&quot;Risk Factors&quot;,cox_muti$Characteristics),</span><br><span class="line">                   c(NA,&quot;P value&quot;,cox_muti$p.value),</span><br><span class="line">                   c(NA,&quot;Hazard Ratio(95% CI)&quot;,cox_muti$HR.95..CI.for.HR.))</span><br><span class="line">forestplot(labeltext&#x3D;tabletext2, </span><br><span class="line">           graph.pos&#x3D;3,  #为Pvalue箱线图所在的位置</span><br><span class="line">           col&#x3D;fpColors(box&#x3D;&quot;#D55E00&quot;, lines&#x3D;&quot;#CC79A7&quot;, zero &#x3D; &quot;gray50&quot;),</span><br><span class="line">           mean&#x3D;c(NA,NA,cox_muti$HR),</span><br><span class="line">           lower&#x3D;c(NA,NA,cox_muti$HR.confint.lower), #95%置信区间下限</span><br><span class="line">           upper&#x3D;c(NA,NA,cox_muti$HR.confint.upper), #95%置信区间上限</span><br><span class="line">           boxsize&#x3D;0.5,lwd.ci&#x3D;2,   #箱子大小，线的宽度</span><br><span class="line">           ci.vertices.height &#x3D; 0.2,ci.vertices&#x3D;TRUE, #置信区间用线宽、高、型</span><br><span class="line">           zero&#x3D;1,lwd.zero&#x3D;1,      #zero线宽 基准线的位置</span><br><span class="line">           colgap&#x3D;unit(7,&quot;mm&quot;),    #列间隙</span><br><span class="line">           xticks &#x3D; c(0.5, 1,1.5,2,2.5,3), #横坐标刻度</span><br><span class="line">           lwd.xaxis&#x3D;1,            #X轴线宽</span><br><span class="line">           lineheight &#x3D; unit(1.5,&quot;cm&quot;), #固定行高</span><br><span class="line">           graphwidth &#x3D; unit(.3,&quot;npc&quot;), #图在表中的宽度比例</span><br><span class="line">           cex&#x3D;0.9, fn.ci_norm &#x3D; fpDrawCircleCI, #误差条显示方式</span><br><span class="line">           hrzl_lines&#x3D;list(&quot;2&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;),</span><br><span class="line">                           &quot;3&quot; &#x3D; gpar(lwd&#x3D;2, col&#x3D;&quot;black&quot;), #第三行顶部加黑线，引号内数字标记行位置</span><br><span class="line">                           &quot;7&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;)),#最后一行底部加黑线,&quot;16&quot;中数字为nrow(tabletext)+1</span><br><span class="line">           mar&#x3D;unit(rep(0.5, times &#x3D; 4), &quot;cm&quot;),#图形页边距</span><br><span class="line">           #fpTxtGp函数中的cex参数设置各个组件的大小</span><br><span class="line">           txt_gp&#x3D;fpTxtGp(label&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          ticks&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          xlab&#x3D;gpar(cex &#x3D; 1.25),</span><br><span class="line">                          title&#x3D;gpar(cex &#x3D; 1.2)),</span><br><span class="line">           xlab&#x3D;&quot;Hazard Ratio&quot;,</span><br><span class="line">          title &#x3D; &quot;Multivariate cox regression analysis&quot;)</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/22/%E5%A4%9A%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/1.png" alt="相关性图"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/05/22/%E5%A4%9A%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">展开全文 >></a>
         </p>
       
 

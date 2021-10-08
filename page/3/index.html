@@ -151,6 +151,91 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Lasso-Cox之森林图绘制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/">Lasso_Cox之森林图绘制</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/" class="archive-article-date">
+  	<time datetime="2021-04-12T07:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Lasso-Cox之森林图绘制"><a href="#Lasso-Cox之森林图绘制" class="headerlink" title="Lasso_Cox之森林图绘制"></a>Lasso_Cox之森林图绘制</h1><blockquote>
+<p>森林图（forest plot），从定义上讲，它一般是在平面直角坐标系中，以一条垂直于X轴的无效线（通常坐标X=1或0）为中心，<br>用若干条平行于X轴的线段，来表示每个研究的效应量大小及其95%可信区间，并用一个棱形来表示多个研究合并的效应量<br>及可信区间，它是Meta分析中最常用的结果综合表达形式。</p>
+</blockquote>
+<ul>
+<li>而在我们构建的COX生存模型中，同样可以采用森林图，量化我们筛选的基因对疾病生存影响HR效应量值。</li>
+<li>分析文件接 《Lasso_cox_TCGA数据挖掘》<h3 id="加载分析需要使用的工具，实则森立图绘制极其简单，但是在绘制画布上存在不少问题"><a href="#加载分析需要使用的工具，实则森立图绘制极其简单，但是在绘制画布上存在不少问题" class="headerlink" title="加载分析需要使用的工具，实则森立图绘制极其简单，但是在绘制画布上存在不少问题"></a>加载分析需要使用的工具，实则森立图绘制极其简单，但是在绘制画布上存在不少问题</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">#加载相关的包</span><br><span class="line">library(glmnet)</span><br><span class="line">library(survival)</span><br><span class="line">library(survminer)</span><br></pre></td></tr></table></figure>
+####数据文件示例<br><img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/1.png" alt="图2"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">setwd(&quot;E:&#x2F;tcga_TEX&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">index_sig_gene &lt;- which(rownames(exp_DNB) %in% sig_gene_muti_cox$sig_gene_muti_cox)</span><br><span class="line">cox_exp &lt;- exp_DNB[index_sig_gene,]</span><br><span class="line">cox_exp &lt;- as.data.frame(t(cox_exp), row.names &#x3D; NULL)</span><br><span class="line">write.csv(cox_exp,&quot;cox_exp_2genes.csv&quot;)</span><br><span class="line"></span><br><span class="line">cox_exp &lt;- read.csv(&quot;cox_exp_2genes.csv&quot;, header &#x3D; T)</span><br><span class="line"></span><br><span class="line">suv_exp &lt;- cbind(cox_exp, data_clinical)</span><br><span class="line"></span><br><span class="line">row.names(suv_exp) &lt;- suv_exp$X</span><br><span class="line">suv_exp &lt;- suv_exp[,-1]</span><br><span class="line"></span><br><span class="line">model &lt;- coxph(Surv(suv_exp$days_to_death, data_clinical$vital_status) ~ CTLA4+TOX,</span><br><span class="line">               data &#x3D; suv_exp)</span><br><span class="line">model</span><br><span class="line">ggforest(model, data &#x3D; suv_exp, fontsize &#x3D; 1, cpositions &#x3D; c(-1000,2000,1000))</span><br></pre></td></tr></table></figure>
+<img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/1.png" alt="图1"></li>
+</ul>
+<blockquote>
+<p>####总之看着奇丑无比，甚至还有不少problem<br>####反观秋秋的图，简直美到爆炸（好的，老舔狗了）<br><img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/2.png" alt="图2"><br>###然后一番寻找：找到一份多彩森林图<br>根据宝贵开源资料：复现了：<a href="https://my.oschina.net/u/4592992/blog/4553574" target="_blank" rel="noopener">（多彩森林图）</a></p>
+</blockquote>
+<p><img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/3.png" alt="图2"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line">## 加载程序包</span><br><span class="line"></span><br><span class="line">library(ggplot2)</span><br><span class="line"></span><br><span class="line">##建立数据集（模拟编造的数据）</span><br><span class="line"></span><br><span class="line">dataset &lt;- data.frame(</span><br><span class="line">  </span><br><span class="line">  Varnames &#x3D; c(&quot;ART&quot;,&quot;WBC&quot;,&quot;CPR&quot;,&quot;DTA&quot;,&quot;EPC&quot;,&quot;FFT&quot;,&quot;GEO&quot;,&quot;HBC&quot;,&quot;PTT&quot;,&quot;JOK&quot;),</span><br><span class="line">  </span><br><span class="line">  OR &#x3D; c(0.9, 2, 0.3, 0.4, 0.5, 1.3, 2.5, 1.6, 1.9, 1.1),</span><br><span class="line">  </span><br><span class="line">  Lower&#x3D;c(0.75, 1.79, 0.18, 0.2, 0.38, 1.15, 2.41, 1.41, 1.66, 0.97),</span><br><span class="line">  </span><br><span class="line">  Upper&#x3D;c(1.05, 2.21, 0.42, 0.6, 0.62, 1.45, 2.59, 1.79, 2.14, 1.23),</span><br><span class="line">  </span><br><span class="line">  Factor &#x3D; c(&#39;Not sig.&#39;, &#39;Risk&#39;, &#39;Protective&#39;, &#39;Protective&#39;, &#39;Protective&#39;, &#39;Risk&#39;, &#39;Risk&#39;, &#39;Risk&#39;, &#39;Risk&#39;, &#39;Not sig.&#39;),</span><br><span class="line">  </span><br><span class="line">  Sample&#x3D;c(450, 420, 390, 400, 470, 390, 400, 388, 480, 460))</span><br><span class="line"></span><br><span class="line">#查看数据集</span><br><span class="line"></span><br><span class="line">View(dataset)</span><br><span class="line"></span><br><span class="line">## 建立注释内容</span><br><span class="line"></span><br><span class="line">annotation &lt;- data.frame(x&#x3D;c(2.89, 2.89, 2.89, 2.89, 2.89,         2.89, 2.89, 2.89, 2.89, 2.89, 2.89),</span><br><span class="line">                         </span><br><span class="line">                         y&#x3D;c(10.47, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1),</span><br><span class="line">                         </span><br><span class="line">                         label&#x3D;c(&#39;P Value&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;0.075&#39;,&#39;&lt;0.001&#39;,</span><br><span class="line">                                 </span><br><span class="line">                                 &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;,                &#39;0.650&#39;))</span><br><span class="line"></span><br><span class="line">## 半成品：添加内容</span><br><span class="line"></span><br><span class="line">p &lt;- ggplot(dataset, aes(OR, Varnames))</span><br><span class="line"></span><br><span class="line">p + geom_point(size&#x3D;3.6, aes(col&#x3D;Factor)) +</span><br><span class="line">  </span><br><span class="line">  geom_errorbarh(aes(xmax &#x3D; Upper, xmin &#x3D; Lower), height &#x3D; 0.4)+</span><br><span class="line">  </span><br><span class="line">  geom_vline(aes(xintercept &#x3D; 1))+theme(legend.position &#x3D; &quot;top&quot;)+</span><br><span class="line">  </span><br><span class="line">  scale_x_continuous(limits&#x3D;c(0.1, 2.9), breaks &#x3D; seq(0, 2.5, 0.5))+</span><br><span class="line">  </span><br><span class="line">  geom_text(data&#x3D;annotation,aes(x&#x3D;x,y&#x3D;y,label&#x3D;label))+</span><br><span class="line">  </span><br><span class="line">  xlab(&#39;Odds Ratio &#39;) + ylab(&quot; &quot;)</span><br><span class="line"></span><br><span class="line">## 建立注释内容（这里也是杜撰的数据）</span><br><span class="line"></span><br><span class="line">annotation &lt;- data.frame(</span><br><span class="line">  </span><br><span class="line">  x&#x3D;c(-1.4, -0.9, -0.35, 1, 2.87, 2.87, 2.87, 2.87, 2.87, 2.87, 2.87, 2.87, 2.87, 2.87, 2.87, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -1.4, -0.9, -0.35, -0.35, -0.35, -0.35, -0.35, -0.35, -0.35, -0.35, -0.35, -0.35),</span><br><span class="line">  </span><br><span class="line">  y &#x3D; c(10.47, 10.47, 10.47, 10.47, 10.47, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 10, 10, 9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1),</span><br><span class="line">  </span><br><span class="line">  label&#x3D;c(&#39;Event in Case&#39;, &#39;Event in Control&#39;, &#39;OR (95% CI)&#39;, &#39;Odds  Ratio&#39;,&#39;P Value&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;0.075&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;&lt;0.001&#39;, &#39;0.650&#39;, &#39;17 (20%)&#39;,</span><br><span class="line">          </span><br><span class="line">          &#39;13 (16%)&#39;, &#39;23 (23%)&#39;, &#39;18 (18%)&#39;, &#39;30 (28%)&#39;, &#39;25 (24%)&#39;, &#39;10 (20%)&#39;, &#39;8 (16%)&#39;, &#39;31 (27%)&#39;,</span><br><span class="line">          </span><br><span class="line">          &#39;25 (19%)&#39;,&#39;17 (20%)&#39;,&#39;13 (16%)&#39;,&#39;23 (23%)&#39;,&#39;18 (18%)&#39;,&#39;30 (28%)&#39;, &#39;25 (24%)&#39;, &#39;24 (28%)&#39;,</span><br><span class="line">          </span><br><span class="line">          &#39;20 (24%)&#39;, &#39;17 (24%)&#39;, &#39;12 (20%)&#39;, &#39;2.00 (1.79-2.21)&#39;, &#39;1.90 (1.66-2.14)&#39;, &#39;1.10 (0.97-1.23)&#39;,</span><br><span class="line">          </span><br><span class="line">          &#39;1.6 0(1.41-1.79)&#39;, &#39;2.50 (2.41-2.59)&#39;, &#39;1.3 (1.15-1.45)&#39;, &#39;0.5 (0.38-0.62)&#39;, &#39;0.40 (0.20-0.60)&#39;,</span><br><span class="line">          </span><br><span class="line">          &#39;0.30 (0.18-0.42)&#39;, &#39;0.90 (0.75-1.05)&#39;))</span><br><span class="line"></span><br><span class="line">## 成品1：添加注释内容</span><br><span class="line"></span><br><span class="line">p &lt;- ggplot(dataset, aes(OR, Varnames))</span><br><span class="line"></span><br><span class="line">p + geom_point(size&#x3D;3.6, aes(col&#x3D;Factor)) +</span><br><span class="line">  </span><br><span class="line">  geom_errorbarh(aes(xmax &#x3D;Upper, xmin &#x3D; Lower),height &#x3D; 0.4)+</span><br><span class="line">  </span><br><span class="line">  geom_vline(aes(xintercept&#x3D;1))+</span><br><span class="line">  </span><br><span class="line">  scale_x_continuous(limits&#x3D;c(-1.5, 2.87), breaks&#x3D;seq(0, 2.5, 0.5)) +</span><br><span class="line">  </span><br><span class="line">  xlab(&#39; &#39;) + ylab(&quot; &quot;) + theme_bw() + theme(legend.position &#x3D;&quot;top&quot;) +</span><br><span class="line">  </span><br><span class="line">  theme(panel.grid.major &#x3D; element_blank(), panel.grid.minor &#x3D; element_blank(),</span><br><span class="line">        </span><br><span class="line">        plot.background &#x3D; element_rect(fill &#x3D;&#39;skyblue&#39;, color &#x3D;&#39;red&#39;),</span><br><span class="line">        </span><br><span class="line">        axis.text&#x3D;element_text(size&#x3D;10, face &#x3D; &quot;bold&quot;),legend.text&#x3D;element_text(size&#x3D;11))+</span><br><span class="line">  </span><br><span class="line">  geom_text(data&#x3D;annotation,aes(x&#x3D;x,y&#x3D;y,label&#x3D;label))</span><br><span class="line"></span><br><span class="line">## 成品2：用样本量定义圆点大小</span><br><span class="line"></span><br><span class="line">p + geom_point(aes(size &#x3D; Sample, col &#x3D; Factor)) +</span><br><span class="line">  </span><br><span class="line">  geom_errorbarh(aes(xmax &#x3D; Upper, xmin &#x3D; Lower), height &#x3D; 0.4)+</span><br><span class="line">  </span><br><span class="line">  geom_vline(aes(xintercept &#x3D; 1))+</span><br><span class="line">  </span><br><span class="line">  scale_x_continuous(limits &#x3D; c(-1.5, 2.87), breaks &#x3D; seq(0,2.5, 0.5)) +</span><br><span class="line">  </span><br><span class="line">  xlab(&#39; &#39;)+ylab(&quot; &quot;) + theme_bw() + theme(legend.position &#x3D;&quot;top&quot;) +</span><br><span class="line">  </span><br><span class="line">  theme(panel.grid.major &#x3D; element_blank(), panel.grid.minor &#x3D; element_blank(),</span><br><span class="line">        </span><br><span class="line">        plot.background &#x3D; element_rect(fill &#x3D;&#39;skyblue&#39;, color &#x3D;&#39;red&#39;),</span><br><span class="line">        </span><br><span class="line">        axis.text&#x3D;element_text(size&#x3D;12, face &#x3D; &quot;bold&quot;),legend.text&#x3D;element_text(size&#x3D;11))+</span><br><span class="line">  </span><br><span class="line">  geom_text(data&#x3D;annotation, aes(x&#x3D;x, y&#x3D;y, label&#x3D;label))</span><br></pre></td></tr></table></figure>
+<blockquote>
+<blockquote>
+<p>针对自己的数据来做一击：<br>#查看模型的exp</p>
+</blockquote>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">summary(model)</span><br><span class="line">exp &lt;- as.data.frame(cbind(OR &#x3D; coef(model),confint(model), </span><br><span class="line">             Sample &#x3D;summary(model)$n, pValue &#x3D; coef(summary(model))[,5]))</span><br><span class="line"></span><br><span class="line">coef(model)</span><br><span class="line"></span><br><span class="line">exp &lt;- as.data.frame(t(exp))</span><br><span class="line">coef(summary(model))[,5]</span><br><span class="line"></span><br><span class="line">exp$Varnames &lt;- rownames(exp)</span><br><span class="line">exp$Upper &lt;- exp$&#96;97.5 %&#96;</span><br><span class="line">exp$Lower &lt;- exp$&#96;2.5 %&#96;</span><br><span class="line"></span><br><span class="line">p &lt;- ggplot(exp, aes(OR, Varnames))</span><br><span class="line">p</span><br><span class="line"></span><br><span class="line">p + geom_point(size&#x3D;3.6, aes(col&#x3D;Varnames)) +</span><br><span class="line">  </span><br><span class="line">  geom_errorbarh(aes(xmax &#x3D; Upper, xmin &#x3D; OR), height &#x3D; 0.4)+</span><br><span class="line">  </span><br><span class="line">  geom_vline(aes(xintercept &#x3D; 1))+theme(legend.position &#x3D; &quot;top&quot;)+</span><br><span class="line">  </span><br><span class="line">  scale_x_continuous(limits&#x3D;c(-4, 4), breaks &#x3D; seq(0, 2.5, 0.5))+</span><br><span class="line">  </span><br><span class="line">  xlab(&#39;Odds Ratio &#39;) + ylab(&quot; &quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/4.png" alt="图2"><br>####发现基因表达不适合做森林图</p>
+<h3 id="原因如下："><a href="#原因如下：" class="headerlink" title="原因如下："></a>原因如下：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&gt; model &lt;- coxph(Surv(test_new$days_to_death, test_new$vital_status)</span><br><span class="line">+                ~ CCT2+CCT3,</span><br><span class="line">+                data &#x3D; test_new)</span><br><span class="line">&gt; summary(model)</span><br><span class="line">Call:</span><br><span class="line">coxph(formula &#x3D; Surv(test_new$days_to_death, test_new$vital_status) ~ </span><br><span class="line">    CCT2 + CCT3, data &#x3D; test_new)</span><br><span class="line"></span><br><span class="line">  n&#x3D; 426, number of events&#x3D; 335 </span><br><span class="line"></span><br><span class="line">          coef exp(coef)  se(coef)    z Pr(&gt;|z|)</span><br><span class="line">CCT2  7.84e-08  1.00e+00  1.12e-07  0.7     0.48</span><br><span class="line">CCT3 -1.10e-07  1.00e+00  9.15e-08 -1.2     0.23</span><br><span class="line"></span><br><span class="line">     exp(coef) exp(-coef) lower .95 upper .95</span><br><span class="line">CCT2         1          1         1         1</span><br><span class="line">CCT3         1          1         1         1</span><br><span class="line"></span><br><span class="line">Concordance&#x3D; 0.516  (se &#x3D; 0.018 )</span><br><span class="line">Likelihood ratio test&#x3D; 1.51  on 2 df,   p&#x3D;0.5</span><br><span class="line">Wald test            &#x3D; 1.47  on 2 df,   p&#x3D;0.5</span><br><span class="line">Score (logrank) test &#x3D; 1.47  on 2 df,   p&#x3D;0.5</span><br></pre></td></tr></table></figure>
+<p>exp（coef）都为1……<br>果真是数据决定图片质量啊</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/12/Lasso-Cox%E4%B9%8B%E6%A3%AE%E6%9E%97%E5%9B%BE%E7%BB%98%E5%88%B6/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Lasso-cox-TCGA数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -505,102 +590,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/01/04/Logistics%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-细胞互作软件（3）-iTALK" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/">细胞互作软件（3）-iTALK</a>
-    </h1>
-  
-
-        
-        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/" class="archive-article-date">
-  	<time datetime="2020-12-07T08:42:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="iTALK"><a href="#iTALK" class="headerlink" title="iTALK"></a>iTALK</h1><blockquote>
-<p>iTALK的特点 </p>
-</blockquote>
-<blockquote>
-<p>集成了多种差异分析和可视化方法；<br>将配体-受体注释为4大类：细胞因子、生长因子、免疫检查点和其他；<br>配体-受体分析的中间数据和最终结果都可以轻松导出。</p>
-</blockquote>
-<ul>
-<li><p>能够用devtools在线安装的，就直接用，我的是scater无限报错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">library(devtools)</span><br><span class="line">install_github(&quot;Coolgenome&#x2F;iTALK&quot;, build_vignettes &#x3D; TRUE)</span><br><span class="line">install.packages(&quot;ps&quot;)</span><br><span class="line">install.packages(&quot;scater&quot;)</span><br><span class="line">BiocManager::install(&quot;scater&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>采用和下载celltalker一样的离线安装模式进行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">devtools::install_local(&quot;G:&#x2F;&#x2F;R-3.6.2&#x2F;library&#x2F;iTALK-master.zip&quot;)</span><br><span class="line">devtools::install_github(&#39;arc85&#x2F;celltalker&#39;)</span><br><span class="line">install.packages(&quot;G:&#x2F;&#x2F;google Downloads&#x2F;iTALK-master&#x2F;&quot;,repos&#x3D;NULL,type&#x3D;&quot;source&quot;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>iTALK也可以无缝对接Seurat的对象，读取其中的meta信息和count数据</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(iTALK)</span><br><span class="line">library(Seurat)</span><br></pre></td></tr></table></figure>
-
-
-<ul>
-<li>由于celltalker的折磨，不愉快的开始，iTALK分析<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;肿瘤组织样本CD8&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">genecount &lt;- read.csv(&quot;Genecount_TTC.csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">genemeta &lt;- read.csv(&quot;TTC_monocleMeta.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">TTC &lt;- CreateSeuratObject(genecount,</span><br><span class="line">                          meta.data &#x3D; genemeta,</span><br><span class="line">                          project &#x3D; &quot;TTC&quot;,</span><br><span class="line">                          min.cells &#x3D; 5,</span><br><span class="line">                          min.features  &#x3D; 200)</span><br></pre></td></tr></table></figure>
-<h1 id="这里是正式开始iTALK的对象的构建"><a href="#这里是正式开始iTALK的对象的构建" class="headerlink" title="这里是正式开始iTALK的对象的构建"></a>这里是正式开始iTALK的对象的构建</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">##准备iTALK输入文件</span><br><span class="line"># 输入文件格式为数据框，行为细胞名称，列为基因名和细胞注释信息，基因名命名的列值为表达数据。</span><br><span class="line"># 细胞注释信息必选“cell_type”，值为细胞类型注释信息；可选“compare_group”，值为细胞的样本分组信息。</span><br><span class="line"></span><br><span class="line">cell.meta &lt;- subset(TTC@meta.data, select&#x3D;c(&quot;sampleType&quot;,&quot;pseudotime&quot;))</span><br><span class="line"></span><br><span class="line">names(cell.meta) &lt;- c(&quot;compare_group&quot;, &quot;cell_type&quot;)</span><br><span class="line"></span><br><span class="line">cell.expr &lt;- data.frame(t(as.matrix(TTC@assays$RNA@counts)), check.names&#x3D;F)</span><br><span class="line">data.italk &lt;- merge(cell.expr, cell.meta, by&#x3D;0)</span><br><span class="line">rownames(data.italk) &lt;- data.italk$Row.names</span><br><span class="line">data.italk &lt;- data.italk[,-1]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>可以查看构建的italk对象</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data.italk[1:5,c(1:2,18027:18028)]</span><br></pre></td></tr></table></figure></li>
-<li>选择可视化的一些参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">##设置绘图颜色和其他变量</span><br><span class="line">mycolor &lt;- c(&quot;#92D0E6&quot;,&quot;#F5949B&quot;,&quot;#E11E24&quot;,&quot;#FBB96F&quot;,&quot;#007AB8&quot;,&quot;#A2D184&quot;,&quot;#00A04E&quot;,&quot;#BC5627&quot;,&quot;#0080BD&quot;,&quot;#EBC379&quot;,&quot;#A74D9D&quot;)</span><br><span class="line">cell_type &lt;- unique(data.italk$cell_type)</span><br><span class="line">cell_col &lt;- structure(mycolor[1:length(cell_type)], names&#x3D;cell_type)</span><br><span class="line">#通讯类型变量</span><br><span class="line">comm_list&lt;-c(&#39;growth factor&#39;,&#39;other&#39;,&#39;cytokine&#39;,&#39;checkpoint&#39;)</span><br><span class="line">#圈图展示配体-受体对的数量</span><br><span class="line">PN&#x3D;20</span><br></pre></td></tr></table></figure></li>
-<li>新建生成的文件夹，可视化输出文件方便<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##&#x3D;&#x3D;细胞通讯关系概览&#x3D;&#x3D;##</span><br><span class="line">dir.create(&#39;iTALK&#x2F;Overview&#39;)</span><br><span class="line">setwd(&quot;iTALK&#x2F;Overview&quot;)</span><br></pre></td></tr></table></figure></li>
-<li>我这里只有一种组织，癌组织TTC，如果有细分的可以换的<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#实际上一个样本之内的细胞才能通讯，这里提取一组样本分析是为了克服单细胞数据稀疏性造成的误差</span><br><span class="line">data1 &lt;- subset(data.italk, subset&#x3D;data.italk$compare_group&#x3D;&#x3D;&quot;TTC&quot;)</span><br></pre></td></tr></table></figure></li>
-<li>分析并生成图片<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#寻找高表达的配体受体基因,top_genes&#x3D;50代表提取平均表达量前50%的基因</span><br><span class="line">highly_exprs_genes &lt;- rawParse(data1, top_genes&#x3D;50, stats&#x3D;&quot;mean&quot;)</span><br><span class="line">res&lt;-NULL</span><br><span class="line">for(comm_type in comm_list)&#123;</span><br><span class="line">  #comm_type &#x3D; &#39;cytokine&#39;   #测试循环代码的临时变量</span><br><span class="line">  res_cat &lt;- FindLR(highly_exprs_genes, datatype&#x3D;&#39;mean count&#39;, comm_type&#x3D;comm_type)</span><br><span class="line">  res_cat &lt;- res_cat[order(res_cat$cell_from_mean_exprs*res_cat$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">  write.csv(res_cat, paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.xls&#39;))</span><br><span class="line">  #pdf(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;.pdf&#39;), width&#x3D;6, height&#x3D;7)</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_net.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  #绘制细胞通讯关系网络图</span><br><span class="line">  NetView(res_cat, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">          vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">  dev.off()</span><br><span class="line">  #绘制topPN的配体-受体圈图</span><br><span class="line">  png(paste0(&#39;LRpairs_Overview_&#39;,comm_type,&#39;_circ.png&#39;), width&#x3D;600, height&#x3D;650)</span><br><span class="line">  LRPlot(res_cat[1:PN,],datatype&#x3D;&#39;mean count&#39;,cell_col&#x3D;cell_col,link.arr.lwd&#x3D;res_cat$cell_from_mean_exprs[1:PN],link.arr.width&#x3D;res_cat$cell_to_mean_exprs[1:PN], text.vjust &#x3D; &quot;0.35cm&quot;)</span><br><span class="line">  dev.off()</span><br><span class="line">  res&lt;-rbind(res,res_cat)</span><br><span class="line">&#125;</span><br><span class="line">res &lt;- res[order(res$cell_from_mean_exprs*res$cell_to_mean_exprs, decreasing&#x3D;T),]</span><br><span class="line">write.csv(res, &#39;LRpairs_Overview.xls&#39;)</span><br><span class="line">res.top &lt;- res[1:PN,]</span><br><span class="line">png(&#39;LRpairs_Overview_net.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">NetView(res, col&#x3D;cell_col, vertex.label.cex&#x3D;1.2, edge.label.cex&#x3D;0.9, </span><br><span class="line">        vertex.size&#x3D;30, arrow.width&#x3D;3, edge.max.width&#x3D;10, margin &#x3D; 0.2)</span><br><span class="line">dev.off()</span><br><span class="line">png(&#39;LRpairs_Overview_circ.png&#39;, width&#x3D;600, height&#x3D;650)</span><br><span class="line">LRPlot(res.top, datatype&#x3D;&#39;mean count&#39;, link.arr.lwd&#x3D;res.top$cell_from_mean_exprs,</span><br><span class="line">       cell_col&#x3D;cell_col, link.arr.width&#x3D;res.top$cell_to_mean_exprs)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
-<h1 id="可视化结果"><a href="#可视化结果" class="headerlink" title="可视化结果"></a>可视化结果</h1>（1）检查点的圈图（LRpairs_Overview_checkpoint_circ）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_circ.png" alt="iTALK"><br>（2）检查点的网络图（LRpairs_Overview_checkpoint_net）<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/LRpairs_Overview_checkpoint_net.png" alt="iTALK"></li>
-</ul>
-<blockquote>
-<p>还有LRpairs_Overview_growth factor、LRpairs_Overview_cytokine的结果就不一一展示。总是三个软件里面，这个使用效果最佳。</p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%883%EF%BC%89-iTALK/">展开全文 >></a>
         </p>
       
 
