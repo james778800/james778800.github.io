@@ -6,18 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2021/10 | Biomagic</title>
+  <title>Snakemake—-RNA-seq流程搭建实践 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/archives/2021/10/index.html">
+  <meta name="description" content="#Snakemake实践Snakemake是可以搭建生物信息上游分析的工具，就是写各种rule来使用不同的工具实现分析目标。##（1）创建Snakemake配置文件 1touch Snakefile.py ##（2）编辑Snakemake配置文件 1vim Snakefile.py ##（3）Snakemake文件配置 1configfile: &quot;config.yaml&quot; ##">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Snakemake—-RNA-seq流程搭建实践">
+<meta property="og:url" content="http://yoursite.com/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="#Snakemake实践Snakemake是可以搭建生物信息上游分析的工具，就是写各种rule来使用不同的工具实现分析目标。##（1）创建Snakemake配置文件 1touch Snakefile.py ##（2）编辑Snakemake配置文件 1vim Snakefile.py ##（3）Snakemake文件配置 1configfile: &quot;config.yaml&quot; ##">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/2.png">
+<meta property="article:published_time" content="2021-10-09T15:04:22.000Z">
+<meta property="article:modified_time" content="2021-10-09T15:27:34.528Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,103 +154,197 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-Snakemake—-RNA-seq流程搭建实践" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Snakemake—-RNA-seq流程搭建实践
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+
+        
+        <a href="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
   	<time datetime="2021-10-09T15:04:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-09</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/">Snakemake—-RNA-seq流程搭建实践</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Snakemake实践<br>Snakemake是可以搭建生物信息上游分析的工具，就是写各种rule来使用不同的工具实现分析目标。<br>##（1）创建Snakemake配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch Snakefile.py</span><br></pre></td></tr></table></figure>
+<p>##（2）编辑Snakemake配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim Snakefile.py</span><br></pre></td></tr></table></figure>
+<p>##（3）Snakemake文件配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">configfile: &quot;config.yaml&quot;</span><br></pre></td></tr></table></figure>
+<p>##（4）config.yaml文件编辑</p>
+<ul>
+<li>需要符合yaml以空格缩进的语法格式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">samples:</span><br><span class="line"> A: data&#x2F;samples&#x2F;A.fastq</span><br><span class="line"> B: data&#x2F;samples&#x2F;B.fastq</span><br></pre></td></tr></table></figure>
+##（5）config.yaml文件编辑：</li>
+<li>定义all生成结果文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rule all:</span><br><span class="line">    input:</span><br><span class="line">        &quot;report.html&quot;</span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
-          
+</li>
+</ul>
+<p>##（6）BWA比对的rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">rule bwa_map:</span><br><span class="line">    input:</span><br><span class="line">        &quot;data&#x2F;genome.fa&quot;,</span><br><span class="line">        lambda wildcards: config[&quot;samples&quot;][wildcards.sample]</span><br><span class="line">    output:</span><br><span class="line">        temp(&quot;mapped_reads&#x2F;&#123;sample&#125;.bam&quot;)</span><br><span class="line">    params:</span><br><span class="line">        rg&#x3D;&quot;@RG\\tID:&#123;sample&#125;\\tSM:&#123;sample&#125;&quot;</span><br><span class="line">    log:</span><br><span class="line">        &quot;logs&#x2F;bwa_mem&#x2F;&#123;sample&#125;.log&quot;</span><br><span class="line">    threads: 8</span><br><span class="line">    shell:</span><br><span class="line">        &quot;(bwa mem -R &#39;&#123;params.rg&#125;&#39; -t &#123;threads&#125; &#123;input&#125; | &quot;</span><br><span class="line">        &quot;samtools view -Sb - &gt; &#123;output&#125;) 2&gt; &#123;log&#125;&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>此处需要注意的是params的制表符尽管在字符串里，但是也需要转译。<br>否则会报如下错误：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">one of the commands exited with non-zero exit code; note that snakemake uses</span><br></pre></td></tr></table></figure>
 
+
+</li>
+</ul>
+<p>##（7）bam文件排序rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rule samtools_sort:</span><br><span class="line">    input:</span><br><span class="line">        &quot;mapped_reads&#x2F;&#123;sample&#125;.bam&quot;</span><br><span class="line">    output:</span><br><span class="line">        protected(&quot;sorted_reads&#x2F;&#123;sample&#125;.bam&quot;)</span><br><span class="line">    shell:</span><br><span class="line">        &quot;samtools sort -T sorted_reads&#x2F;&#123;wildcards.sample&#125; &quot;</span><br><span class="line">        &quot;-O bam &#123;input&#125; &gt; &#123;output&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>##（8）bam文件索引rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rule samtools_index:</span><br><span class="line">    input:</span><br><span class="line">        &quot;sorted_reads&#x2F;&#123;sample&#125;.bam&quot;</span><br><span class="line">    output:</span><br><span class="line">        &quot;sorted_reads&#x2F;&#123;sample&#125;.bam.bai&quot;</span><br><span class="line">    shell:</span><br><span class="line">        &quot;samtools index &#123;input&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>##（9）基因组变异识别rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rule bcftools_call:</span><br><span class="line">    input:</span><br><span class="line">        fa&#x3D;&quot;data&#x2F;genome.fa&quot;,</span><br><span class="line">        bam&#x3D;expand(&quot;sorted_reads&#x2F;&#123;sample&#125;.bam&quot;, sample&#x3D;config[&quot;samples&quot;]),</span><br><span class="line">        bai&#x3D;expand(&quot;sorted_reads&#x2F;&#123;sample&#125;.bam.bai&quot;, sample&#x3D;config[&quot;samples&quot;])</span><br><span class="line">    output:</span><br><span class="line">        &quot;calls&#x2F;all.vcf&quot;</span><br><span class="line">    shell:</span><br><span class="line">        &quot;samtools mpileup -g -f &#123;input.fa&#125; &#123;input.bam&#125; | &quot;</span><br><span class="line">        &quot;bcftools call -mv - &gt; &#123;output&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>##（10）生成分析报告rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">rule report:</span><br><span class="line">    input:</span><br><span class="line">        &quot;calls&#x2F;all.vcf&quot;</span><br><span class="line">    output:</span><br><span class="line">        &quot;report.html&quot;</span><br><span class="line">    run:</span><br><span class="line">        from snakemake.utils import report</span><br><span class="line">        with open(input[0]) as vcf:</span><br><span class="line">            n_calls &#x3D; sum(1 for l in vcf if not l.startswith(&quot;#&quot;))</span><br><span class="line"></span><br><span class="line">        report(&quot;&quot;&quot;</span><br><span class="line">        An example variant calling workflow</span><br><span class="line">        &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">        Reads were mapped to the Yeast</span><br><span class="line">        reference genome and variants were called jointly with</span><br><span class="line">        SAMtools&#x2F;BCFtools.</span><br><span class="line"></span><br><span class="line">        This resulted in &#123;n_calls&#125; variants (see Table T1_).</span><br><span class="line">        &quot;&quot;&quot;, output[0], T1&#x3D;input[0])</span><br></pre></td></tr></table></figure>
+
+
+<p>##（11）运行前检查潜在错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snakemake -np -s Snakefile.py</span><br></pre></td></tr></table></figure>
+<p>##（12）生成分析流程图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snakemake --dag -s Snakefile.py| dot -Tpdf &gt; Snake_pipeline.pdf</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/1.png" alt="Snakemake—-RNA-seq流程搭建实践"><br>##（13）直接运行:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snakemake -s Snakefile.py -j 4</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/2.png" alt="Snakemake—-RNA-seq流程搭建实践"></p>
+<ul>
+<li>搭建流程之前要配置snakemake的conda分析环境，以及下载需要的工具。也方便迁移环境。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">channels:</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;cloud&#x2F;bioconda&#x2F;</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;cloud&#x2F;conda-forge&#x2F;</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;pkgs&#x2F;main&#x2F;</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;pkgs&#x2F;free&#x2F;</span><br><span class="line">        - defaults</span><br><span class="line">dependencies:</span><br><span class="line">        - bwa&#x3D;0.7.17</span><br><span class="line">        - samtools&#x3D;1.13</span><br><span class="line">        - bcftools&#x3D;1.13</span><br><span class="line">show_channel_urls:true</span><br></pre></td></tr></table></figure>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
-  	<time datetime="2021-10-08T13:55:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">药物敏感性预测实践</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/08/%E8%8D%AF%E7%89%A9%E6%95%8F%E6%84%9F%E6%80%A7%E9%A2%84%E6%B5%8B%E5%AE%9E%E8%B7%B5/">药物敏感性预测实践</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
-  	<time datetime="2021-10-07T09:04:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/">一致性聚类实践</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -268,8 +367,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

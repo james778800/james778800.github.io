@@ -151,6 +151,79 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="w-临床列线图及矫正曲线" class="article article-type-w  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/">临床列线图及矫正曲线</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/" class="archive-article-date">
+  	<time datetime="2021-05-22T08:18:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>列线图（Alignment Diagram），又称诺莫图（Nomogram图），它是建立在多因素回归分析的基础上，这里的回归既包括Logistic回归也包括cox回归，通过回归分析将多个预测指标进行整合，然后采用带有刻度的线段，表达预测模型中各个变量之间的相互关系。</li>
+</ul>
+<p>根据百度百科给的解释，其主要是通过模型中各个影响因素对结局变量的贡献程度，给每个影响因素的每个取值水平进行赋分，然后再将各个评分相加得到总评分，最后通过总评分与结局事件发生概率之间的函数转换关系，从而计算出该个体结局事件的预测值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;F210406002&#x2F;Step12&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">meta_final &lt;- read.csv(&quot;E:&#x2F;F210406002&#x2F;Step10xiangxiantu&#x2F;meta_final.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">library(survival)</span><br><span class="line">library(rms)</span><br><span class="line">#########################################################################</span><br><span class="line">dd&#x3D;datadist(lung)</span><br><span class="line">model_muti &lt;- cph(Surv(time, vital_status) ~ Stage +  </span><br><span class="line">                      Treatment+ Riskscore + age + T + M + N, </span><br><span class="line">                  data &#x3D; meta_final,</span><br><span class="line">                  x &#x3D; T,</span><br><span class="line">                  y &#x3D; T,</span><br><span class="line">                  surv &#x3D; T,</span><br><span class="line">                  time.inc &#x3D; 1825)</span><br><span class="line">survival &lt;- Survival(model_muti)</span><br><span class="line">survival1 &lt;- function(x)survival(365,x)</span><br><span class="line">survival3 &lt;- function(x)survival(1095,x)</span><br><span class="line">survival5 &lt;- function(x)survival(1825,x)</span><br><span class="line"></span><br><span class="line">options(datadist&#x3D;&#39;dd&#39;) </span><br><span class="line"></span><br><span class="line">nom &lt;- nomogram(model_muti, fun &#x3D; list(survival1,</span><br><span class="line">                                       survival3,</span><br><span class="line">                                       survival5),</span><br><span class="line">                fun.at &#x3D; c(0.05,seq(0.1,0.9,by&#x3D;0.1),0.95),</span><br><span class="line">                funlabel &#x3D; c(&quot;1 year survival&quot;,</span><br><span class="line">                             &quot;3 year survival&quot;,</span><br><span class="line">                             &quot;5 year survival&quot;),</span><br><span class="line">                maxscale&#x3D;100)</span><br><span class="line">plot(nom, cex.axis &#x3D; 0.9,label.every &#x3D; 1,</span><br><span class="line">     col.grid &#x3D; gray(c(0.8,0.95)),</span><br><span class="line">     naxes&#x3D;13,lmgp &#x3D; 0.5,)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dd&#x3D;datadist(meta_final)</span><br><span class="line">#ff&lt;- psm(Surv(time,status) ~ age+sex,data &#x3D;  lung, dist&#x3D;&#39;lognormal&#39;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/1.png" alt="列线图"></p>
+<p>###校准曲线是实际风险和预测风险的对比，曲线约接近对角线，说明预测效果越好。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">## 构建校正曲线</span><br><span class="line"></span><br><span class="line">cal1&lt;- calibrate(model_muti, cmethod&#x3D;&#39;KM&#39;, u&#x3D;1825,m&#x3D;60, B&#x3D;200)</span><br><span class="line">?calibrate()</span><br><span class="line">## 绘制校正曲线</span><br><span class="line">plot(cal1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">par(mar&#x3D;c(8,5,3,2),cex &#x3D; 1.0)</span><br><span class="line"></span><br><span class="line">plot(cal1,lwd&#x3D;2,lty&#x3D;1,</span><br><span class="line">     </span><br><span class="line">     errbar.col&#x3D;c(rgb(0,118,192,maxColorValue&#x3D;255)),</span><br><span class="line">     </span><br><span class="line">     xlim&#x3D;c(0.25,0.6),ylim&#x3D;c(0.15,0.70),</span><br><span class="line">     </span><br><span class="line">     xlab&#x3D;&quot;Nomogram-Predicted Probability of 1-Year DFS&quot;,</span><br><span class="line">     </span><br><span class="line">     ylab&#x3D;&quot;Actual 1-Year DFS (proportion)&quot;,</span><br><span class="line">     </span><br><span class="line">     col&#x3D;c(rgb(192,98,83,maxColorValue&#x3D;255)))</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/2.png" alt="列线图"></p>
+<h4 id="生存模型的AUC曲线的绘制"><a href="#生存模型的AUC曲线的绘制" class="headerlink" title="生存模型的AUC曲线的绘制"></a>生存模型的AUC曲线的绘制</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">#AUC</span><br><span class="line">meta_final &lt;- read.csv(&quot;E:&#x2F;F210406002&#x2F;Step10xiangxiantu&#x2F;meta_final.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line">library(survivalROC)</span><br><span class="line"></span><br><span class="line">risk_surv &lt;- meta_final</span><br><span class="line"></span><br><span class="line">rocobj &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                      risk_surv$vital_status, </span><br><span class="line">                      risk_surv$Age,</span><br><span class="line">                      predict.time &#x3D; 1825,</span><br><span class="line">                      method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj2 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$Stage,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj3 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$M,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj4 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$N,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj5 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$T,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj6 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$Treatment,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj7 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$Riskscore,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plot(rocobj7$FP,</span><br><span class="line">     rocobj7$TP,</span><br><span class="line">     type &#x3D; &quot;l&quot;,</span><br><span class="line">     xlim &#x3D; c(0,1),</span><br><span class="line">     ylim &#x3D; c(0,1),</span><br><span class="line">     xlab &#x3D; paste(&quot;1-specificity \n AUC &#x3D; &quot;,</span><br><span class="line">                  round(rocobj7$AUC,3)),</span><br><span class="line">     ylab &#x3D; &quot;sensitivity&quot;,</span><br><span class="line">     col &#x3D; &quot;red&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">lines(rocobj2$FP, rocobj2$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;green&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj3$FP, rocobj3$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;orange&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj4$FP, rocobj4$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#191970&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj5$FP, rocobj5$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#FFB6C1&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj6$FP, rocobj6$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#BA55D3&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj$FP, rocobj$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#00FFFF&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">legend(0.6,0.3,c(paste(&quot;Riskscore AUC &#x3D; &quot;,round(rocobj7$AUC,3)),</span><br><span class="line">                 paste(&quot;Stage AUC &#x3D; &quot;,round(rocobj2$AUC,3)),</span><br><span class="line">                 paste(&quot;M AUC &#x3D; &quot;,round(rocobj3$AUC,3)),</span><br><span class="line">                 paste(&quot;N AUC &#x3D; &quot;,round(rocobj4$AUC,3)),</span><br><span class="line">                 paste(&quot;T AUC &#x3D; &quot;,round(rocobj5$AUC,3)),</span><br><span class="line">                 paste(&quot;Treatment AUC &#x3D; &quot;,round(rocobj6$AUC,3)),</span><br><span class="line">                 paste(&quot;Age AUC &#x3D; &quot;,round(rocobj$AUC,3))),</span><br><span class="line">       x.intersp&#x3D;1, y.intersp&#x3D;0.8,</span><br><span class="line">       lty&#x3D; 1 ,lwd&#x3D; 2,col&#x3D;c(&quot;red&quot;,&quot;green&quot;,&quot;orange&quot;),</span><br><span class="line">       bty &#x3D; &quot;n&quot;,# bty妗嗙殑绫诲瀷</span><br><span class="line">       seg.len&#x3D;1,cex&#x3D;0.8)# </span><br><span class="line"></span><br><span class="line">abline(0,1,col&#x3D;&quot;gray&quot;, lty&#x3D;2)</span><br><span class="line"></span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/3.png" alt="列线图"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-多因素COX生存风险分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -433,76 +506,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Lasso-Cox之多基因生存分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/">Lasso_Cox之多基因生存分析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-04-12T11:23:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>分析文件接 《Lasso_cox_TCGA数据挖掘》<h1 id="研究目的"><a href="#研究目的" class="headerlink" title="研究目的"></a>研究目的</h1>探究两个基因表达对病人生存影响，而非单基因<br>,其实就是多因素的生存分析，核心是计算riskscore即“HR”值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">#联合生存模型</span><br><span class="line">cox &#x3D; model</span><br><span class="line">#cox &lt;- coxph(fmla, data &#x3D; sigExpressionProfile)</span><br><span class="line"></span><br><span class="line">coef &lt;- cox$coefficients</span><br><span class="line"></span><br><span class="line">rownames(cox_exp) &lt;- cox_exp$X </span><br><span class="line">cox_exp &lt;- cox_exp[,-1]</span><br><span class="line">riskScore &lt;- as.matrix(cox_exp) %*% coef</span><br><span class="line"></span><br><span class="line">#row.names(sigExpresionProfile) &lt;- sigExpresionProfile$X</span><br><span class="line">#sigExpresionProfile &lt;- sigExpresionProfile[,-1]</span><br><span class="line">#coe &lt;-coefficient@x</span><br><span class="line">#riskScore &lt;- as.matrix(sigExpresionProfile) %*% coe</span><br><span class="line">riskScore &lt;- as.data.frame(riskScore)</span><br><span class="line">names(riskScore) &lt;- c(&quot;HR&quot;)</span><br><span class="line"></span><br><span class="line">head(riskScore)</span><br><span class="line"></span><br><span class="line">test_suv &lt;- cbind(data_clinical, riskScore)</span><br><span class="line"></span><br><span class="line">group1&lt;-ifelse(test_suv$HR&gt;mean(test_suv$HR),</span><br><span class="line">               &quot;High&quot;,&quot;Low&quot;)</span><br><span class="line">sfit1&lt;-survfit(Surv(test_suv$days_to_death,</span><br><span class="line">                    test_suv$vital_status)~group1,data &#x3D; test_suv)</span><br><span class="line">ggsurvplot(sfit1,</span><br><span class="line">           legend.title &#x3D; NULL,</span><br><span class="line">           conf.int &#x3D; F,</span><br><span class="line">           pval &#x3D; T,</span><br><span class="line">           title &#x3D; &#39;Gene Entropy Level&#39;,</span><br><span class="line">           risk.table &#x3D; T,</span><br><span class="line">           palette &#x3D; c(&quot;#E7B800&quot;,&quot;#2E9FDF&quot;),</span><br><span class="line">           risk.table.col &#x3D; &#39;strata&#39;,</span><br><span class="line">           tables.height &#x3D; 0.2,</span><br><span class="line">           xlab &#x3D; &quot;Time In Days&quot;,</span><br><span class="line">           pval.method &#x3D; TRUE,</span><br><span class="line">           surv.median.line &#x3D; &quot;hv&quot;,</span><br><span class="line">           ncensor.plot &#x3D; T)</span><br></pre></td></tr></table></figure>
-<img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/1.png" alt="图1"><blockquote>
-<p>相对于单个基因在CRC中，p值极显著<br><img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/2.png" alt="图2"></p>
-<p><img src="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/3.png" alt="图2"></p>
-</blockquote>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/12/Lasso-Cox%E4%B9%8B%E5%A4%9A%E5%9F%BA%E5%9B%A0%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90/">展开全文 >></a>
         </p>
       
 

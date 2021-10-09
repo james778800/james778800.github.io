@@ -151,6 +151,94 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-edgeR进行差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">edgeR进行差异分分析</a>
+    </h1>
+  
+
+        
+        <a href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2020-09-09T06:41:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-09-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#edgeR</p>
+<blockquote>
+<p>主要是利用了多组实验的精确统计模型或者适用于多因素复杂实验的广义线性模型。</p>
+</blockquote>
+<blockquote>
+<p>前者叫做“经典edgeR”， 后者叫做”广义线性模型 edgeR“。</p>
+</blockquote>
+<blockquote>
+<p>定义的read数是可以指基因水平、外显子水平、转录本水平或者标签水平等</p>
+</blockquote>
+<p>##广义线性模型 edgeR  可用于无重复样本</p>
+<ul>
+<li>(为什么不用DEseq2，用这个？)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#清空缓存的变量</span><br><span class="line"></span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line"></span><br><span class="line">#设置工作目录</span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;CRC_DNB_data&#x2F;Esm&#x2F;&quot;)</span><br><span class="line">#关闭因子和设置小数点位数</span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 1)</span><br><span class="line">#调用包</span><br><span class="line">library(edgeR)</span><br><span class="line">library(limma)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#读取清洗的数据，构造DGElist对象需要的东西，构建无重复的两个list进行差异分析</span><br><span class="line"></span><br><span class="line">Pstage &lt;- read.csv(&quot;B_P_cell.csv&quot;,header &#x3D; T,sep &#x3D; &quot;,&quot;,row.names &#x3D; 2,check.names &#x3D; F)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/1.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#edgeR开始</span><br><span class="line"></span><br><span class="line">#规整化数据，可以用log2处理表达矩阵</span><br><span class="line">Pstage &lt;- round(Pstage)</span><br><span class="line">counts &lt;- Pstage</span><br><span class="line">#设置分组信息</span><br><span class="line">group &lt;- 1:2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- DGEList(counts&#x3D;counts, group &#x3D; group)</span><br><span class="line">keep &lt;- rowSums(cpm(y)&gt;1) &gt;&#x3D; 1</span><br><span class="line">y &lt;- y[keep, , keep.lib.sizes&#x3D;FALSE]</span><br><span class="line">y &lt;- calcNormFactors(y)</span><br><span class="line">y_bcv &lt;- y</span><br><span class="line">bcv &lt;- 0.4</span><br><span class="line">et &lt;- exactTest(y_bcv, dispersion &#x3D; bcv ^ 2)</span><br><span class="line">gene1 &lt;- decideTestsDGE(et, p.value &#x3D; 0.05, lfc &#x3D; 0)</span><br><span class="line">summary(gene1)</span><br><span class="line">write.csv(et$table,&quot;gene_exp.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/2.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#根据fdrtool计算qval的</span><br><span class="line">exp&lt;-read.csv(&quot;gene_exp.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">p&lt;-exp$PValue</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#install.packages(&quot;fdrtool&quot;)</span><br><span class="line">library(fdrtool)</span><br><span class="line">fdr&#x3D;fdrtool(p,statistic&#x3D;&quot;pvalue&quot;)</span><br><span class="line">qval&lt;-fdr$qval</span><br><span class="line">exp&lt;-cbind(exp,qval)</span><br><span class="line">write.csv(exp,&quot;exp_qvalue.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/3.png" alt="表达矩阵"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#筛选log2FC &gt;2 并且 adj&lt;0.05的差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">diffgene &lt;-subset(exp, qval &lt; 0.05 &amp; abs(logFC) &gt; 2)</span><br><span class="line">dim(diffgene)</span><br><span class="line">head(diffgene)</span><br><span class="line">write.csv(diffgene,file &#x3D; &quot;diffgene.csv&quot;)</span><br><span class="line"></span><br><span class="line">#同理，可以筛选非差异基因</span><br><span class="line">exp&lt;-read.csv(&quot;exp_qvalue.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">undiffgene &lt;-subset(exp, qval &gt; 0.05 &amp; abs(logFC) &lt; 2)</span><br><span class="line">dim(undiffgene)</span><br><span class="line">head(undiffgene)</span><br><span class="line">write.csv(undiffgene,file &#x3D; &quot;undiffgene.csv&quot;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/4.png" alt="表达矩阵"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/09/09/edgeR%E8%BF%9B%E8%A1%8C%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-DEseq2差异分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -446,89 +534,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-TCGA数据-2-相关性分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(2):相关性分析（bulk水平）</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:16:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#cor分析研究目的</p>
-<blockquote>
-<p>相关性分析就是为了研究我关注的基因和差异分析所得的基因的表达规律</p>
-</blockquote>
-<ul>
-<li>使用FPKM数据来进行？</li>
-<li>方法使用Spearman还是Pearson？</li>
-<li>是否需要取log？</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">library(tinyarray)</span><br><span class="line">BiocManager::install(&quot;tinyarray&quot;)</span><br><span class="line">library(dplyr)</span><br><span class="line">library(ggstatsplot)</span><br><span class="line">library(tidyr)</span><br><span class="line">library(Cairo)</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;相关性分析&#x2F;&quot;)</span><br><span class="line">exp&lt;-read.csv(file &#x3D; &quot;FPKM(CD274转置).csv&quot;,check.names &#x3D; F,stringsAsFactors &#x3D; F,row.names &#x3D; 1)</span><br><span class="line">exp&lt;-log(exp+1)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>读入的数据是转置注释的原始表达矩阵，行是样本，列是基因</li>
-<li>取对数保证表达量可比性，进行标准化</li>
-<li>FPKM来进行分析，counts只用来做差异分析</li>
-</ul>
-<blockquote>
-<p>批量相关分析（循环）</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">y &lt;- as.numeric(exp[,&quot;CD274&quot;])</span><br><span class="line">colnames &lt;- colnames(exp)</span><br><span class="line">cor_data_df &lt;- data.frame(colnames)</span><br><span class="line"></span><br><span class="line">for (i in 1:length(colnames))</span><br><span class="line">&#123;</span><br><span class="line">    test &lt;- cor.test(as.numeric(exp[,i]),y,type&#x3D;&quot;spearman&quot;)</span><br><span class="line">    cor_data_df[i,2] &lt;- test$estimate</span><br><span class="line">    cor_data_df[i,3] &lt;- test$p.value</span><br><span class="line">&#125;</span><br><span class="line">names(cor_data_df) &lt;- c(&quot;Symbol&quot;,&quot;correlation&quot;,&quot;pvalue&quot;)</span><br><span class="line">head(cor_data_df)</span><br><span class="line"></span><br><span class="line">cor_data_sig &lt;- cor_data_df %&gt;% </span><br><span class="line">    filter(pvalue &lt; 0.05) %&gt;% </span><br><span class="line">    arrange(desc(abs(correlation)))%&gt;% </span><br><span class="line">    dplyr::slice(1:500)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">CairoPDF(&quot;TLE2.pdf&quot;,height &#x3D; 12,width &#x3D; 12)</span><br><span class="line">ggscatterstats(data &#x3D;as.data.frame(exp), </span><br><span class="line">               y &#x3D; TLE2, </span><br><span class="line">               x &#x3D; CD274,</span><br><span class="line">               centrality.para &#x3D; &quot;mean&quot;,                              </span><br><span class="line">               margins &#x3D; &quot;both&quot;,                                         </span><br><span class="line">               xfill &#x3D; &quot;#CC79A7&quot;, </span><br><span class="line">               yfill &#x3D; &quot;#009E73&quot;, </span><br><span class="line">               marginal.type &#x3D; &quot;density&quot;,</span><br><span class="line">               title &#x3D; &quot;Relationship between PDL1 and MGP&quot;)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="表达矩阵示例"><br>#负相关和正相关基因都可以保留，来增加文章水分23333</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
         </p>
       
 

@@ -151,6 +151,110 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Snakemake—-RNA-seq流程搭建实践" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/">Snakemake—-RNA-seq流程搭建实践</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+  	<time datetime="2021-10-09T15:04:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Snakemake实践<br>Snakemake是可以搭建生物信息上游分析的工具，就是写各种rule来使用不同的工具实现分析目标。<br>##（1）创建Snakemake配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch Snakefile.py</span><br></pre></td></tr></table></figure>
+<p>##（2）编辑Snakemake配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim Snakefile.py</span><br></pre></td></tr></table></figure>
+<p>##（3）Snakemake文件配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">configfile: &quot;config.yaml&quot;</span><br></pre></td></tr></table></figure>
+<p>##（4）config.yaml文件编辑</p>
+<ul>
+<li>需要符合yaml以空格缩进的语法格式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">samples:</span><br><span class="line"> A: data&#x2F;samples&#x2F;A.fastq</span><br><span class="line"> B: data&#x2F;samples&#x2F;B.fastq</span><br></pre></td></tr></table></figure>
+##（5）config.yaml文件编辑：</li>
+<li>定义all生成结果文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rule all:</span><br><span class="line">    input:</span><br><span class="line">        &quot;report.html&quot;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>##（6）BWA比对的rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">rule bwa_map:</span><br><span class="line">    input:</span><br><span class="line">        &quot;data&#x2F;genome.fa&quot;,</span><br><span class="line">        lambda wildcards: config[&quot;samples&quot;][wildcards.sample]</span><br><span class="line">    output:</span><br><span class="line">        temp(&quot;mapped_reads&#x2F;&#123;sample&#125;.bam&quot;)</span><br><span class="line">    params:</span><br><span class="line">        rg&#x3D;&quot;@RG\\tID:&#123;sample&#125;\\tSM:&#123;sample&#125;&quot;</span><br><span class="line">    log:</span><br><span class="line">        &quot;logs&#x2F;bwa_mem&#x2F;&#123;sample&#125;.log&quot;</span><br><span class="line">    threads: 8</span><br><span class="line">    shell:</span><br><span class="line">        &quot;(bwa mem -R &#39;&#123;params.rg&#125;&#39; -t &#123;threads&#125; &#123;input&#125; | &quot;</span><br><span class="line">        &quot;samtools view -Sb - &gt; &#123;output&#125;) 2&gt; &#123;log&#125;&quot;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>此处需要注意的是params的制表符尽管在字符串里，但是也需要转译。<br>否则会报如下错误：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">one of the commands exited with non-zero exit code; note that snakemake uses</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p>##（7）bam文件排序rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rule samtools_sort:</span><br><span class="line">    input:</span><br><span class="line">        &quot;mapped_reads&#x2F;&#123;sample&#125;.bam&quot;</span><br><span class="line">    output:</span><br><span class="line">        protected(&quot;sorted_reads&#x2F;&#123;sample&#125;.bam&quot;)</span><br><span class="line">    shell:</span><br><span class="line">        &quot;samtools sort -T sorted_reads&#x2F;&#123;wildcards.sample&#125; &quot;</span><br><span class="line">        &quot;-O bam &#123;input&#125; &gt; &#123;output&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>##（8）bam文件索引rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rule samtools_index:</span><br><span class="line">    input:</span><br><span class="line">        &quot;sorted_reads&#x2F;&#123;sample&#125;.bam&quot;</span><br><span class="line">    output:</span><br><span class="line">        &quot;sorted_reads&#x2F;&#123;sample&#125;.bam.bai&quot;</span><br><span class="line">    shell:</span><br><span class="line">        &quot;samtools index &#123;input&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>##（9）基因组变异识别rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rule bcftools_call:</span><br><span class="line">    input:</span><br><span class="line">        fa&#x3D;&quot;data&#x2F;genome.fa&quot;,</span><br><span class="line">        bam&#x3D;expand(&quot;sorted_reads&#x2F;&#123;sample&#125;.bam&quot;, sample&#x3D;config[&quot;samples&quot;]),</span><br><span class="line">        bai&#x3D;expand(&quot;sorted_reads&#x2F;&#123;sample&#125;.bam.bai&quot;, sample&#x3D;config[&quot;samples&quot;])</span><br><span class="line">    output:</span><br><span class="line">        &quot;calls&#x2F;all.vcf&quot;</span><br><span class="line">    shell:</span><br><span class="line">        &quot;samtools mpileup -g -f &#123;input.fa&#125; &#123;input.bam&#125; | &quot;</span><br><span class="line">        &quot;bcftools call -mv - &gt; &#123;output&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>##（10）生成分析报告rule：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">rule report:</span><br><span class="line">    input:</span><br><span class="line">        &quot;calls&#x2F;all.vcf&quot;</span><br><span class="line">    output:</span><br><span class="line">        &quot;report.html&quot;</span><br><span class="line">    run:</span><br><span class="line">        from snakemake.utils import report</span><br><span class="line">        with open(input[0]) as vcf:</span><br><span class="line">            n_calls &#x3D; sum(1 for l in vcf if not l.startswith(&quot;#&quot;))</span><br><span class="line"></span><br><span class="line">        report(&quot;&quot;&quot;</span><br><span class="line">        An example variant calling workflow</span><br><span class="line">        &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">        Reads were mapped to the Yeast</span><br><span class="line">        reference genome and variants were called jointly with</span><br><span class="line">        SAMtools&#x2F;BCFtools.</span><br><span class="line"></span><br><span class="line">        This resulted in &#123;n_calls&#125; variants (see Table T1_).</span><br><span class="line">        &quot;&quot;&quot;, output[0], T1&#x3D;input[0])</span><br></pre></td></tr></table></figure>
+
+
+<p>##（11）运行前检查潜在错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snakemake -np -s Snakefile.py</span><br></pre></td></tr></table></figure>
+<p>##（12）生成分析流程图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snakemake --dag -s Snakefile.py| dot -Tpdf &gt; Snake_pipeline.pdf</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/1.png" alt="Snakemake—-RNA-seq流程搭建实践"><br>##（13）直接运行:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snakemake -s Snakefile.py -j 4</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/2.png" alt="Snakemake—-RNA-seq流程搭建实践"></p>
+<ul>
+<li>搭建流程之前要配置snakemake的conda分析环境，以及下载需要的工具。也方便迁移环境。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">channels:</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;cloud&#x2F;bioconda&#x2F;</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;cloud&#x2F;conda-forge&#x2F;</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;pkgs&#x2F;main&#x2F;</span><br><span class="line">        - https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;anaconda&#x2F;pkgs&#x2F;free&#x2F;</span><br><span class="line">        - defaults</span><br><span class="line">dependencies:</span><br><span class="line">        - bwa&#x3D;0.7.17</span><br><span class="line">        - samtools&#x3D;1.13</span><br><span class="line">        - bcftools&#x3D;1.13</span><br><span class="line">show_channel_urls:true</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/09/Snakemake%E2%80%94-RNA-seq%E6%B5%81%E7%A8%8B%E6%90%AD%E5%BB%BA%E5%AE%9E%E8%B7%B5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-药物敏感性预测实践" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -478,79 +582,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="w-临床列线图及矫正曲线" class="article article-type-w  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/">临床列线图及矫正曲线</a>
-    </h1>
-  
-
-        
-        <a href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:18:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>列线图（Alignment Diagram），又称诺莫图（Nomogram图），它是建立在多因素回归分析的基础上，这里的回归既包括Logistic回归也包括cox回归，通过回归分析将多个预测指标进行整合，然后采用带有刻度的线段，表达预测模型中各个变量之间的相互关系。</li>
-</ul>
-<p>根据百度百科给的解释，其主要是通过模型中各个影响因素对结局变量的贡献程度，给每个影响因素的每个取值水平进行赋分，然后再将各个评分相加得到总评分，最后通过总评分与结局事件发生概率之间的函数转换关系，从而计算出该个体结局事件的预测值。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;F210406002&#x2F;Step12&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">meta_final &lt;- read.csv(&quot;E:&#x2F;F210406002&#x2F;Step10xiangxiantu&#x2F;meta_final.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">library(survival)</span><br><span class="line">library(rms)</span><br><span class="line">#########################################################################</span><br><span class="line">dd&#x3D;datadist(lung)</span><br><span class="line">model_muti &lt;- cph(Surv(time, vital_status) ~ Stage +  </span><br><span class="line">                      Treatment+ Riskscore + age + T + M + N, </span><br><span class="line">                  data &#x3D; meta_final,</span><br><span class="line">                  x &#x3D; T,</span><br><span class="line">                  y &#x3D; T,</span><br><span class="line">                  surv &#x3D; T,</span><br><span class="line">                  time.inc &#x3D; 1825)</span><br><span class="line">survival &lt;- Survival(model_muti)</span><br><span class="line">survival1 &lt;- function(x)survival(365,x)</span><br><span class="line">survival3 &lt;- function(x)survival(1095,x)</span><br><span class="line">survival5 &lt;- function(x)survival(1825,x)</span><br><span class="line"></span><br><span class="line">options(datadist&#x3D;&#39;dd&#39;) </span><br><span class="line"></span><br><span class="line">nom &lt;- nomogram(model_muti, fun &#x3D; list(survival1,</span><br><span class="line">                                       survival3,</span><br><span class="line">                                       survival5),</span><br><span class="line">                fun.at &#x3D; c(0.05,seq(0.1,0.9,by&#x3D;0.1),0.95),</span><br><span class="line">                funlabel &#x3D; c(&quot;1 year survival&quot;,</span><br><span class="line">                             &quot;3 year survival&quot;,</span><br><span class="line">                             &quot;5 year survival&quot;),</span><br><span class="line">                maxscale&#x3D;100)</span><br><span class="line">plot(nom, cex.axis &#x3D; 0.9,label.every &#x3D; 1,</span><br><span class="line">     col.grid &#x3D; gray(c(0.8,0.95)),</span><br><span class="line">     naxes&#x3D;13,lmgp &#x3D; 0.5,)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dd&#x3D;datadist(meta_final)</span><br><span class="line">#ff&lt;- psm(Surv(time,status) ~ age+sex,data &#x3D;  lung, dist&#x3D;&#39;lognormal&#39;)</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/1.png" alt="列线图"></p>
-<p>###校准曲线是实际风险和预测风险的对比，曲线约接近对角线，说明预测效果越好。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">## 构建校正曲线</span><br><span class="line"></span><br><span class="line">cal1&lt;- calibrate(model_muti, cmethod&#x3D;&#39;KM&#39;, u&#x3D;1825,m&#x3D;60, B&#x3D;200)</span><br><span class="line">?calibrate()</span><br><span class="line">## 绘制校正曲线</span><br><span class="line">plot(cal1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">par(mar&#x3D;c(8,5,3,2),cex &#x3D; 1.0)</span><br><span class="line"></span><br><span class="line">plot(cal1,lwd&#x3D;2,lty&#x3D;1,</span><br><span class="line">     </span><br><span class="line">     errbar.col&#x3D;c(rgb(0,118,192,maxColorValue&#x3D;255)),</span><br><span class="line">     </span><br><span class="line">     xlim&#x3D;c(0.25,0.6),ylim&#x3D;c(0.15,0.70),</span><br><span class="line">     </span><br><span class="line">     xlab&#x3D;&quot;Nomogram-Predicted Probability of 1-Year DFS&quot;,</span><br><span class="line">     </span><br><span class="line">     ylab&#x3D;&quot;Actual 1-Year DFS (proportion)&quot;,</span><br><span class="line">     </span><br><span class="line">     col&#x3D;c(rgb(192,98,83,maxColorValue&#x3D;255)))</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/2.png" alt="列线图"></p>
-<h4 id="生存模型的AUC曲线的绘制"><a href="#生存模型的AUC曲线的绘制" class="headerlink" title="生存模型的AUC曲线的绘制"></a>生存模型的AUC曲线的绘制</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">#AUC</span><br><span class="line">meta_final &lt;- read.csv(&quot;E:&#x2F;F210406002&#x2F;Step10xiangxiantu&#x2F;meta_final.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line">library(survivalROC)</span><br><span class="line"></span><br><span class="line">risk_surv &lt;- meta_final</span><br><span class="line"></span><br><span class="line">rocobj &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                      risk_surv$vital_status, </span><br><span class="line">                      risk_surv$Age,</span><br><span class="line">                      predict.time &#x3D; 1825,</span><br><span class="line">                      method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj2 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$Stage,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj3 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$M,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj4 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$N,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj5 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$T,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj6 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$Treatment,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line">rocobj7 &lt;- survivalROC(risk_surv$time, </span><br><span class="line">                       risk_surv$vital_status, </span><br><span class="line">                       risk_surv$Riskscore,</span><br><span class="line">                       predict.time &#x3D; 1825,</span><br><span class="line">                       method &#x3D; &quot;KM&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plot(rocobj7$FP,</span><br><span class="line">     rocobj7$TP,</span><br><span class="line">     type &#x3D; &quot;l&quot;,</span><br><span class="line">     xlim &#x3D; c(0,1),</span><br><span class="line">     ylim &#x3D; c(0,1),</span><br><span class="line">     xlab &#x3D; paste(&quot;1-specificity \n AUC &#x3D; &quot;,</span><br><span class="line">                  round(rocobj7$AUC,3)),</span><br><span class="line">     ylab &#x3D; &quot;sensitivity&quot;,</span><br><span class="line">     col &#x3D; &quot;red&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">lines(rocobj2$FP, rocobj2$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;green&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj3$FP, rocobj3$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;orange&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj4$FP, rocobj4$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#191970&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj5$FP, rocobj5$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#FFB6C1&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj6$FP, rocobj6$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#BA55D3&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line">lines(rocobj$FP, rocobj$TP, type&#x3D;&quot;l&quot;,col&#x3D;&quot;#00FFFF&quot;,xlim&#x3D;c(0,1), ylim&#x3D;c(0,1))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">legend(0.6,0.3,c(paste(&quot;Riskscore AUC &#x3D; &quot;,round(rocobj7$AUC,3)),</span><br><span class="line">                 paste(&quot;Stage AUC &#x3D; &quot;,round(rocobj2$AUC,3)),</span><br><span class="line">                 paste(&quot;M AUC &#x3D; &quot;,round(rocobj3$AUC,3)),</span><br><span class="line">                 paste(&quot;N AUC &#x3D; &quot;,round(rocobj4$AUC,3)),</span><br><span class="line">                 paste(&quot;T AUC &#x3D; &quot;,round(rocobj5$AUC,3)),</span><br><span class="line">                 paste(&quot;Treatment AUC &#x3D; &quot;,round(rocobj6$AUC,3)),</span><br><span class="line">                 paste(&quot;Age AUC &#x3D; &quot;,round(rocobj$AUC,3))),</span><br><span class="line">       x.intersp&#x3D;1, y.intersp&#x3D;0.8,</span><br><span class="line">       lty&#x3D; 1 ,lwd&#x3D; 2,col&#x3D;c(&quot;red&quot;,&quot;green&quot;,&quot;orange&quot;),</span><br><span class="line">       bty &#x3D; &quot;n&quot;,# bty妗嗙殑绫诲瀷</span><br><span class="line">       seg.len&#x3D;1,cex&#x3D;0.8)# </span><br><span class="line"></span><br><span class="line">abline(0,1,col&#x3D;&quot;gray&quot;, lty&#x3D;2)</span><br><span class="line"></span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/3.png" alt="列线图"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/05/22/%E4%B8%B4%E5%BA%8A%E5%88%97%E7%BA%BF%E5%9B%BE%E5%8F%8A%E7%9F%AB%E6%AD%A3%E6%9B%B2%E7%BA%BF/">展开全文 >></a>
         </p>
       
 
