@@ -151,6 +151,272 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-一致性聚类实践" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/">一致性聚类实践</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/" class="archive-article-date">
+  	<time datetime="2021-10-07T09:04:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##一致性聚类概要：</p>
+<blockquote>
+<p>一致性聚类是一种为确定数据集中可能的聚类的数量和成员提供定量证据的方法，在转录组层面，可以根据基因表达对样本进行分型。一致性聚类方法包括从一组项目中进行次抽样，例如微阵列，并确定特定簇计数（k）的簇。然后，对共识值，两个项目占在同一子样本中发生的次数中有相同的聚类，计算并存储在每个k的对称一致矩阵中。</p>
+</blockquote>
+<blockquote>
+<p>本实践的包用的是：ConsensusClusterPlus</p>
+</blockquote>
+<p>ConsensusClusterPlus官方教程文档： <a href="http://www.bioconductor.org/packages/release/bioc/vignettes/ConsensusClusterPlus/inst/doc/ConsensusClusterPlus.pdf" target="_blank" rel="noopener">官方教程文档</a></p>
+<ul>
+<li>Bioconductor可以下载该包<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BiocManager::install(&quot;ConsensusClusterPlus&quot;)</span><br><span class="line">library(ConsensusClusterPlus)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>该包的应用十分简单，但其中关于聚类的方法需要了解。（但是实际情况则根据聚类的效果来选择。）</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>clusterAlg此参数是在聚类中的选择聚类算法。</p>
+</blockquote>
+<ul>
+<li>其中聚类的方法包括：<blockquote>
+<p>1、HC</p>
+</blockquote>
+</li>
+</ul>
+<p>系谱聚类（HC: Hierarchical Clustering)<br>基本思想：</p>
+<p>1、开始时，将每个样本作为一类。</p>
+<p>2、规定某种度量作为样本之间距离以及类距离之间的度量，并且计算之。（hculster里边的dist方法以及method属性）</p>
+<p>3、将距离最短的两个类合并为一个类。</p>
+<p>4、重复2-3，即不断合并最近的两个类，每次减少一个类，直到所有的样本合并为一个类。</p>
+<p>点与点的距离和类与类之间距离的计算可以参考R-modeling关于距离的介绍。</p>
+<ul>
+<li>系谱聚类思想博文引用： <a href="https://www.jianshu.com/p/fc772a29570a" target="_blank" rel="noopener">系谱聚类思想博文引用</a></li>
+</ul>
+<blockquote>
+<p>2、KM</p>
+</blockquote>
+<p>K-Means算法的基本思想是初始随机给定K个簇中心，按照最邻近原则把待分类样本点分到各个簇。然后按平均法重新计算各个簇的质心(这个点可以不是样本点)，从而确定新的簇心。一直迭代，直到簇心的移动距离小于某个给定的值。</p>
+<p>K-Means聚类算法主要分为三个步骤：</p>
+<p>(1)第一步是为待聚类的点寻找聚类中心</p>
+<p>(2)第二步是计算每个点到聚类中心的距离，将每个点聚类到离该点最近的聚类中去</p>
+<p>(3)第三步是计算每个聚类中所有点的坐标平均值，并将这个平均值作为新的聚类中心</p>
+<p>反复执行(2)、(3)，直到聚类中心不再进行大范围移动或者聚类次数达到要求为止</p>
+<ul>
+<li>K-Means算法博文引用： <a href="https://blog.csdn.net/u013524655/article/details/40989469" target="_blank" rel="noopener">K-Means算法博文引用</a></li>
+</ul>
+<blockquote>
+<p>3、PAM</p>
+</blockquote>
+<blockquote>
+<p>PAM（Partition Around Medoids）是K-medoid（K中心点划分）的基础算法，基本流程如下：首先随机选择k个对象作为中心，把每个对象分配给离它最近的中心。然后随机地选择一个非中心对象替换中心对象，计算分配后的距离改进量。聚类的过程就是不断迭代，进行中心对象和非中心对象的反复替换过程，直到目标函数不再有改进为止。</p>
+</blockquote>
+<pre><code>PAM算法如下：
+   (1) 随机选择K个观测值（每个都称为中心点）；
+   (2) 计算观测值到各个中心的距离/相异性；
+   (3) 把每个观测值分配到最近的中心点；
+   (4) 计算每个中心点到每个观测值的距离的总和（总成本）；
+   (5) 选择一个该类中不是中心的点，并和中心点互换；
+   (6) 重新把每个点分配到距它最近的中心点；
+   (7) 再次计算总成本；
+   (8) 如果总成本比步骤(4)计算的总成本少，把新的点作为中心点；
+   (9) 重复步骤(5)～(8)直到中心点不再改变。</code></pre><ul>
+<li>K-medoid算法博文引用： <a href="https://blog.csdn.net/sinat_19596835/article/details/78303744" target="_blank" rel="noopener">K-medoid算法引用</a></li>
+</ul>
+<p>###以下为一致性聚类代码实践：</p>
+<ul>
+<li>数据选用的是TCGA的GBM患者</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#输入文件为表达矩阵</span><br><span class="line">res &lt;- ConsensusClusterPlus(as.matrix(JW_exp1), </span><br><span class="line">                            maxK &#x3D; 10, </span><br><span class="line">                            reps &#x3D; 1000, </span><br><span class="line">                            pItem &#x3D; 0.75, </span><br><span class="line">                            pFeature &#x3D; 1, </span><br><span class="line">                            clusterAlg &#x3D; &quot;pam&quot;, </span><br><span class="line">                            corUse &#x3D; &quot;complete.obs&quot;, </span><br><span class="line">                            seed&#x3D;123456, plot&#x3D;&quot;png&quot;, </span><br><span class="line">                            writeTable&#x3D;T)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>选择的是pam算法<br>#输出的res文件包括：<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/1.png" alt="一致性聚类"></p>
+</blockquote>
+<p>#根据其值选择k值<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/4.png" alt="一致性聚类"><br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/5.png" alt="一致性聚类"></p>
+<p>#生成聚类的热图(部分展示)<br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/2.png" alt="一致性聚类"><br><img src="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/3.png" alt="一致性聚类"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/07/%E4%B8%80%E8%87%B4%E6%80%A7%E8%81%9A%E7%B1%BB%E5%AE%9E%E8%B7%B5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-使用dplyr进行数据转换" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/">使用dplyr进行数据转换</a>
+    </h1>
+  
+
+        
+        <a href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
+  	<time datetime="2021-07-20T12:11:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>dplyr包主要用于数据清洗和整理，<br>主要功能有：行选择、列选择、统计汇总、窗口函数、数据框交集等是非常高效、友好的数据处理包，<br>生物信息数据的大型表格采用tidyverse进行处理，高效编辑且有用。<br>该包是数据分析必学包之一。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br><span class="line">#第四章 基本数据管理</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">irisx &lt;- iris</span><br><span class="line"></span><br><span class="line">#函数within修改数据框</span><br><span class="line">test1 &lt;- within(iris, &#123;width &lt;- NA</span><br><span class="line">width[iris$Sepal.Width &gt; 4] &lt;- &quot;BIG&quot;</span><br><span class="line">width[iris$Sepal.Width &gt;&#x3D; 3&amp; iris$Sepal.Width &lt;&#x3D;4] &lt;- &quot;MIDDLE&quot;</span><br><span class="line">width[iris$Sepal.Width &lt; 3] &lt;- &quot;SMALL&quot;&#125;)</span><br><span class="line"></span><br><span class="line">str(test1$width)</span><br><span class="line">#新增列为字符串类型,可转换为因子</span><br><span class="line">test1$width &lt;- as.factor(test1$width)</span><br><span class="line">levels(test1$width)</span><br><span class="line">rm(list &#x3D; ls())</span><br><span class="line">gc()</span><br><span class="line"></span><br><span class="line">#subset()函数</span><br><span class="line">newdata &lt;- subset(test1, test1$Sepal.Length &gt;4 &amp;test1$width &#x3D;&#x3D; &quot;BIG&quot;,</span><br><span class="line">                  select &#x3D; c(Sepal.Length,width))</span><br><span class="line"></span><br><span class="line">########</span><br><span class="line">#利用dplyr进行数据转换</span><br><span class="line"></span><br><span class="line">library(tidyverse)</span><br><span class="line">#install.packages(&quot;nycflights13&quot;)</span><br><span class="line">library(nycflights13)</span><br><span class="line">flights</span><br><span class="line">str(flights)</span><br><span class="line"></span><br><span class="line">#筛选filter()</span><br><span class="line">data &#x3D; flights</span><br><span class="line"></span><br><span class="line">filter(data, dest &#x3D;&#x3D; &quot;IAH&quot;, day !&#x3D; 1)</span><br><span class="line"></span><br><span class="line">table(is.na(data$distance))</span><br><span class="line">data_1 &lt;- na.omit(data)</span><br><span class="line"></span><br><span class="line">#3.2.4练习</span><br><span class="line">#a</span><br><span class="line">data</span><br><span class="line">filter(data, dep_delay &gt;&#x3D; 2)</span><br><span class="line">#b</span><br><span class="line">filter(data, dest &#x3D;&#x3D; &quot;IAH&quot;|dest &#x3D;&#x3D; &quot;HOU&quot;)</span><br><span class="line">#c</span><br><span class="line"></span><br><span class="line">#between()使用</span><br><span class="line"></span><br><span class="line">?between()</span><br><span class="line">filter(data, between(dep_time, 500, 600))</span><br><span class="line"></span><br><span class="line">table(is.na(data$dep_time))</span><br><span class="line"></span><br><span class="line">#arrange()排序</span><br><span class="line"></span><br><span class="line">arrange(flights, desc(month))%&gt;%arrange(.,desc(arr_time))</span><br><span class="line"></span><br><span class="line">arrange(flights, desc(month), desc(arr_time))</span><br><span class="line"></span><br><span class="line">arrange(flights, desc(month)&amp;desc(arr_time))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">arrange(flights, desc(distance&#x2F;air_time))</span><br><span class="line"></span><br><span class="line">test1 &lt;- within(data, &#123;speed &lt;- distance&#x2F;air_time&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">arrange(test1, desc(speed))</span><br><span class="line"></span><br><span class="line">#select()选择列</span><br><span class="line"></span><br><span class="line">select(data, year, month, day)</span><br><span class="line"></span><br><span class="line">select(data, -(year:day))</span><br><span class="line"></span><br><span class="line">#可匹配正则表达式的辅助函数</span><br><span class="line"></span><br><span class="line">#筛选的是tibble的列名</span><br><span class="line">select(data, starts_with(&quot;a&quot;))</span><br><span class="line"></span><br><span class="line">select(data, ends_with(&quot;e&quot;))</span><br><span class="line"></span><br><span class="line">select(data, contains(&quot;time&quot;))</span><br><span class="line"></span><br><span class="line">data</span><br><span class="line">#修改名字</span><br><span class="line">rename(data, tail_num &#x3D; tailnum)</span><br><span class="line"></span><br><span class="line">#everything()辅助select()将变量移至数据框开头</span><br><span class="line">select(data, minute, distance, everything())</span><br><span class="line"></span><br><span class="line">#one_of函数</span><br><span class="line">select(data, minute, distance, one_of())</span><br><span class="line">vars &lt;- c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;dep_delay&quot;, &quot;arr_delay&quot;)</span><br><span class="line">select(data, one_of(vars))</span><br><span class="line">#筛选变量可用此辅助进行</span><br><span class="line"></span><br><span class="line">#mutate添加新变量</span><br><span class="line">#mutate添加新列总是添加在数据集的最后</span><br><span class="line"></span><br><span class="line">flights_sml &lt;- select(flights,</span><br><span class="line">                      year:day,</span><br><span class="line">                      ends_with(&quot;delay&quot;),</span><br><span class="line">                      distance,</span><br><span class="line">                      air_time)</span><br><span class="line">mutate(flights_sml,</span><br><span class="line">       gain &#x3D; arr_delay - dep_delay,</span><br><span class="line">       speed &#x3D; distance &#x2F; air_time * 60)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mutate(flights_sml,</span><br><span class="line">       gain &#x3D; arr_delay - dep_delay,</span><br><span class="line">       hours &#x3D; air_time &#x2F; 60,</span><br><span class="line">       gain_per_hour &#x3D; gain &#x2F; hours)</span><br><span class="line"></span><br><span class="line">#仅保留新变量的方法transmute()</span><br><span class="line">data1 &lt;- transmute(flights_sml,</span><br><span class="line">       gain &#x3D; arr_delay - dep_delay,</span><br><span class="line">       hours &#x3D; air_time &#x2F; 60,</span><br><span class="line">       gain_per_hour &#x3D; gain &#x2F; hours)</span><br><span class="line"></span><br><span class="line"># %%求余，模运算符</span><br><span class="line">transmute(flights,</span><br><span class="line">          dep_time,</span><br><span class="line">          hour &#x3D; dep_time %&#x2F;% 100,</span><br><span class="line">          minute &#x3D; dep_time %% 100)</span><br><span class="line"></span><br><span class="line">#偏移函数</span><br><span class="line"></span><br><span class="line">x &lt;- 1:10</span><br><span class="line">x - lag(x)</span><br><span class="line">x !&#x3D; lead(x)</span><br><span class="line"></span><br><span class="line">#累加和滚动聚合</span><br><span class="line">x</span><br><span class="line">cumsum(x)</span><br><span class="line">#累加积</span><br><span class="line">cumprod(x)</span><br><span class="line">#计算累加均值</span><br><span class="line">cummean(x)</span><br><span class="line"></span><br><span class="line">#排秩</span><br><span class="line">y &lt;- c(1, 2, 2, NA, 3, 4)</span><br><span class="line">min_rank(y)</span><br><span class="line">min_rank(desc(y))</span><br><span class="line"></span><br><span class="line">row_number(y)</span><br><span class="line">dense_rank(y)</span><br><span class="line">percent_rank(y)</span><br><span class="line">cume_dist(y)</span><br><span class="line"></span><br><span class="line">#summarize()进行分组摘要</span><br><span class="line">summarise(flights, </span><br><span class="line">          delay &#x3D; mean(dep_delay, na.rm &#x3D; TRUE))</span><br><span class="line">by_dest &lt;- group_by(flights, dest)</span><br><span class="line">summarise(by_dest)</span><br><span class="line"></span><br><span class="line">#使用管道组合多种操作</span><br><span class="line">library(ggplot2)</span><br><span class="line"></span><br><span class="line">delays &lt;- flights %&gt;% group_by(dest) %&gt;%</span><br><span class="line">          summarise(</span><br><span class="line">            count &#x3D; n(),</span><br><span class="line">          dist &#x3D; mean(distance, na.rm &#x3D; T),</span><br><span class="line">          delay &#x3D; mean(arr_delay, na.rm &#x3D; T)</span><br><span class="line">          ) %&gt;%</span><br><span class="line">          filter(count &gt; 20, dest !&#x3D; &quot;ABQ&quot;)</span><br><span class="line"></span><br><span class="line">ggplot(data &#x3D; delays, mapping &#x3D; aes(x &#x3D; dist, y &#x3D; delay)) + </span><br><span class="line">  geom_point(aes(size &#x3D; count), alpha &#x3D; 1&#x2F;3) +</span><br><span class="line">  geom_smooth(se &#x3D; F)</span><br><span class="line"></span><br><span class="line">#探索na.rm(缺失值)</span><br><span class="line">flights %&gt;% </span><br><span class="line">  group_by(year, month, day) %&gt;% </span><br><span class="line">  summarise(mean &#x3D; mean(dep_delay))</span><br><span class="line">#可以在计算前去除缺失值</span><br><span class="line">flights %&gt;% </span><br><span class="line">  group_by(year, month, day) %&gt;% </span><br><span class="line">  summarise(mean &#x3D; mean(dep_delay, na.rm &#x3D; T))</span><br><span class="line"></span><br><span class="line">not_cancelled &lt;- flights %&gt;% filter(!is.na(dep_delay),</span><br><span class="line">                                    !is.na(arr_delay))</span><br><span class="line"></span><br><span class="line">not_cancelled %&gt;% group_by(year, month, day) %&gt;%</span><br><span class="line">                 summarize(mean &#x3D; mean(dep_delay))</span><br><span class="line"></span><br><span class="line">#计数</span><br><span class="line">delays &lt;- not_cancelled %&gt;% </span><br><span class="line">          group_by(tailnum) %&gt;%</span><br><span class="line">          summarize(</span><br><span class="line">            delay &#x3D; mean(arr_delay)</span><br><span class="line">          )</span><br><span class="line">delays$delay &lt;- round(delays$delay)</span><br><span class="line"></span><br><span class="line">ggplot(dada &#x3D; delays) +</span><br><span class="line">  geom_freqpoly(binwidth &#x3D; 10, aes(x &#x3D; delays$delay))</span><br><span class="line"></span><br><span class="line">str(delays)</span><br><span class="line"></span><br><span class="line">delays &lt;- rename(delays, hcynb &#x3D; delay)</span><br><span class="line"></span><br><span class="line">ggplot(dada &#x3D; delays, mapping &#x3D; aes(x &#x3D; delays$hcynb)) +</span><br><span class="line">  geom_freqpoly(binwidth &#x3D; 100)</span><br><span class="line"></span><br><span class="line">#航班数量，平均延误散点图</span><br><span class="line">delays &lt;- not_cancelled %&gt;%</span><br><span class="line">  group_by(tailnum) %&gt;%</span><br><span class="line">  summarize(</span><br><span class="line">    delay &#x3D; mean(arr_delay, na.rm &#x3D; T),</span><br><span class="line">    n &#x3D; n()</span><br><span class="line">  )</span><br><span class="line">ggplot(data &#x3D;delays, mapping &#x3D; aes(x &#x3D; n, y &#x3D; delay)) +</span><br><span class="line">  geom_point(alpha &#x3D; 1&#x2F;9)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#n()不需要任何参数可以返回当前分组的大小</span><br><span class="line">#n_distinct()可以返回唯一值的数量</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#ggplot2集成到dylyr pipeline中</span><br><span class="line"></span><br><span class="line">delays %&gt;% </span><br><span class="line">  filter(n &gt; 25) %&gt;%</span><br><span class="line">  ggplot(mapping &#x3D; aes(x &#x3D; n ,y &#x3D; delay)) +</span><br><span class="line">  geom_point(alpha &#x3D; 1&#x2F;8)</span><br><span class="line"></span><br><span class="line">rm(list &#x3D; ls())</span><br><span class="line"></span><br><span class="line">#返回计数情况</span><br><span class="line">not_cancelled %&gt;%</span><br><span class="line">  count(dest)</span><br><span class="line"></span><br><span class="line">not_cancelled %&gt;%</span><br><span class="line">  group_by(dest) %&gt;%</span><br><span class="line">  summarize(carriers &#x3D; n_distinct(carrier)) %&gt;%</span><br><span class="line">  arrange(desc(carriers))</span><br><span class="line"></span><br><span class="line">#多变量分组</span><br><span class="line">daily &lt;- group_by(flights, year, month, day)</span><br><span class="line">  (per_day &lt;- summarize(daily, flights &#x3D; n()))</span><br><span class="line"></span><br><span class="line">(per_month &lt;- summarize(per_day, flights &#x3D; sum(flights)))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(per_year &lt;- summarize(per_month, flights &#x3D; sum(flights)))</span><br><span class="line"></span><br><span class="line">#取消分组</span><br><span class="line">daily %&gt;% </span><br><span class="line">  ungroup() %&gt;%</span><br><span class="line">  summarize(flights &#x3D; n())</span><br><span class="line"></span><br><span class="line">#分组新变量</span><br><span class="line"></span><br><span class="line">#找出分组中最差的成员</span><br><span class="line">flights %&gt;%</span><br><span class="line">  group_by(year, month, day) %&gt;%</span><br><span class="line">  filter(rank(desc(arr_delay)) &lt; 10)</span><br><span class="line">#找出分组中大于某个阈值的所有分组</span><br><span class="line">popular_dests &lt;- flights %&gt;%</span><br><span class="line">  group_by(dest) %&gt;%</span><br><span class="line">  filter(n() &gt; 365)</span><br><span class="line"></span><br><span class="line">#针对数据进行标准化</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vars &lt;- c(year, month, day, dep_delay, arr_delay)</span><br><span class="line"></span><br><span class="line">popular_dests &lt;- select(popular_dests, year, month, day, dep_delay, arr_delay)  </span><br><span class="line">  </span><br><span class="line">popular_dests %&gt;% </span><br><span class="line">  filter(arr_delay &gt; 0) %&gt;%</span><br><span class="line">  mutate(prop_delay &#x3D; arr_delay &#x2F; sum(arr_delay)) %&gt;%</span><br><span class="line">  select(year:day, dest, arr_delay, prop_delay)</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">#数据模式的变体</span><br><span class="line">#install.packages(&quot;Lahman&quot;)</span><br><span class="line">#BiocManager::install(&quot;Lahman&quot;)</span><br><span class="line"></span><br><span class="line">library(Lahman)</span><br><span class="line">a &lt;- Batting</span><br><span class="line">str(a)</span><br><span class="line">#将dataframe转换为tibble</span><br><span class="line">batting &lt;- as_tibble(a)</span><br><span class="line">str(batting)</span><br><span class="line"></span><br><span class="line">batters &lt;- batting %&gt;% </span><br><span class="line">  group_by(playerID) %&gt;%</span><br><span class="line">  summarize(</span><br><span class="line">    ba &#x3D; sum(H, na.rm &#x3D; TRUE)&#x2F; sum(AB, na.rm &#x3D; TRUE),</span><br><span class="line">    ab &#x3D; sum(AB, na.rm &#x3D; TRUE)</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">batters %&gt;%</span><br><span class="line">  filter(ab &gt; 100) %&gt;%</span><br><span class="line">  ggplot(mapping &#x3D; aes(x &#x3D; ab, y &#x3D; ba)) +</span><br><span class="line">  geom_point() +</span><br><span class="line">  geom_smooth(se &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line">batters %&gt;%</span><br><span class="line">  arrange(desc(ba))</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/07/20/%E4%BD%BF%E7%94%A8dplyr%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-生存风险得分模型的效能分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/">生存风险得分模型的效能分析</a>
+    </h1>
+  
+
+        
+        <a href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/" class="archive-article-date">
+  	<time datetime="2021-05-22T09:24:09.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">#联合生存模型</span><br><span class="line">model &lt;- coxph(Surv(time, vital_status) ~ MYOSLID+LINC00665</span><br><span class="line">               +SNHG15</span><br><span class="line">               +LINC01783</span><br><span class="line">               +LINC02482</span><br><span class="line">               +LINC01215</span><br><span class="line">               +LINC01023</span><br><span class="line">               +LINC01451, </span><br><span class="line">               data &#x3D; dataSurv)</span><br><span class="line"></span><br><span class="line">coef &lt;- model$coefficients</span><br><span class="line"></span><br><span class="line">cox_exp &lt;- DEG_exp[,-6]</span><br><span class="line"></span><br><span class="line">riskScore &lt;- as.matrix(cox_exp) %*% coef</span><br><span class="line"></span><br><span class="line">riskScore &lt;- as.data.frame(riskScore)</span><br><span class="line">names(riskScore) &lt;- c(&quot;HR&quot;)</span><br><span class="line"></span><br><span class="line">head(riskScore)</span><br><span class="line"></span><br><span class="line">test_suv &lt;- cbind(survival, riskScore)</span><br><span class="line"></span><br><span class="line">group1&lt;-ifelse(test_suv$HR&gt;mean(test_suv$HR),</span><br><span class="line">               &quot;High&quot;,&quot;Low&quot;)</span><br><span class="line">sfit1&lt;-survfit(Surv(test_suv$time,</span><br><span class="line">                    test_suv$vital_status)~group1,data &#x3D; test_suv)</span><br><span class="line"></span><br><span class="line">library(survminer)</span><br><span class="line"></span><br><span class="line">ggsurvplot(sfit1,</span><br><span class="line">           legend.title &#x3D; NULL,</span><br><span class="line">           conf.int &#x3D; F,</span><br><span class="line">           pval &#x3D; T,</span><br><span class="line">           risk.table &#x3D; F,</span><br><span class="line">           palette &#x3D; c(&quot;RED&quot;,&quot;NAVY&quot;),</span><br><span class="line">           risk.table.col &#x3D; &#39;strata&#39;,</span><br><span class="line">           tables.height &#x3D; 0.2,</span><br><span class="line">           xlab &#x3D; &quot;Time In Days&quot;,</span><br><span class="line">           pval.method &#x3D; TRUE,</span><br><span class="line">           surv.median.line &#x3D; &quot;hv&quot;,</span><br><span class="line">           ncensor.plot &#x3D; F)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/1.png" alt="图"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">coef &lt;- as.data.frame(coef)</span><br><span class="line"></span><br><span class="line">coef$Title&#x3D;rownames(coef)</span><br><span class="line"></span><br><span class="line">film &lt;- data.frame( </span><br><span class="line">  RANK &#x3D;c(1,2,3,4,5,6,7,8),</span><br><span class="line">  Title &#x3D; c(&quot;MYOSLID&quot;, &quot;LINC00665&quot;, &quot;SNHG15&quot;, &quot;LINC01783&quot;,</span><br><span class="line">            &quot;LINC02482&quot;, &quot;LINC01215&quot;, &quot;LINC01023&quot;, &quot;LINC01451&quot;), </span><br><span class="line">  coef &#x3D; c(-0.03933526, 0.08184529, -0.11828169, 0.05030023,</span><br><span class="line">           0.19644109, 0.12218954, -0.29364838, -0.02505100))</span><br><span class="line">p &lt;- ggplot() +  geom_bar(data &#x3D; coef, </span><br><span class="line">                          aes(x &#x3D; coef, y &#x3D; Title),</span><br><span class="line">                          stat &#x3D; &quot;identity&quot;,</span><br><span class="line">                          width &#x3D; 0.5, </span><br><span class="line">                          position &#x3D; position_dodge(width &#x3D; 0.9),</span><br><span class="line">                          fill &#x3D; &quot;navy&quot;)</span><br><span class="line">p + theme(axis.text.x &#x3D; element_text(angle &#x3D; 45,</span><br><span class="line">                                     vjust &#x3D; 1,</span><br><span class="line">                                     hjust &#x3D; 1,</span><br><span class="line">                                     size &#x3D; 10),</span><br><span class="line">          axis.text.y &#x3D; element_text(size &#x3D; 10),</span><br><span class="line">          panel.background &#x3D; element_blank(),</span><br><span class="line">          panel.grid.major.x &#x3D; element_line(colour &#x3D; &quot;black&quot;))</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/2.png" alt="图"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">#使用Survival程序包的Predict函数，计算出每位患者的风险评分</span><br><span class="line">RiskScore&lt;-predict(model,type &#x3D; &quot;risk&quot;)</span><br><span class="line">names(RiskScore) &#x3D; rownames(test_final)</span><br><span class="line"></span><br><span class="line">#开始绘制风险模型的生存点图</span><br><span class="line">fp &lt;- RiskScore</span><br><span class="line">phe&lt;-test_final</span><br><span class="line"></span><br><span class="line">fp_dat&#x3D;data.frame(patientid&#x3D;1:length(fp),</span><br><span class="line">                  fp&#x3D;as.numeric(sort(fp)))</span><br><span class="line">#添加风险分组，以风险评分的中位值将患者分为两组，大于中位值的 患者为高风险组，小于或等于中位值的患者为低风 险组</span><br><span class="line">fp_dat$riskgroup&#x3D; ifelse(fp_dat$fp&gt;&#x3D;median(fp_dat$fp),&#39;high&#39;,&#39;low&#39;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sur_dat &lt;- cbind(fp_dat,test_final)</span><br><span class="line">sur_dat&#x3D;data.frame(patientid&#x3D;1:length(fp),time&#x3D;phe[names(sort(fp)),&#39;time&#39;],event&#x3D;phe[names(sort(fp )),&#39;event&#39;]) </span><br><span class="line">sur_dat$event&#x3D;ifelse(sur_dat$status&#x3D;&#x3D;0,&#39;alive&#39;,&#39;death&#39;)</span><br><span class="line"></span><br><span class="line">sur_dat$event&#x3D;factor(sur_dat$event,levels &#x3D; c(&quot;death&quot;,&quot;alive&quot;))</span><br><span class="line"></span><br><span class="line">exp_dat&#x3D;dat[names(sort(fp)),(ncol(dat)-7):ncol(dat)]</span><br><span class="line">#fp_dat用来绘制第一幅图</span><br><span class="line">#sur_dat用来绘制第二幅图</span><br><span class="line">#exp_dat用来绘制第三幅图：热图。没画</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">###第一个图</span><br><span class="line">library(ggplot2)</span><br><span class="line"></span><br><span class="line">p1&#x3D;ggplot(fp_dat,aes(x&#x3D;patientid,y&#x3D;fp))+geom_point(aes(color&#x3D;riskgroup))+</span><br><span class="line">  scale_colour_manual(values &#x3D; c(&quot;red&quot;,&quot;green&quot;))+</span><br><span class="line">  theme_bw()+labs(x&#x3D;&quot;Patient ID(increasing risk score)&quot;,y&#x3D;&quot;Risk score&quot;)+</span><br><span class="line">  geom_hline(yintercept&#x3D;median(fp_dat$fp),colour&#x3D;&quot;black&quot;, linetype&#x3D;&quot;dotted&quot;,size&#x3D;0.8)+</span><br><span class="line">  geom_vline(xintercept&#x3D;sum(fp_dat$riskgroup&#x3D;&#x3D;&quot;low&quot;),colour&#x3D;&quot;black&quot;, linetype&#x3D;&quot;dotted&quot;,size&#x3D;0.8)</span><br><span class="line">p1</span><br><span class="line"></span><br><span class="line">#第二个图</span><br><span class="line">p2&#x3D;ggplot(sur_dat,aes(x&#x3D;patientid,y&#x3D;time))+geom_point(aes(col&#x3D;event))+theme_bw()+</span><br><span class="line">  scale_colour_manual(values &#x3D; c(&quot;red&quot;,&quot;green&quot;))+</span><br><span class="line">  labs(x&#x3D;&quot;Patient ID(increasing risk score)&quot;,y&#x3D;&quot;Survival time(year)&quot;)+</span><br><span class="line">  geom_vline(xintercept&#x3D;sum(fp_dat$riskgroup&#x3D;&#x3D;&quot;low&quot;),colour&#x3D;&quot;black&quot;, linetype&#x3D;&quot;dotted&quot;,size&#x3D;0.8)</span><br><span class="line">p2</span><br><span class="line"></span><br><span class="line"># #第三个图</span><br><span class="line"># library(pheatmap)</span><br><span class="line"># mycolors &lt;- colorRampPalette(c(&quot;white&quot;, &quot;green&quot;, &quot;red&quot;), bias &#x3D; 1.2)(100)</span><br><span class="line"># tmp&#x3D;t(scale(exp_dat))</span><br><span class="line"># tmp[tmp &gt; 1] &#x3D; 1</span><br><span class="line"># tmp[tmp &lt; -1] &#x3D; -1</span><br><span class="line"># p3&#x3D;pheatmap(tmp,col&#x3D; mycolors,show_colnames &#x3D; F,cluster_cols &#x3D; F)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">library(ggplotify)</span><br><span class="line">plots &#x3D; list(p1,p2)</span><br><span class="line"></span><br><span class="line">library(gridExtra)</span><br><span class="line">lay1 &#x3D; rbind(c(rep(1,7)),c(rep(2,7))) #布局矩阵</span><br><span class="line">grid.arrange(grobs &#x3D; plots, layout_matrix &#x3D; lay1, heigths &#x3D; c(2,3,2),weights&#x3D;c(10,10,10))</span><br><span class="line"></span><br><span class="line">#rm(fit)</span><br><span class="line">#fit &lt;- cph(Surv(time,status)~ANLN+CENPA+GPR182+BCO2,LIRI)</span><br><span class="line">#ggrisk(fit,</span><br><span class="line">       # cutoff.value&#x3D;&#39;median&#39;,</span><br><span class="line">       # cutoff.x &#x3D; 145,</span><br><span class="line">       # cutoff.y &#x3D; -0.8)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/3.png" alt="图"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/05/22/%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%BE%97%E5%88%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%88%E8%83%BD%E5%88%86%E6%9E%90/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="w-临床列线图及矫正曲线" class="article article-type-w  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -291,253 +557,9 @@
 
 
   
-    <article id="post-单因素COX生存风险分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">单因素COX生存风险分析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:17:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>针对构建的生存风险得分模型中的Riskscore与临床其他的癌症临床变量进行计算HR值，同时判断该变量是否为独立预后因子<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;F210406002&#x2F;Step11&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">meta_final &lt;- read.csv(&quot;meta_final_coxS.csv&quot;,</span><br><span class="line">                       header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">covariates &lt;- c(&quot;Stage&quot;, &quot;T&quot;, &quot;M&quot;, &quot;N&quot;, </span><br><span class="line">                &quot;Treatment&quot;, &quot;Riskscore&quot;, &quot;Age&quot;)</span><br><span class="line"></span><br><span class="line">univ_formulas &lt;- sapply(covariates,</span><br><span class="line">                        function(x) as.formula(paste(&quot;Surv(time, vital_status)~&quot;,x)))</span><br><span class="line"></span><br><span class="line">univ_models &lt;- lapply(univ_formulas, function(x)&#123;coxph(x, data &#x3D; meta_final)&#125;)</span><br></pre></td></tr></table></figure></li>
-<li>循环采用coxph（Surv（））进行批量分析，计算beta值，HR值，置信区间及wald.test的P value<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#Extract data</span><br><span class="line">a &lt;- summary(univ_models$T)</span><br><span class="line">a$coefficients</span><br><span class="line">p.value &lt;- signif(a$waid[&quot;pvalue&quot;], digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">univ_results &lt;- lapply(univ_models,</span><br><span class="line">                       function(x)&#123;</span><br><span class="line">                         x &lt;- summary(x)</span><br><span class="line">                         p.value &lt;- signif(x$waldtest[&quot;pvalue&quot;], digits &#x3D; 2)</span><br><span class="line">                         wald.test &lt;- signif(x$waldtest[&quot;test&quot;], digits &#x3D; 2)</span><br><span class="line">                         beta &lt;- signif(x$coef[1], digits &#x3D; 2);</span><br><span class="line">                         HR &lt;- signif(x$coef[2], digits &#x3D; 2);</span><br><span class="line">                         HR.confint.lower &lt;- signif(x$conf.int[ ,&quot;lower .95&quot;], 2)</span><br><span class="line">                         HR.confint.upper &lt;- signif(x$conf.int[ ,&quot;upper .95&quot;], 2)</span><br><span class="line">                         HR &lt;- paste0(HR, &quot; (&quot;,</span><br><span class="line">                                     HR.confint.lower, &quot;-&quot;, HR.confint.upper, &quot;) &quot;)</span><br><span class="line">                         res &lt;- c(beta, HR, wald.test, p.value,HR.confint.lower,HR.confint.upper)</span><br><span class="line">                         names(res) &lt;- c(&quot;beta&quot;, &quot;HR(95% CI for HR)&quot;, &quot;wald.test&quot;,</span><br><span class="line">                                         &quot;p.value&quot;,&quot;HR.confint.lower&quot;,&quot;HR.confint.upper&quot;)</span><br><span class="line">                         return(res)</span><br><span class="line">                       &#125;)</span><br><span class="line"></span><br><span class="line">res &lt;- t(as.data.frame(univ_results, check.name &#x3D; F))</span><br><span class="line"></span><br><span class="line">write.csv(res, &quot;cox_单因素.csv&quot;)</span><br><span class="line">res &lt;- read.csv(&quot;cox_res.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br></pre></td></tr></table></figure></li>
-<li>forestplot包是目前做森林图比较好看的包，比前几期的森林图要nice多<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">library(forestplot)</span><br><span class="line">#install.packages(&quot;forestplot&quot;)</span><br><span class="line"></span><br><span class="line"># 森林图</span><br><span class="line"></span><br><span class="line">out_multi &lt;- read.csv(&quot;cox_res.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tabletext &lt;- cbind(c(NA,&quot;Risk Factors&quot;,rownames(out_multi)),</span><br><span class="line">                   c(NA,&quot;P value&quot;,out_multi$p.value),</span><br><span class="line">                   c(NA,&quot;Hazard Ratio(95% CI)&quot;,out_multi$HR.95..CI.for.HR.))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">forestplot(labeltext&#x3D;tabletext, </span><br><span class="line">           graph.pos&#x3D;3,  #为Pvalue箱线图所在的位置</span><br><span class="line">           col&#x3D;fpColors(box&#x3D;&quot;#D55E00&quot;, lines&#x3D;&quot;#CC79A7&quot;, zero &#x3D; &quot;gray50&quot;),</span><br><span class="line">           mean&#x3D;c(NA,NA,out_multi$HR),</span><br><span class="line">           lower&#x3D;c(NA,NA,out_multi$HR.confint.lower), #95%置信区间下限</span><br><span class="line">           upper&#x3D;c(NA,NA,out_multi$HR.confint.upper), #95%置信区间上限</span><br><span class="line">           boxsize&#x3D;0.5,lwd.ci&#x3D;2,   #箱子大小，线的宽度</span><br><span class="line">           ci.vertices.height &#x3D; 0.2,ci.vertices&#x3D;TRUE, #置信区间用线宽、高、型</span><br><span class="line">           zero&#x3D;1,lwd.zero&#x3D;1,      #zero线宽 基准线的位置</span><br><span class="line">           colgap&#x3D;unit(7,&quot;mm&quot;),    #列间隙</span><br><span class="line">           xticks &#x3D; c(0.5, 1,1.5,2,2.5,3), #横坐标刻度</span><br><span class="line">           lwd.xaxis&#x3D;1,            #X轴线宽</span><br><span class="line">           lineheight &#x3D; unit(1.5,&quot;cm&quot;), #固定行高</span><br><span class="line">           graphwidth &#x3D; unit(.3,&quot;npc&quot;), #图在表中的宽度比例</span><br><span class="line">           cex&#x3D;0.9, fn.ci_norm &#x3D; fpDrawCircleCI, #误差条显示方式</span><br><span class="line">           hrzl_lines&#x3D;list(&quot;2&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;),</span><br><span class="line">                           &quot;3&quot; &#x3D; gpar(lwd&#x3D;2, col&#x3D;&quot;black&quot;), #第三行顶部加黑线，引号内数字标记行位置</span><br><span class="line">                           &quot;10&quot; &#x3D; gpar(lwd&#x3D;4, col&#x3D;&quot;black&quot;)),#最后一行底部加黑线,&quot;16&quot;中数字为nrow(tabletext)+1</span><br><span class="line">           mar&#x3D;unit(rep(0.5, times &#x3D; 4), &quot;cm&quot;),#图形页边距</span><br><span class="line">           #fpTxtGp函数中的cex参数设置各个组件的大小</span><br><span class="line">           txt_gp&#x3D;fpTxtGp(label&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          ticks&#x3D;gpar(cex&#x3D;1.2),</span><br><span class="line">                          xlab&#x3D;gpar(cex &#x3D; 1.25),</span><br><span class="line">                          title&#x3D;gpar(cex &#x3D; 1.2)),</span><br><span class="line">           xlab&#x3D;&quot;Hazard Ratio&quot;,</span><br><span class="line">           title &#x3D; &quot;Univariate cox regression analysis&quot;)</span><br></pre></td></tr></table></figure>
-<img src="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/1.png" alt="相关性图"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/05/22/%E5%8D%95%E5%9B%A0%E7%B4%A0COX%E7%94%9F%E5%AD%98%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Starbase数据库-爬虫" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/">Starbasese数据库-爬虫</a>
-    </h1>
-  
-
-        
-        <a href="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:16:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在ceRNA调控网络中，miRNA起到了桥梁的作用，通过和各种RNA分子结合，从而介导该调控机制的发生。starBase数据库提供了miRNA和各种RNA分子的相互作用信息，并在此基础上构建了ceRNA网络，网址如下</p>
-<p><a href="http://starbase.sysu.edu.cn/index.php" target="_blank" rel="noopener">http://starbase.sysu.edu.cn/index.php</a></p>
-<p>该数据库提供了以下几种类型的信息：</p>
-<blockquote>
-<p>miRNA target</p>
-<p>RNA-RNA相互作用</p>
-<p>ceRNA调控网络</p>
-<p>RNA和蛋白的结合信息<br>###一眼看过去只能一个一个下载相互作用关系，秒想到去爬虫，果然就是想的少，做的就多<br>作为学者必须仔细，一直思考，一直想。</p>
-</blockquote>
-<p>###采用python的selenium进行网页爬取数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">#coding&#x3D;utf-8</span><br><span class="line">import time</span><br><span class="line">import selenium.webdriver</span><br><span class="line">from selenium.webdriver.common.action_chains import ActionChains</span><br><span class="line">from selenium.webdriver.common.keys import Keys</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#设置驱动目录</span><br><span class="line">driver &#x3D; selenium.webdriver.Edge(r&#39;e:\F210406002\Seleium\venv\msedgedriver.exe&#39;)</span><br><span class="line"></span><br><span class="line">#进入lncRNA RNA互作网页</span><br><span class="line">driver.get(&quot;http:&#x2F;&#x2F;starbase.sysu.edu.cn&#x2F;rnaRNA.php?source&#x3D;lncRNA&quot;)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#点击GENES</span><br><span class="line"></span><br><span class="line">driver.find_element_by_xpath(&quot;&#x2F;html&#x2F;body&#x2F;div&#x2F;div&#x2F;div&#x2F;div[1]&#x2F;div&#x2F;a[4]&quot;).click()</span><br><span class="line">time.sleep(1)</span><br><span class="line">driver.find_element_by_xpath(&quot;&#x2F;html&#x2F;body&#x2F;div&#x2F;div&#x2F;div&#x2F;div[1]&#x2F;div&#x2F;div[4]&quot;).click()</span><br><span class="line">#action &#x3D; ActionChains(driver).move_to_element(&quot;elem_genequery&quot;)</span><br><span class="line">time.sleep(1)</span><br><span class="line">driver.maximize_window()</span><br><span class="line">#输入框输入内容</span><br></pre></td></tr></table></figure>
-<p>##切记不要设置时间过短，数据库容易崩。采用xpath进行定位优于采用class或者name等类对网页元素进行定位</p>
-<blockquote>
-<p>同时针对网页的需要仔细的F12进行check<br>这里由于是当作工具来使用，忽略了可能搜索无内容，下载重复的文件，当然我第一时间想到的结解决方法是采用<br>cmd的shell语句，搞个bat文件进行批量合并，所以如果在爬取过程进行设置，就会减少文件的下载和时间。<br>果然就是算法中的：时间代价会有空间代价所填补。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">f1&#x3D; open(&quot;E:&#x2F;F210406002&#x2F;Seleium&#x2F;lncRNA_b.txt&quot;, &#39;r&#39;)</span><br><span class="line">while 1:</span><br><span class="line">    line &#x3D; f1.readline()</span><br><span class="line">    if not line:</span><br><span class="line">      break</span><br><span class="line">    elem &#x3D; driver.find_element_by_xpath(&quot;&#x2F;html&#x2F;body&#x2F;div&#x2F;div&#x2F;div&#x2F;div[1]&#x2F;div&#x2F;div[4]&#x2F;div&#x2F;div&#x2F;div[1]&#x2F;input&quot;)</span><br><span class="line">    line &#x3D; line.strip(&#39;\n&#39;)</span><br><span class="line">    elem.send_keys(line)</span><br><span class="line">    elem.send_keys(Keys.ENTER)</span><br><span class="line">    time.sleep(2.5)</span><br><span class="line">    driver.find_element_by_xpath(&quot;&#x2F;html&#x2F;body&#x2F;div&#x2F;div&#x2F;div&#x2F;div[2]&#x2F;div[2]&#x2F;div&#x2F;div[1]&#x2F;div[2]&#x2F;span[1]&quot;).click()</span><br><span class="line">    driver.find_element_by_xpath(&quot;&#x2F;html&#x2F;body&#x2F;div&#x2F;div&#x2F;div&#x2F;div[1]&#x2F;div&#x2F;div[4]&#x2F;div&#x2F;button&#x2F;div&#x2F;div&quot;).click()</span><br><span class="line">    time.sleep(2.5)</span><br></pre></td></tr></table></figure>
-<p>##以上简单的爬取，把中大数据库爬崩了，仔细check。网页有API接口，继续在R语言里面运用接口进行下载。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;F210406002&#x2F;lnc_RNA&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">lncRNAexp &lt;- read.csv(&quot;lncRNA_fpkm_exp.csv&quot;,</span><br><span class="line">                      header &#x3D; T,</span><br><span class="line">                      row.names &#x3D; 1)</span><br><span class="line">lncgene &lt;- as.data.frame(rownames(lncRNAexp))</span><br><span class="line"></span><br><span class="line">write.csv(lncgene, &quot;lncRNAgene.csv&quot;)</span><br><span class="line"></span><br><span class="line">#Starbase V3数据库相互作用对下载</span><br><span class="line">family&#x3D;read.table(&quot;E:&#x2F;F210406002&#x2F;Seleium&#x2F;lncRNA_b.txt&quot;,sep&#x3D;&quot;\t&quot;)</span><br><span class="line">lncRNA&#x3D;unlist(strsplit(as.character(family$V1),&quot;,&quot;))</span><br><span class="line"></span><br><span class="line">dir.create(&quot;mRNA&quot;)</span><br><span class="line"></span><br><span class="line">for(mir in lncRNA)&#123;</span><br><span class="line">  file&#x3D;paste(&quot;mRNA&#x2F;&quot;,mir,&quot;.txt&quot;,sep&#x3D;&quot;&quot;)</span><br><span class="line">  link&#x3D;paste(&quot;http:&#x2F;&#x2F;starbase.sysu.edu.cn&#x2F;api&#x2F;RNARNA&#x2F;?assembly&#x3D;hg19&amp;geneType&#x3D;lncRNA&amp;RNA&#x3D;&quot;,mir,&quot;&amp;clipExpNum&#x3D;1&amp;degraExpNum&#x3D;0&amp;pancancerNum&#x3D;0&amp;programNum&#x3D;1&amp;program&#x3D;None&amp;target&#x3D;all&quot;,sep&#x3D;&quot;&quot;)</span><br><span class="line">  download.file(link,file)</span><br><span class="line">  Sys.sleep(6)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Sys-sleep的时间控制长一点，数据库会中断，需要对下载的循环的列表手动删除，以免重新下载，一般一次可以下载300个作用对。"><a href="#Sys-sleep的时间控制长一点，数据库会中断，需要对下载的循环的列表手动删除，以免重新下载，一般一次可以下载300个作用对。" class="headerlink" title="Sys.sleep的时间控制长一点，数据库会中断，需要对下载的循环的列表手动删除，以免重新下载，一般一次可以下载300个作用对。"></a>Sys.sleep的时间控制长一点，数据库会中断，需要对下载的循环的列表手动删除，以免重新下载，一般一次可以下载300个作用对。</h2><blockquote>
-<p>批处理合并文件语句：<br><img src="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/2.png" alt="相关性图"></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#进入命令行窗口输入</span><br><span class="line">copy *.* all.txt</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/1.png" alt="相关性图"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/05/22/Starbase%E6%95%B0%E6%8D%AE%E5%BA%93-%E7%88%AC%E8%99%AB/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-lncRNA-RNA相关性分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">lncRNA-RNA相关性分析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/" class="archive-article-date">
-  	<time datetime="2021-05-22T08:15:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-05-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#研究目的</p>
-<ul>
-<li>探究lncRNA的表达和感兴趣的mRNA表达的相关性，同时分析其相关系数，其检验其相关程度的显著性。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#clean the environment</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">getwd()</span><br><span class="line">library(rtracklayer)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>表达矩阵可能没有注释完全，采用gtf格式的注释文件对表达矩阵中的lncRNA进行提取，同理也可研究miRNA及其他非编码的RNA<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">AnnoData &#x3D; import(&quot;E:&#x2F;F210406002&#x2F;Step0_RawData&#x2F;gencode.v27.long_noncoding_RNAs.gtf&quot;)</span><br><span class="line"></span><br><span class="line">#将3列信息单独提出来：</span><br><span class="line"></span><br><span class="line">index &#x3D; which(AnnoData$type &#x3D;&#x3D; &quot;gene&quot;)</span><br><span class="line"></span><br><span class="line">Target &#x3D; data.frame(Ensembl_ID &#x3D; AnnoData$gene_id[index],</span><br><span class="line">                    Symbol &#x3D; AnnoData$gene_name[index],</span><br><span class="line">                    Biotype &#x3D; AnnoData$gene_type[index])</span><br><span class="line"></span><br><span class="line">index_lncRNA &lt;- Target$Biotype &#x3D;&#x3D; &quot;lincRNA&quot;</span><br><span class="line">INCRNA &lt;- Target[index_lncRNA,]</span><br></pre></td></tr></table></figure></li>
-<li>为了排除count数据的影响，采用标准化的count数据（DESeq2标准化处理or其他），这里我采FPKM进行相关性分析<br>当然也可也采用TPM更好</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#load FPKM exparray</span><br><span class="line">GenecountV3 &lt;- read.csv(&quot;E:&#x2F;F210406002&#x2F;Step1_CleanData&#x2F;CESC_FPKM_clean.csv&quot;, </span><br><span class="line">                        header &#x3D; T, </span><br><span class="line">                        row.names &#x3D; 1)</span><br><span class="line">#save lnc RNA exparray</span><br><span class="line">index1 &lt;- which(rownames(GenecountV3) %in% INCRNA$Symbol)</span><br><span class="line">lnRNA_count_exp &lt;- GenecountV3[index1,] </span><br><span class="line"></span><br><span class="line">write.csv(lnRNA_count_exp, &quot;E:&#x2F;F210406002&#x2F;lnc_RNA&#x2F;lncRNA_fpkm_exp.csv&quot;)</span><br><span class="line"></span><br><span class="line">#save Fe genes exparray</span><br><span class="line">index2 &lt;- which(rownames(GenecountV3) %in% Fe_genes$elements)</span><br><span class="line">Fe_count_exp &lt;- GenecountV3[index2,] </span><br><span class="line">write.csv(Fe_count_exp, &quot;E:&#x2F;F210406002&#x2F;lnc_RNA&#x2F;Fe_fpkm_exp_1.csv&quot;)</span><br><span class="line"></span><br><span class="line">#save lnc and Fe exparray </span><br><span class="line">TEST_IRIS &lt;- rbind(Fe_count_exp,lnRNA_count_exp)</span><br><span class="line">#write.csv(TEST_IRIS, &quot;E:&#x2F;F210406002&#x2F;lnc_RNA&#x2F;TEST_IRIS.csv&quot;)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>可以进行相关性分析及可视化的R包很多，这里已尝试多种R包，但是corrplot进行批量相关性分析，及相关性检验的效果相对比较简单</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">###############################################################################################</span><br><span class="line">library(&quot;corrplot&quot;)</span><br><span class="line"></span><br><span class="line">#test the P value for relationship</span><br><span class="line">library(limma)</span><br><span class="line"></span><br><span class="line">Fe_exp &#x3D; Fe_count_exp</span><br><span class="line">lnc &#x3D; lnRNA_count_exp</span><br></pre></td></tr></table></figure></li>
-<li><p>设置相关性过滤的阈值<br>参考标准：<br>相关系数的绝对值越大，相关性越强，相关系数越接近于1或-1，相关度越强，相关系数越接近于0，相关度越弱。      </p>
-<p>通常情况下通过以下取值范围判断变量的相关强度：      </p>
-<blockquote>
-<p>相关系数 ：<br> 0.8-1.0 极强相关<br> 0.6-0.8 强相关<br> 0.4-0.6 中等程度相关<br> 0.2-0.4 弱相关<br> 0.0-0.2 极弱相关或无相关</p>
-</blockquote>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#Setting thresholds</span><br><span class="line">## res File 04</span><br><span class="line">corFilter&#x3D;0.4</span><br><span class="line">## res File 05</span><br><span class="line">corFilter&#x3D;0.5</span><br><span class="line"></span><br><span class="line">pvalueFilter&#x3D;0.05</span><br></pre></td></tr></table></figure>
-<h4 id="根据设置的阈值进行批量相关性分析及检验"><a href="#根据设置的阈值进行批量相关性分析及检验" class="headerlink" title="根据设置的阈值进行批量相关性分析及检验"></a>根据设置的阈值进行批量相关性分析及检验</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">corResult&#x3D;data.frame()</span><br><span class="line">for(i in row.names(lnc))&#123;</span><br><span class="line">  if(sd(lnc[i,])&gt;0.5)&#123;</span><br><span class="line">    for(j in row.names(Fe_exp))&#123;</span><br><span class="line">      x&#x3D;as.numeric(lnc[i,])</span><br><span class="line">      y&#x3D;as.numeric(Fe_exp[j,])</span><br><span class="line">      corT&#x3D;cor.test(x,y)</span><br><span class="line">      cor&#x3D;corT$estimate</span><br><span class="line">      pvalue&#x3D;corT$p.value</span><br><span class="line">      if((abs(cor)&gt;corFilter) &amp; (pvalue&lt;pvalueFilter))&#123;</span><br><span class="line">        corResult&#x3D;rbind(corResult,cbind(gene&#x3D;j,lncRNA&#x3D;i,cor,pvalue))</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#write.csv(corResult,file &#x3D; &quot;corResult_04.csv&quot;)</span><br><span class="line">#0.4纳入筛选基因流程</span><br><span class="line"></span><br><span class="line">#write.csv(corResult,file &#x3D; &quot;corResult_05.csv&quot;)</span><br><span class="line">#0.5进行数据可视化</span><br><span class="line"></span><br><span class="line">pp &lt;- read.csv(&quot;E:&#x2F;F210406002&#x2F;lnc_RNA&#x2F;corResult_05.csv&quot;,</span><br><span class="line">               header &#x3D; T,</span><br><span class="line">               row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line"># test pearson mathix </span><br><span class="line">DAT1 &lt;- cor(t(Fe_count_exp),t(lnRNA_count_exp),method &#x3D; &quot;pearson&quot;)</span><br><span class="line">DAT1 &lt;- as.data.frame(DAT1)</span><br><span class="line"></span><br><span class="line">#clean the mathix for unique col and rownames</span><br><span class="line">index_Fe &lt;- which(rownames(DAT1) %in% pp$gene)</span><br><span class="line">DAT2 &lt;- DAT1[index_Fe,]</span><br><span class="line"></span><br><span class="line">index_INCCC &lt;- which(names(DAT2) %in% pp$lncRNA)</span><br><span class="line">DAT3 &lt;- DAT2[,index_INCCC]</span><br><span class="line">#corrplot(as.matrix(DAT3),method&#x3D;&quot;color&quot;)</span><br><span class="line"></span><br><span class="line">#添加P值</span><br><span class="line">dim(DAT3)</span><br><span class="line"></span><br><span class="line">fe_index &lt;- which(rownames(Fe_exp) %in% pp$gene)</span><br><span class="line">Fe_exp_32 &lt;- Fe_exp[fe_index,]</span><br><span class="line">lnc_index &lt;-which(rownames(lnRNA_count_exp) %in% pp$lncRNA)</span><br><span class="line">lnc_exp_29 &lt;- lnRNA_count_exp[lnc_index,]</span><br><span class="line">#合并矩阵做p值</span><br><span class="line">new_exp_DAT &lt;- rbind(Fe_exp_32, lnc_exp_29)</span><br><span class="line">cor1 &lt;- cor(t(new_exp_DAT))</span><br><span class="line">corrplot(cor1,method&#x3D;&quot;color&quot;)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>针对相关性的各个基因进行相关性检验，可返回P值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#构建cor.mtest函数</span><br><span class="line">cor.mtest &lt;- function(mat, ...) &#123;</span><br><span class="line">  mat &lt;- as.matrix(mat)</span><br><span class="line">  n &lt;- ncol(mat)</span><br><span class="line">  p.mat&lt;- matrix(NA, n, n)</span><br><span class="line">  diag(p.mat) &lt;- 0</span><br><span class="line">  for (i in 1:(n - 1)) &#123;</span><br><span class="line">    for (j in (i + 1):n) &#123;</span><br><span class="line">      tmp &lt;- cor.test(mat[, i], mat[, j], ...)</span><br><span class="line">      p.mat[i, j] &lt;- p.mat[j, i] &lt;- tmp$p.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  colnames(p.mat) &lt;- rownames(p.mat) &lt;- colnames(mat)</span><br><span class="line">  p.mat</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>insig参数可以设置可视化的p值显示方式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mydatap&lt;- cor.mtest(t(new_exp_DAT))</span><br><span class="line"></span><br><span class="line">#sig.level &#x3D; 0.05</span><br><span class="line">#筛选的标准以0.05为界</span><br><span class="line"></span><br><span class="line">corrplot(cor1,method&#x3D;&quot;color&quot;, p.mat &#x3D; mydatap, </span><br><span class="line">         sig.level &#x3D; 0.05,</span><br><span class="line">         #insig &#x3D; &quot;label_sig&quot;,</span><br><span class="line">         order &#x3D; &quot;hclust&quot;,</span><br><span class="line">         insig &#x3D;&quot;blank&quot;,</span><br><span class="line">         pch &#x3D; 1, pch.col &#x3D; &quot;black&quot;, pch.cex &#x3D; 4,</span><br><span class="line">         tl.cex &#x3D; 0.4,</span><br><span class="line">         tl.col &#x3D; &quot;black&quot;)</span><br></pre></td></tr></table></figure>
-####以下是我的可视化结果：<br><img src="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/1.png" alt="相关性图"><br>####调整后第二种<br><img src="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/2.png" alt="相关性图"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/05/22/lncRNA-RNA%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
     </nav>
   
 

@@ -151,6 +151,311 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Lasso-cox-TCGA数据挖掘" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">Lasso_cox_TCGA数据挖掘(1)</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/" class="archive-article-date">
+  	<time datetime="2021-04-12T06:40:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Lasso-cox-TCGA数据挖掘"><a href="#Lasso-cox-TCGA数据挖掘" class="headerlink" title="Lasso_cox_TCGA数据挖掘"></a>Lasso_cox_TCGA数据挖掘</h1><blockquote>
+<p>LASSO 回归的特点是在拟合广义线性模型的同时进行变量筛选（variable selection）和复杂度调整（regularization）。 因此，不论目标因变量（dependent/response varaible）是连续的（continuous），还是二元或者多元离散的（discrete），都可以用 LASSO 回归建模然后预测。 这里的变量筛选是指不把所有的变量都放入模型中进行拟合，而是有选择的把变量放入模型从而得到更好的性能参数。 复杂度调整是指通过一系列参数控制模型的复杂度，从而避免过度拟合（overfitting）。 对于线性模型来说，复杂度与模型的变量数有直接关系，变量数越多，模型复杂度就越高。 更多的变量在拟合时往往可以给出一个看似更好的模型，但是同时也面临过度拟合的危险。此时如果用全新的数据去验证模型（validation），通常效果很差。 一般来说，变量数大于数据点数量很多，或者某一个离散变量有太多独特值时，都有可能过度拟合。<br><a href="https://cosx.org/2016/10/data-mining-1-lasso/" target="_blank" rel="noopener">（LASSO回归示例）</a></p>
+</blockquote>
+<ul>
+<li><p>#研究目的</p>
+<blockquote>
+<p>探究TCGA——COAD的RNAseq数据与临床信息中生存相关的关键基因。（简称：筛选与生存相关的基因）</p>
+</blockquote>
+</li>
+<li><p>###导入数据及数据格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">#加载相关的包</span><br><span class="line">library(glmnet)</span><br><span class="line">library(survival)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#生存数据</span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;生存分析&#x2F;&quot;)</span><br><span class="line">data_clinical &lt;- read.csv(&quot;meta_new.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line">index3 &lt;- data_clinical$time &#x3D;&#x3D; 0</span><br><span class="line">data_clinical &lt;- data_clinical[!index3,]</span><br><span class="line">data_clinical$vital_status &lt;- gsub(&quot;Dead&quot;, 1 ,data_clinical$vital_status)</span><br><span class="line">data_clinical$vital_status &lt;- gsub(&quot;Alive&quot;, 0 ,data_clinical$vital_status)</span><br><span class="line">data_clinical$vital_status &lt;- as.double(data_clinical$a.vital_status)</span><br><span class="line">data_clinical$days_to_death &lt;- as.double(data_clinical$time)</span><br><span class="line">data_clinical &lt;- na.omit(data_clinical)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>临床信息的文件示例<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/2.png" alt="图1"></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#设置因变量</span><br><span class="line">y &lt;- data.matrix(Surv(time &#x3D; data_clinical$days_to_death, event &#x3D; data_clinical$vital_status))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#全表达谱</span><br><span class="line">marker.exp &lt;- read.csv(&quot;G:&#x2F;TCGA&#x2F;cancer注释FPKM表达矩阵.csv&quot;, header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">#筛选纳入生存的病人</span><br><span class="line">names(marker.exp) &lt;- substr(names(marker.exp),1, 12)</span><br><span class="line">GENEALL &lt;- names(marker.exp)</span><br><span class="line">index1 &lt;- which(GENEALL%in%data_clinical$ID)</span><br><span class="line">exp &lt;- marker.exp[,index1]</span><br><span class="line">duplicated(names(exp))</span><br><span class="line">duplicated(data_clinical$ID)</span><br><span class="line">test2 &lt;- names(exp)</span><br><span class="line">index2 &lt;- which(data_clinical$ID%in%test2)</span><br><span class="line">index2 &lt;- which(test2%in%data_clinical$ID)</span><br><span class="line">index2</span><br><span class="line">exp &lt;- exp[,index2]</span><br><span class="line"></span><br><span class="line">#筛选基因并且构建筛选基因的表达矩阵</span><br><span class="line">DNBgene &lt;- read.csv(&quot;E:&#x2F;TEX_marker.txt&quot;, header &#x3D; F, sep &#x3D; &quot;\t&quot;)</span><br><span class="line">index4 &lt;- which(rownames(exp) %in% DNBgene$V1)</span><br><span class="line">exp_DNB &lt;- exp[index4,]</span><br><span class="line">#marker.exp &#x3D; as.matrix(exp)</span><br><span class="line">#index3 &lt;- is.na(exp[1,])</span><br><span class="line">#exp &lt;- na.omit(exp)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>提取后的表达矩阵文件示例<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/1.png" alt="图2"></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#构建模型</span><br><span class="line">fit &lt;- glmnet(x &#x3D; t(exp_DNB), y, family &#x3D; &quot;cox&quot;,alpha &#x3D; 1)</span><br><span class="line"></span><br><span class="line">plot(fit, xvar &#x3D; &quot;lambda&quot;, label &#x3D; T)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>lasso模型构建过程文件展示<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/3.png" alt="图3"></p>
+<blockquote>
+<p>可以从筛选变量的过程观察到对生存显著相关的基因（序号作为展示），同时可以观察到变量最后筛选为几个了<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/4.png" alt="图4"><br>多变量同样可以进行筛选，但需要进一步交叉验证 </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#进行交叉验证</span><br><span class="line"></span><br><span class="line">lasso_fit &lt;- cv.glmnet(x &#x3D; t(exp_DNB), y, family &#x3D; &quot;cox&quot;,</span><br><span class="line">                       type.measure &#x3D; &quot;deviance&quot;)</span><br><span class="line"></span><br><span class="line">plot(lasso_fit)</span><br></pre></td></tr></table></figure></li>
+<li><p>lasso交叉验证图<br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/5.png" alt="图5"><br><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/6.png" alt="图6"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#筛选变量</span><br><span class="line">coefficient &lt;- coef(lasso_fit, s &#x3D; lasso_fit$lambda.min)</span><br><span class="line">Active.Index &lt;- which(as.numeric(coefficient) !&#x3D; 0)</span><br><span class="line">active.coefficient &lt;- as.numeric(coefficient)[Active.Index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">sig_gene_muti_cox &lt;- rownames(coefficient)[Active.Index]</span><br><span class="line">sig_gene_muti_cox</span><br><span class="line">sig_gene_muti_cox &lt;- as.data.frame(sig_gene_muti_cox)</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/7.png" alt="图7"></p>
+</li>
+<li><p>友情提醒：为保证实验可重复性，一定要设置噢~</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set.seed(77)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/12/Lasso-cox-TCGA%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Pytorch的Hello-World" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/11/Pytorch%E7%9A%84Hello-World/">Pytorch的Hello World</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/11/Pytorch%E7%9A%84Hello-World/" class="archive-article-date">
+  	<time datetime="2021-01-11T13:29:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/2021/01/11/Pytorch%E7%9A%84Hello-World/2.png" alt="图2"><br>##识别图片中的手写体<br>##分类模型</p>
+<p>###一、首先我是在服务器里conda新建了环境开始配置的，然后部署了jupyter notebook,可以使用Firefox网页的编辑器<br>类似：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[I 21:13:27.717 NotebookApp] 端口 8888 已经被站用, 请尝试其他端口.</span><br><span class="line">[I 21:13:27.719 NotebookApp] 启动notebooks 在本地路径: &#x2F;home&#x2F;zhongjiayuan&#x2F;singlecell&#x2F;hujiaqi&#x2F;zms</span><br><span class="line">[I 21:13:27.719 NotebookApp] Jupyter Notebook 6.1.6 is running at:</span><br><span class="line">[I 21:13:27.719 NotebookApp] http:&#x2F;&#x2F;localhost:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">[I 21:13:27.719 NotebookApp]  or http:&#x2F;&#x2F;127.0.0.1:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">[I 21:13:27.719 NotebookApp] 使用control-c停止此服务器并关闭所有内核(两次跳过确认).</span><br><span class="line">[C 21:13:27.722 NotebookApp]</span><br><span class="line"></span><br><span class="line">    To access the notebook, open this file in a browser:</span><br><span class="line">        file:&#x2F;&#x2F;&#x2F;home&#x2F;zhongjiayuan&#x2F;.local&#x2F;share&#x2F;jupyter&#x2F;runtime&#x2F;nbserver-33538-open.html</span><br><span class="line">    Or copy and paste one of these URLs:</span><br><span class="line">        http:&#x2F;&#x2F;localhost:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">     or http:&#x2F;&#x2F;127.0.0.1:8889&#x2F;?token&#x3D;475e95793415ce33803bf940408e2b86bcbc8f106f17ca06</span><br><span class="line">[I 21:20:32.364 NotebookApp] Kernel started: afeb6534-3c81-4254-9b14-2153d29f86b9, name: python3</span><br><span class="line">[I 21:36:46.179 NotebookApp] Starting buffering for afeb6534-3c81-4254-9b14-2153d29f86b9:0b0496fc0ead471f8d6e3a562b4f585a</span><br></pre></td></tr></table></figure>
+<p>##我的shell和火狐的Jupyter notebook界面：<br><img src="/2021/01/11/Pytorch%E7%9A%84Hello-World/1.png" alt="图1"></p>
+<blockquote>
+<p>####二、导入相关模块，我是在conda的python3.6进行的，我的相关包版本如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">&gt;Package                       Version</span><br><span class="line">&gt;----------------------------- -------------------</span><br><span class="line">&gt;argon2-cffi                   20.1.0</span><br><span class="line">&gt;async-generator               1.10</span><br><span class="line">&gt;attrs                         20.3.0</span><br><span class="line">&gt;backcall                      0.2.0</span><br><span class="line">&gt;backports.functools-lru-cache 1.6.1</span><br><span class="line">&gt;bleach                        1.4.2</span><br><span class="line">&gt;certifi                       2020.12.5</span><br><span class="line">&gt;cffi                          1.14.4</span><br><span class="line">&gt;cycler                        0.10.0</span><br><span class="line">&gt;decorator                     4.4.2</span><br><span class="line">&gt;defusedxml                    0.6.0</span><br><span class="line">&gt;entrypoints                   0.3</span><br><span class="line">&gt;html5lib                      1.1</span><br><span class="line">&gt;importlib-metadata            3.3.0</span><br><span class="line">&gt;ipykernel                     5.4.2</span><br><span class="line">&gt;ipython                       7.12.0</span><br><span class="line">&gt;ipython-genutils              0.2.0</span><br><span class="line">&gt;ipywidgets                    7.6.3</span><br><span class="line">&gt;jedi                          0.18.0</span><br><span class="line">&gt;Jinja2                        2.11.2</span><br><span class="line">&gt;jsonschema                    3.2.0</span><br><span class="line">&gt;jupyter-client                6.1.11</span><br><span class="line">&gt;jupyter-console               6.2.0</span><br><span class="line">&gt;jupyter-core                  4.7.0</span><br><span class="line">&gt;jupyterlab-pygments           0.1.2</span><br><span class="line">&gt;jupyterlab-widgets            1.0.0</span><br><span class="line">&gt;kiwisolver                    1.3.1</span><br><span class="line">&gt;MarkupSafe                    1.1.1</span><br><span class="line">&gt;matplotlib                    3.3.3</span><br><span class="line">&gt;mistune                       0.8.4</span><br><span class="line">&gt;nbclient                      0.5.1</span><br><span class="line">&gt;nbconvert                     6.0.7</span><br><span class="line">&gt;nbformat                      5.0.8</span><br><span class="line">&gt;nest-asyncio                  1.4.3</span><br><span class="line">&gt;notebook                      6.1.6</span><br><span class="line">&gt;numpy                         1.19.5</span><br><span class="line">&gt;olefile                       0.46</span><br><span class="line">&gt;pandas                        1.1.5</span><br><span class="line">&gt;pandocfilters                 1.4.2</span><br><span class="line">&gt;parso                         0.8.1</span><br><span class="line">&gt;pexpect                       4.8.0</span><br><span class="line">&gt;pickleshare                   0.7.5</span><br><span class="line">&gt;Pillow                        8.1.0</span><br><span class="line">&gt;pip                           20.3.3</span><br><span class="line">&gt;prometheus-client             0.9.0</span><br><span class="line">&gt;prompt-toolkit                3.0.10</span><br><span class="line">&gt;ptyprocess                    0.7.0</span><br><span class="line">&gt;pycparser                     2.20</span><br><span class="line">&gt;Pygments                      2.7.3</span><br><span class="line">&gt;pyparsing                     2.4.7</span><br><span class="line">&gt;PyQt5                         5.12.3</span><br><span class="line">&gt;PyQt5-sip                     4.19.18</span><br><span class="line">&gt;PyQtChart                     5.12</span><br><span class="line">&gt;PyQtWebEngine                 5.12.1</span><br><span class="line">&gt;pyrsistent                    0.17.3</span><br><span class="line">&gt;python-dateutil               2.8.1</span><br><span class="line">&gt;pytz                          2020.5</span><br><span class="line">&gt;pyzmq                         20.0.0</span><br><span class="line">&gt;qtconsole                     5.0.1</span><br><span class="line">&gt;QtPy                          1.9.0</span><br><span class="line">&gt;Send2Trash                    1.5.0</span><br><span class="line">&gt;setuptools                    49.6.0.post20210108</span><br><span class="line">&gt;six                           1.15.0</span><br><span class="line">&gt;terminado                     0.9.2</span><br><span class="line">&gt;testpath                      0.4.4</span><br><span class="line">&gt;torch                         0.4.1</span><br><span class="line">&gt;torchvision                   0.1.8</span><br><span class="line">&gt;tornado                       6.1</span><br><span class="line">&gt;traitlets                     4.3.3</span><br><span class="line">&gt;typing-extensions             3.7.4.3</span><br><span class="line">&gt;wcwidth                       0.2.5</span><br><span class="line">&gt;webencodings                  0.5.1</span><br><span class="line">&gt;wheel                         0.36.2</span><br><span class="line">&gt;widgetsnbextension            3.5.1</span><br><span class="line">&gt;zipp                          3.4.0</span><br></pre></td></tr></table></figure>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import torch</span><br><span class="line">import torch.nn as nn</span><br><span class="line">import torchvision</span><br><span class="line">import torchvision.transforms as transforms</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 判定GPU是否存在</span><br><span class="line">device &#x3D; torch.device(&#39;cuda&#39; if torch.cuda.is_available() else &#39;cpu&#39;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 定义超参数</span><br><span class="line">input_size &#x3D; 784</span><br><span class="line">hidden_size &#x3D; 500</span><br><span class="line">num_classes &#x3D; 10</span><br><span class="line">num_epochs &#x3D; 5</span><br><span class="line">batch_size &#x3D; 100</span><br><span class="line">learning_rate &#x3D; 0.001</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># 手写体数据</span><br><span class="line">train_dataset &#x3D; torchvision.datasets.MNIST(root&#x3D;&#39;.&#x2F;data&#39;, </span><br><span class="line">                                           train&#x3D;True, </span><br><span class="line">                                           transform&#x3D;transforms.ToTensor(),  </span><br><span class="line">                                           download&#x3D;True)</span><br><span class="line"> </span><br><span class="line">test_dataset &#x3D; torchvision.datasets.MNIST(root&#x3D;&#39;.&#x2F;data&#39;, </span><br><span class="line">                                          train&#x3D;False, </span><br><span class="line">                                          transform&#x3D;transforms.ToTensor())</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Downloading http:&#x2F;&#x2F;yann.lecun.com&#x2F;exdb&#x2F;mnist&#x2F;train-images-idx3-ubyte.gz</span><br><span class="line">Downloading http:&#x2F;&#x2F;yann.lecun.com&#x2F;exdb&#x2F;mnist&#x2F;train-labels-idx1-ubyte.gz</span><br><span class="line">Downloading http:&#x2F;&#x2F;yann.lecun.com&#x2F;exdb&#x2F;mnist&#x2F;t10k-images-idx3-ubyte.gz</span><br><span class="line">Downloading http:&#x2F;&#x2F;yann.lecun.com&#x2F;exdb&#x2F;mnist&#x2F;t10k-labels-idx1-ubyte.gz</span><br><span class="line">Processing...</span><br><span class="line">Done!</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">train_loader &#x3D; torch.utils.data.DataLoader(dataset&#x3D;train_dataset, </span><br><span class="line">                                           batch_size&#x3D;batch_size, </span><br><span class="line">                                           shuffle&#x3D;True)</span><br><span class="line"> </span><br><span class="line">test_loader &#x3D; torch.utils.data.DataLoader(dataset&#x3D;test_dataset, </span><br><span class="line">                                          batch_size&#x3D;batch_size, </span><br><span class="line">                                          shuffle&#x3D;False)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 定义含有一个隐含层的全连接神经网络。</span><br><span class="line">class NeuralNet(nn.Module):</span><br><span class="line">    def __init__(self, input_size, hidden_size, num_classes):</span><br><span class="line">        super(NeuralNet, self).__init__()</span><br><span class="line">        self.fc1 &#x3D; nn.Linear(input_size, hidden_size) </span><br><span class="line">        self.relu &#x3D; nn.ReLU()</span><br><span class="line">        self.fc2 &#x3D; nn.Linear(hidden_size, num_classes)  </span><br><span class="line">    </span><br><span class="line">    def forward(self, x):</span><br><span class="line">        out &#x3D; self.fc1(x)</span><br><span class="line">        out &#x3D; self.relu(out)</span><br><span class="line">        out &#x3D; self.fc2(out)</span><br><span class="line">        return out</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 定义模型</span><br><span class="line">model &#x3D; NeuralNet(input_size, hidden_size, num_classes).to(device)</span><br></pre></td></tr></table></figure>
+<p>#耗时较长</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 损失函数和优化算法</span><br><span class="line">criterion &#x3D; nn.CrossEntropyLoss()</span><br><span class="line">optimizer &#x3D; torch.optim.Adam(model.parameters(), lr&#x3D;learning_rate)</span><br></pre></td></tr></table></figure>
+<p>#GPU运算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;python3.6&#x2F;site-packages&#x2F;torch&#x2F;cuda&#x2F;__init__.py:114: UserWarning: </span><br><span class="line">    Found GPU0 TITAN RTX which requires CUDA_VERSION &gt;&#x3D; 9000 for</span><br><span class="line">     optimal performance and fast startup time, but your PyTorch was compiled</span><br><span class="line">     with CUDA_VERSION 8000. Please install the correct PyTorch binary</span><br><span class="line">     using instructions from http:&#x2F;&#x2F;pytorch.org</span><br><span class="line">    </span><br><span class="line">  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))</span><br><span class="line">&#x2F;python3.6&#x2F;site-packages&#x2F;torch&#x2F;cuda&#x2F;__init__.py:114: UserWarning: </span><br><span class="line">    Found GPU1 GeForce RTX 2080 Ti which requires CUDA_VERSION &gt;&#x3D; 9000 for</span><br><span class="line">     optimal performance and fast startup time, but your PyTorch was compiled</span><br><span class="line">     with CUDA_VERSION 8000. Please install the correct PyTorch binary</span><br><span class="line">     using instructions from http:&#x2F;&#x2F;pytorch.org</span><br><span class="line">    </span><br><span class="line">  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))</span><br><span class="line">&#x2F;python3.6&#x2F;site-packages&#x2F;torch&#x2F;cuda&#x2F;__init__.py:114: UserWarning: </span><br><span class="line">    Found GPU2 GeForce RTX 2080 Ti which requires CUDA_VERSION &gt;&#x3D; 9000 for</span><br><span class="line">     optimal performance and fast startup time, but your PyTorch was compiled</span><br><span class="line">     with CUDA_VERSION 8000. Please install the correct PyTorch binary</span><br><span class="line">     using instructions from http:&#x2F;&#x2F;pytorch.org</span><br><span class="line">    </span><br><span class="line">  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))</span><br><span class="line">&#x2F;home&#x2F;zhongjiayuan&#x2F;miniconda3&#x2F;envs&#x2F;hjq&#x2F;lib&#x2F;python3.6&#x2F;site-packages&#x2F;torch&#x2F;cuda&#x2F;__init__.py:114: UserWarning: </span><br><span class="line">    Found GPU3 GeForce RTX 2080 Ti which requires CUDA_VERSION &gt;&#x3D; 9000 for</span><br><span class="line">     optimal performance and fast startup time, but your PyTorch was compiled</span><br><span class="line">     with CUDA_VERSION 8000. Please install the correct PyTorch binary</span><br><span class="line">     using instructions from http:&#x2F;&#x2F;pytorch.org</span><br><span class="line">    </span><br><span class="line">  warnings.warn(incorrect_binary_warn % (d, name, 9000, CUDA_VERSION))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># 训练模型</span><br><span class="line">total_step &#x3D; len(train_loader)</span><br><span class="line">for epoch in range(num_epochs):</span><br><span class="line">    for i, (images, labels) in enumerate(train_loader):  </span><br><span class="line">        # Move tensors to the configured device</span><br><span class="line">        images &#x3D; images.reshape(-1, 28*28).to(device)</span><br><span class="line">        labels &#x3D; labels.to(device)</span><br><span class="line">        </span><br><span class="line">        # 前向传播和计算loss</span><br><span class="line">        outputs &#x3D; model(images)</span><br><span class="line">        loss &#x3D; criterion(outputs, labels)</span><br><span class="line">        </span><br><span class="line">        # 后向传播和调整参数</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line">        # 每100个batch打印一次数据</span><br><span class="line">        if (i+1) % 100 &#x3D;&#x3D; 0:</span><br><span class="line">            print (&#39;Epoch [&#123;&#125;&#x2F;&#123;&#125;], Step [&#123;&#125;&#x2F;&#123;&#125;], Loss: &#123;:.4f&#125;&#39; </span><br><span class="line">                   .format(epoch+1, num_epochs, i+1, total_step, loss.item()))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Epoch [1&#x2F;5], Step [100&#x2F;600], Loss: 0.5699</span><br><span class="line">Epoch [1&#x2F;5], Step [200&#x2F;600], Loss: 0.2943</span><br><span class="line">Epoch [1&#x2F;5], Step [300&#x2F;600], Loss: 0.4047</span><br><span class="line">Epoch [1&#x2F;5], Step [400&#x2F;600], Loss: 0.1379</span><br><span class="line">Epoch [1&#x2F;5], Step [500&#x2F;600], Loss: 0.0782</span><br><span class="line">Epoch [1&#x2F;5], Step [600&#x2F;600], Loss: 0.2034</span><br><span class="line">Epoch [2&#x2F;5], Step [100&#x2F;600], Loss: 0.1151</span><br><span class="line">Epoch [2&#x2F;5], Step [200&#x2F;600], Loss: 0.1684</span><br><span class="line">Epoch [2&#x2F;5], Step [300&#x2F;600], Loss: 0.1150</span><br><span class="line">Epoch [2&#x2F;5], Step [400&#x2F;600], Loss: 0.1497</span><br><span class="line">Epoch [2&#x2F;5], Step [500&#x2F;600], Loss: 0.0788</span><br><span class="line">Epoch [2&#x2F;5], Step [600&#x2F;600], Loss: 0.0614</span><br><span class="line">Epoch [3&#x2F;5], Step [100&#x2F;600], Loss: 0.0786</span><br><span class="line">Epoch [3&#x2F;5], Step [200&#x2F;600], Loss: 0.1572</span><br><span class="line">Epoch [3&#x2F;5], Step [300&#x2F;600], Loss: 0.0281</span><br><span class="line">Epoch [3&#x2F;5], Step [400&#x2F;600], Loss: 0.0306</span><br><span class="line">Epoch [3&#x2F;5], Step [500&#x2F;600], Loss: 0.1343</span><br><span class="line">Epoch [3&#x2F;5], Step [600&#x2F;600], Loss: 0.0401</span><br><span class="line">Epoch [4&#x2F;5], Step [100&#x2F;600], Loss: 0.0496</span><br><span class="line">Epoch [4&#x2F;5], Step [200&#x2F;600], Loss: 0.0570</span><br><span class="line">Epoch [4&#x2F;5], Step [300&#x2F;600], Loss: 0.1419</span><br><span class="line">Epoch [4&#x2F;5], Step [400&#x2F;600], Loss: 0.0546</span><br><span class="line">Epoch [4&#x2F;5], Step [500&#x2F;600], Loss: 0.0208</span><br><span class="line">Epoch [4&#x2F;5], Step [600&#x2F;600], Loss: 0.0283</span><br><span class="line">Epoch [5&#x2F;5], Step [100&#x2F;600], Loss: 0.0109</span><br><span class="line">Epoch [5&#x2F;5], Step [200&#x2F;600], Loss: 0.0495</span><br><span class="line">Epoch [5&#x2F;5], Step [300&#x2F;600], Loss: 0.0254</span><br><span class="line">Epoch [5&#x2F;5], Step [400&#x2F;600], Loss: 0.0456</span><br><span class="line">Epoch [5&#x2F;5], Step [500&#x2F;600], Loss: 0.0924</span><br><span class="line">Epoch [5&#x2F;5], Step [600&#x2F;600], Loss: 0.0063</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 模型测试部分</span><br><span class="line"># 测试阶段不需要计算梯度，注意</span><br><span class="line">with torch.no_grad():</span><br><span class="line">    correct &#x3D; 0</span><br><span class="line">    total &#x3D; 0</span><br><span class="line">    for images, labels in test_loader:</span><br><span class="line">        images &#x3D; images.reshape(-1, 28*28).to(device)</span><br><span class="line">        labels &#x3D; labels.to(device)</span><br><span class="line">        outputs &#x3D; model(images)</span><br><span class="line">        _, predicted &#x3D; torch.max(outputs.data, 1)</span><br><span class="line">        total +&#x3D; labels.size(0)</span><br><span class="line">        correct +&#x3D; (predicted &#x3D;&#x3D; labels).sum().item()</span><br><span class="line"> </span><br><span class="line">    print(&#39;Accuracy of the network on the 10000 test images: &#123;&#125; %&#39;.format(100 * correct &#x2F; total))</span><br></pre></td></tr></table></figure>
+<p>#模型准确率：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Accuracy of the network on the 10000 test images: 97.93 %</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 保存模型参数</span><br><span class="line">torch.save(model.state_dict(), &#39;model.ckpt&#39;)</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/11/Pytorch%E7%9A%84Hello-World/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-空间转录组分析（1）-Seurat-V4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/">空间转录组分析（1）-Seurat V4</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/" class="archive-article-date">
+  	<time datetime="2021-01-04T06:28:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p><a href="https://zhuanlan.zhihu.com/p/103163429" target="_blank" rel="noopener">(1)空间转录组测序</a></p>
+<p><a href="https://cloud.tencent.com/developer/article/1605990" target="_blank" rel="noopener">(2)空间转录组Seurat分析方法</a></p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>简介：10X genomic Visium空间基因表达解决方案（Visium Spatial Gene Expression Solution）可以测量完整组织切片的总mRNA，将总mRNA的空间信息与形态学内容相结合，并绘制所有基因表达发生的位置，获得疾病复杂而完整的基因表达图谱。在确定不同细胞群的同时保留空间位置，为细胞功能、表型和组织微环境中位置的关系提供了重要信息。</p>
+</blockquote>
+</blockquote>
+<p>##（1）构建分析环境</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line"></span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">setwd(&quot;E:&#x2F;zoomRNA_seq&#x2F;&quot;)</span><br></pre></td></tr></table></figure>
+<p>##（2）调用相关软件</p>
+<blockquote>
+<p>一开始采用的是Seurat V3的版本，可以进行构建10X genomic Visium对象分析。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">library(Seurat)</span><br><span class="line">library(ggplot2)</span><br><span class="line">library(cowplot)</span><br><span class="line">library(dplyr)</span><br><span class="line">#下载相关包</span><br><span class="line"></span><br><span class="line">library(SeuratData)</span><br><span class="line"></span><br><span class="line">install.packages(&quot;SeuratData&quot;)</span><br><span class="line">InstallData(&quot;stxBrain&quot;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>devtools安装失败，采用github里面去下载，本地进行安装。并且安装相关的依赖的包</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#本地安装包</span><br><span class="line">install.packages(&quot;H:&#x2F;singlecell&#x2F;Seurat&#x2F;stxBrain.SeuratData_0.1.1.tar.gz&quot;, repos &#x3D; NULL, type &#x3D; &quot;source&quot;)</span><br><span class="line"></span><br><span class="line">brain &lt;- LoadData(&quot;stxBrain&quot;, type &#x3D; &quot;anterior1&quot;)</span><br><span class="line"></span><br><span class="line">#合并读入：Failed</span><br><span class="line">list.files(&quot;E:&#x2F;zoomRNA_seq&#x2F;V1_Adult_Mouse_Brain&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">#brain&lt;-Seurat::Load10X_Spatial(&quot;E:\\zoomRNA_seq\\V1_Adult_Mouse_Brain&quot;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>下载10X官网的数据，其中我们选取了小鼠脑组织的数据，H5的数据以及组织切片的数据。</p>
+</blockquote>
+<blockquote>
+<p><a href="https://support.10xgenomics.com/spatial-gene-expression/datasets" target="_blank" rel="noopener">10X官网空间转录组数据</a></p>
+<p><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/1.png" alt="图1"></p>
+<p><a href="https://support.10xgenomics.com/" target="_blank" rel="noopener">我们采用的数据</a></p>
+<p><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/2.png" alt="图1"><br>其中这红框两个文件是构建Seurat对象必须的数据。</p>
+</blockquote>
+<p>#（3）导入数据并分析</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># Load the expression data</span><br><span class="line">expr.url &lt;- &#39;V1_Adult_Mouse_Brain&#x2F;V1_Adult_Mouse_Brain_filtered_feature_bc_matrix.h5&#39;</span><br><span class="line"></span><br><span class="line">expr.data &lt;- Seurat::Read10X_h5(filename &#x3D;  expr.url )</span><br><span class="line"></span><br><span class="line">anterior1 &lt;- Seurat::CreateSeuratObject(counts &#x3D; expr.data, project &#x3D; &#39;anterior1&#39;, assay &#x3D; &#39;Spatial&#39;)</span><br><span class="line"></span><br><span class="line">anterior1$slice &lt;- 1</span><br><span class="line"></span><br><span class="line">anterior1$region &lt;- &#39;anterior&#39;</span><br><span class="line"># Load the image data</span><br><span class="line">img.url &lt;- &#39;V1_Adult_Mouse_Brain&#x2F;V1_Adult_Mouse_Brain_spatial.tar.gz&#39;</span><br><span class="line"></span><br><span class="line">untar(tarfile &#x3D;  img.url)</span><br><span class="line"></span><br><span class="line">img &lt;- Seurat::Read10X_Image(image.dir &#x3D; &#39;V1_Adult_Mouse_Brain&#x2F;spatial&#x2F;&#39;)</span><br><span class="line"></span><br><span class="line">Seurat::DefaultAssay(object &#x3D; img) &lt;- &#39;Spatial&#39;</span><br><span class="line"></span><br><span class="line">img &lt;- img[colnames(x &#x3D; anterior1)]</span><br><span class="line"></span><br><span class="line">anterior1[[&#39;image&#39;]] &lt;- img</span><br><span class="line"></span><br><span class="line">brain &#x3D; anterior1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>导入img原始的数据：组织图像。<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/3.png" alt="图1"></li>
+<li>数据还有细胞对应组织位置的信息list<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/4.png" alt="图1"></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#数据预处理</span><br><span class="line">plot1 &lt;- VlnPlot(brain, features &#x3D; &quot;nCount_Spatial&quot;, pt.size &#x3D; 0.1) + NoLegend()</span><br><span class="line"></span><br><span class="line">plot2 &lt;- SpatialFeaturePlot(brain, features &#x3D; &quot;nCount_Spatial&quot;) + theme(legend.position &#x3D; &quot;right&quot;)</span><br><span class="line">plot_grid(plot1, plot2)</span><br><span class="line"></span><br><span class="line"># rerun normalization to store sctransform residuals for all genes</span><br><span class="line">brain &lt;- SCTransform(brain, assay &#x3D; &quot;Spatial&quot;, return.only.var.genes &#x3D; FALSE, verbose &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line"># Computes the correlation of the log normalized data and sctransform residuals with the number</span><br><span class="line"># of UMIs</span><br><span class="line">brain &lt;- GroupCorrelation(brain, group.assay &#x3D; &quot;Spatial&quot;, assay &#x3D; &quot;Spatial&quot;, slot &#x3D; &quot;data&quot;,</span><br><span class="line">                          do.plot &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line">brain &lt;- GroupCorrelation(brain, group.assay &#x3D; &quot;Spatial&quot;, assay &#x3D; &quot;SCT&quot;, slot &#x3D; &quot;scale.data&quot;, </span><br><span class="line">                          do.plot &#x3D; FALSE)</span><br><span class="line"></span><br><span class="line">p1 &lt;- GroupCorrelationPlot(brain, assay &#x3D; &quot;Spatial&quot;, cor &#x3D; &quot;nCount_Spatial_cor&quot;) + ggtitle(&quot;Log Normalization&quot;) + </span><br><span class="line">    theme(plot.title &#x3D; element_text(hjust &#x3D; 0.5))</span><br><span class="line"></span><br><span class="line">p2 &lt;- GroupCorrelationPlot(brain, assay &#x3D; &quot;SCT&quot;, cor &#x3D; &quot;nCount_Spatial_cor&quot;) + ggtitle(&quot;SCTransform Normalization&quot;) + </span><br><span class="line">    theme(plot.title &#x3D; element_text(hjust &#x3D; 0.5))</span><br><span class="line">plot_grid(p1, p2)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>两种不同的标准化的方法对数据的影响，建议SCT方法（如右图）。效果比较好。<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/6.png" alt="图1"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#基因表达可视化</span><br><span class="line">SpatialFeaturePlot(brain, features &#x3D; c(&quot;Hpca&quot;, &quot;Ttr&quot;))</span><br></pre></td></tr></table></figure></li>
+<li>Hpca和Ttr基因的表达量在组织中的分布情况（海马体为多）<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/7.png" alt="图1"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#降维、聚类和可视化</span><br><span class="line">#然后，我们可以使用与scRNA-seq分析相同的工作流，对RNA表达数据进行降维和聚类。</span><br><span class="line">#我们可以在UMAP空间(使用DimPlot)或使用SpatialDimPlot将分群的结果显示在图像上。</span><br><span class="line"></span><br><span class="line">brain &lt;- RunPCA(brain, assay &#x3D; &quot;SCT&quot;, verbose &#x3D; FALSE)</span><br><span class="line">brain &lt;- FindNeighbors(brain, reduction &#x3D; &quot;pca&quot;, dims &#x3D; 1:30)</span><br><span class="line">brain &lt;- FindClusters(brain, verbose &#x3D; FALSE)</span><br><span class="line">brain &lt;- RunUMAP(brain, reduction &#x3D; &quot;pca&quot;, dims &#x3D; 1:30)</span><br><span class="line"></span><br><span class="line">p1 &lt;- DimPlot(brain, reduction &#x3D; &quot;umap&quot;, label &#x3D; TRUE)</span><br><span class="line">p2 &lt;- SpatialDimPlot(brain, label &#x3D; TRUE, label.size &#x3D; 3)</span><br><span class="line">plot_grid(p1, p2)</span><br></pre></td></tr></table></figure></li>
+<li>各个Cluster在组织中都有对应<br><img src="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/8.png" alt="图1"></li>
+</ul>
+<p>##（4）这里是想构建鼠标指针点击图片互动，但是SeuratV3似乎会报错（Error: Cannot find ‘NA’ in this Seurat object）<br>##（5）因此更新V4版本（develop）重新跑，在Rstudio可以展示出互动的图</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># move your mouse</span><br><span class="line">SpatialPlot(brain, do.hover &#x3D; T,label &#x3D; T)</span><br><span class="line">?SpatialDimPlot()</span><br><span class="line"></span><br><span class="line">#devtools::install_github(repo &#x3D; &#39;satijalab&#x2F;seurat&#39;, ref &#x3D; &#39;develop&#39;)</span><br><span class="line"></span><br><span class="line">#install.packages(&quot;testthat&quot;)</span><br><span class="line">#install.packages(&quot;RcppAnnoy&quot;)</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/04/%E7%A9%BA%E9%97%B4%E8%BD%AC%E5%BD%95%E7%BB%84%E5%88%86%E6%9E%90%EF%BC%881%EF%BC%89-Seurat-V4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Logistics回归分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -325,303 +630,9 @@
 
 
   
-    <article id="post-细胞互作软件（2）-cellphoneDB" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">细胞互作软件（2）-cellphoneDB</a>
-    </h1>
-  
-
-        
-        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/" class="archive-article-date">
-  	<time datetime="2020-12-07T08:42:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="CellPhoneDB的优势"><a href="#CellPhoneDB的优势" class="headerlink" title="CellPhoneDB的优势"></a>CellPhoneDB的优势</h1><blockquote>
-<p>CellPhoneDB的独特之处不是它的算法，而是他们开发的细胞通讯配体-受体数据库。他们的数据库不仅包含公共资源注释的受体和配体，还有人工挑选的参与细胞通讯的特定蛋白质家族。他们的数据库还考虑了配体和受体的亚基结构，这是大多数据库和研究没有涉及的，这点对于准确研究多亚基复合物介导的细胞通讯很关键。</p>
-</blockquote>
-<blockquote>
-<p>网页版使用：<a href="https://www.cellphonedb.org/explore-sc-rna-seq" target="_blank" rel="noopener">https://www.cellphonedb.org/explore-sc-rna-seq</a></p>
-</blockquote>
-<ul>
-<li>我采用Linux下的包来使用cellphoneDB<blockquote>
-<p>数据是示例数据</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conda install cellphonedb</span><br><span class="line">conda activate hcy</span><br><span class="line">conda install cellphonedb</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>conda 似乎是不能直接下载的，找不到相关包</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install cellphonedb</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-检查是否安装成功<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb</span><br></pre></td></tr></table></figure>
-<img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/1.png" alt="celltalker示例图"></li>
-<li>创建测试数据的文件夹来输入数据和生成文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir test_cellphoneDB</span><br><span class="line">cd test_cellphoneDB&#x2F;</span><br></pre></td></tr></table></figure></li>
-<li>激活Python环境再使用软件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#创建cpdb-venv环境</span><br><span class="line">python -m venv cpdb-venv</span><br><span class="line"></span><br><span class="line">#激活环境</span><br><span class="line">source cpdb-venv&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 下载表达矩阵和meta信息</span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt --output test_counts.txt</span><br><span class="line"></span><br><span class="line">curl https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt --output test_meta.txt</span><br></pre></td></tr></table></figure>
-<p>由于我没有curl指令，用wget下载也是殊途同归</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_counts.txt</span><br><span class="line"></span><br><span class="line">wget https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;Teichlab&#x2F;cellphonedb&#x2F;master&#x2F;in&#x2F;example_data&#x2F;test_meta.txt</span><br></pre></td></tr></table></figure>
-<p>①运行statistical method的例子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method statistical_analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
-<p>②没有使用statistical method的例子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb method analysis test_meta.txt test_counts.txt</span><br></pre></td></tr></table></figure>
-<ul>
-<li>可以调试的参数说明：<blockquote>
-<p>可选参数：<br>~ Optional Method parameters:</p>
-</blockquote>
-</li>
-</ul>
-<p>–counts-data: [ensembl | gene_name | hgnc_symbol] counts data 中的基因标识符类型</p>
-<p>–project-name: 项目名称，在输出文件夹中创建具有此名称的子文件夹</p>
-<p>–iterations: 统计分析迭代次数[1000]</p>
-<p>–threshold: 表达特定的配体/受体的细胞%</p>
-<p>–result-precision: 结果中保留的小数位数[3]</p>
-<p>–output-path: 输出文件路径 [out]</p>
-<p>–output-format: 结果文件的输出格式(如果没有扩展名，将添加到文件名中) [txt]</p>
-<p>–means-result-name: Means结果文件名[means]</p>
-<p>–significant-means-result-name: 有显著意义的means 结果文件名 [significant_means]</p>
-<p>–deconvoluted-result-name: Deconvoluted 结果文件名 [deconvoluted]</p>
-<p>–verbose/–quiet: 打印或隐藏CellPhoneDB日志 [verbose]</p>
-<p>–subsampling: 使二次抽样</p>
-<p>–subsampling-log: 启用非对数转换数据输入的子采样log1p !!强制!!</p>
-<p>–subsampling-num-pc: 子抽样NumPC参数(要使用的pc数量) [100]</p>
-<p>–subsampling-num-cells: 要取样到的细胞数 [1/3 of cells]</p>
-<p>~ Optional Method Statistical parameters</p>
-<p>–pvalues-result-name: P-values 结果文件名 [pvalues]</p>
-<p>–pvalue: P-value阈值 [0.05]</p>
-<p>–debug-seed: 调试随机种子-1，要禁用它，请使用一个值&gt;=0 [-1]</p>
-<p>–threads: 要使用的线程数 &gt;=1 [-1]</p>
-<h1 id="可视化结果，点图"><a href="#可视化结果，点图" class="headerlink" title="可视化结果，点图"></a>可视化结果，点图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot dot_plot --rows in&#x2F;rows.txt --columns in&#x2F;columns.txt</span><br><span class="line">cellphonedb plot dot_plot</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/plot_00.png" alt="cellphoneDB"></p>
-<h1 id="可视化结果，热图"><a href="#可视化结果，热图" class="headerlink" title="可视化结果，热图"></a>可视化结果，热图</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cellphonedb plot heatmap_plot test_meta.txt</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/2.png" alt="cellphoneDB"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%882%EF%BC%89-cellphoneDB/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-细胞互作软件（1）-celltalker" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%881%EF%BC%89-celltalker/">细胞互作软件（1）-celltalker</a>
-    </h1>
-  
-
-        
-        <a href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%881%EF%BC%89-celltalker/" class="archive-article-date">
-  	<time datetime="2020-12-07T08:41:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#celltalker<br>细胞通讯分析工具</p>
-<blockquote>
-<p>目前利用单细胞转录组数据分析细胞通讯的工具有CellPhoneDB，celltalker和iTALK。CellPhoneDB相关的文章2018年发表在Nature上，升级后又发了一篇Nature Protocols，在三者之中最权威。iTALK的可视化效果最好，相关文献2019年发表在bioRxiv。celltalker由本专题演示数据来源文章的作者开发，相关文献2020年发表于Immunity。iTALK和celltalker都只有R语言版本，CellPhoneDB可以使用网页版和python版。</p>
-</blockquote>
-<ul>
-<li><p>下载celltalker包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#采用devtools进行下载</span><br><span class="line">library(devtools)</span><br><span class="line">install_github(&quot;arc85&#x2F;celltalker&quot;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>期间有依赖包需要在R文件的library中删除后重新下载</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#比如则这个包就是报错为：have zero 啥的，重新安装下载</span><br><span class="line">#install.packages(&quot;processx&quot;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>可能由于网络原因无法下载，可以采用离线下载安装方式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">devtools::install_local(&quot;G:&#x2F;&#x2F;R-3.6.2&#x2F;library&#x2F;celltalker-master.zip&quot;)</span><br><span class="line">devtools::install_github(&#39;arc85&#x2F;celltalker&#39;)</span><br><span class="line"></span><br><span class="line">library(tidyverse)</span><br><span class="line">library(celltalker)</span><br><span class="line">#由于在线安装失败，采用离线安装，Nice！解决</span><br><span class="line">install.packages(&quot;G:&#x2F;&#x2F;google Downloads&#x2F;celltalker-master&#x2F;&quot;,repos&#x3D;NULL,type&#x3D;&quot;source&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>正式开始分析</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line">#愉快的开始，celltalker分析</span><br><span class="line"></span><br><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line"></span><br><span class="line">library(celltalker)</span><br><span class="line">library(Seurat)</span><br><span class="line"></span><br><span class="line">#设置路径</span><br><span class="line">#setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;肿瘤组织样本CD8&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;R_testfile&#x2F;ZZM_scRNA&#x2F;T-cell-data&#x2F;&quot;)</span><br><span class="line"></span><br><span class="line">#读取文件</span><br><span class="line">genecount &lt;- read.csv(&quot;genecount_clean.csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line">genecount &lt;- as.matrix(genecount)</span><br><span class="line">genemeta &lt;- read.csv(&quot;metadata.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">row.names(genemeta) &lt;- gsub(&quot;-&quot;,&quot;.&quot;,row.names(genemeta))</span><br><span class="line">#构建seurat对象</span><br><span class="line">RAW &lt;- CreateSeuratObject(genecount,</span><br><span class="line">                          meta.data &#x3D; genemeta,</span><br><span class="line">                          project &#x3D; &quot;RAW&quot;,</span><br><span class="line">                          min.cells &#x3D; 5,</span><br><span class="line">                          min.features  &#x3D; 200)</span><br><span class="line"></span><br><span class="line">#RAW@meta.data &lt;- read.csv(&quot;metadata.csv&quot;, header &#x3D; T, row.names &#x3D; 1)</span><br><span class="line"></span><br><span class="line">ident_df &lt;- data.frame(cell&#x3D;names(Idents(RAW)), </span><br><span class="line">                       cluster &#x3D; RAW@meta.data$sampleType)</span><br><span class="line"></span><br><span class="line">TTC &lt;- subset(RAW, cells &#x3D; as.vector(ident_df[which(ident_df$cluster&#x3D;&#x3D;&quot;TTC&quot;),1]))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TTC &lt;- CreateSeuratObject(genecount,</span><br><span class="line">                          meta.data &#x3D; genemeta,</span><br><span class="line">                          project &#x3D; &quot;TTC&quot;,</span><br><span class="line">                          min.cells &#x3D; 5,</span><br><span class="line">                          min.features  &#x3D; 200)</span><br><span class="line"></span><br><span class="line">#数据清洗，tsne降维对meta信息进行添加</span><br><span class="line">#Normalizing the data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TTC &lt;- NormalizeData(TTC, normalization.method &#x3D; &quot;LogNormalize&quot;, scale.factor &#x3D; 10000)</span><br><span class="line">TTC &lt;- NormalizeData(TTC)</span><br><span class="line"></span><br><span class="line">#Identification of highly variable features (feature selection)</span><br><span class="line">TTC &lt;- FindVariableFeatures(TTC, selection.method &#x3D; &quot;vst&quot;, nfeatures &#x3D; 2000)</span><br><span class="line">?FindVariableFeatures()</span><br><span class="line"># Identify the 10 most highly variable genes</span><br><span class="line">top10 &lt;- head(VariableFeatures(TTC), 10)</span><br><span class="line"></span><br><span class="line"># plot variable features with and without labels</span><br><span class="line">plot1 &lt;- VariableFeaturePlot(TTC)</span><br><span class="line">plot2 &lt;- LabelPoints(plot &#x3D; plot1, points &#x3D; top10, repel &#x3D; TRUE)</span><br><span class="line">plot1 + plot2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#Scaling the data</span><br><span class="line">all.genes &lt;- rownames(TTC)</span><br><span class="line">TTC &lt;- ScaleData(TTC, features &#x3D; all.genes)</span><br><span class="line"></span><br><span class="line">#Perform linear dimensional reduction</span><br><span class="line"></span><br><span class="line">TTC &lt;- RunPCA(TTC, features &#x3D; VariableFeatures(object &#x3D; TTC))</span><br><span class="line"></span><br><span class="line">VizDimLoadings(TTC, dims &#x3D; 1:2, reduction &#x3D; &quot;pca&quot;)</span><br><span class="line"></span><br><span class="line">DimPlot(TTC, reduction &#x3D; &quot;pca&quot;)</span><br><span class="line"></span><br><span class="line">DimHeatmap(TTC, dims &#x3D; 1, cells &#x3D; 500, balanced &#x3D; TRUE)</span><br><span class="line"></span><br><span class="line">DimHeatmap(TTC, dims &#x3D; 1:6, cells &#x3D; 500, balanced &#x3D; TRUE)</span><br><span class="line"></span><br><span class="line">#Determine the ‘dimensionality’ of the dataset</span><br><span class="line"></span><br><span class="line">TTC &lt;- JackStraw(TTC, num.replicate &#x3D; 300)</span><br><span class="line"></span><br><span class="line">TTC &lt;- ScoreJackStraw(TTC, dims &#x3D; 1:20)</span><br><span class="line"></span><br><span class="line">JackStrawPlot(TTC, dims &#x3D; 1:15)</span><br><span class="line"></span><br><span class="line">ElbowPlot(TTC)</span><br><span class="line"></span><br><span class="line">##Cluster the cells</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TTC &lt;- FindNeighbors(TTC, dims &#x3D;1:10)</span><br><span class="line">TTC &lt;- FindClusters(TTC, resolution &#x3D; 0.5)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># Look at cluster IDs of the first 5 cells</span><br><span class="line">head(Idents(TTC), 5)</span><br><span class="line"></span><br><span class="line">#Run non-linear dimensional reduction (umap)</span><br><span class="line"></span><br><span class="line">TTC &lt;- RunTSNE(TTC, dims &#x3D; 1:10)</span><br></pre></td></tr></table></figure></li>
-<li><p>上面为Seurat流程，而celltalker可以进行对接</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#检查celltalker的受体配体配对信息的数据框</span><br><span class="line">#Check out ramilowski_pairs data.frame</span><br><span class="line">head(ramilowski_pairs)</span><br><span class="line"></span><br><span class="line">#There are 2,557 unique ligand&#x2F;receptor interactions in this dataset</span><br><span class="line">#Identification of differentially expressed ligands and receptors</span><br><span class="line">#Identify ligands and receptors in our dataset</span><br><span class="line"></span><br><span class="line">ligs &lt;- as.character(unique(ramilowski_pairs$ligand))</span><br><span class="line">recs &lt;- as.character(unique(ramilowski_pairs$receptor))</span><br><span class="line"></span><br><span class="line">ligs.present &lt;- rownames(TTC)[rownames(TTC) %in% ligs]</span><br><span class="line">recs.present &lt;- rownames(TTC)[rownames(TTC) %in% recs]</span><br><span class="line"></span><br><span class="line">genes.to.use &lt;- union(ligs.present,recs.present)</span><br><span class="line"></span><br><span class="line">#Use FindAllMarkers for differentially expressed ligands and receptors between groups</span><br><span class="line"></span><br><span class="line">#设置分群来做差异分析，选择meta信息中要选用的列，我们做的是pseudotime</span><br><span class="line">Idents(TTC) &lt;- &quot;seurat_clusters&quot;</span><br><span class="line">markers &lt;- FindAllMarkers(TTC,assay&#x3D;&quot;RNA&quot;,features&#x3D;genes.to.use,only.pos&#x3D; F,logfc.threshold &#x3D; 0.25,</span><br><span class="line">                          min.pct &#x3D; 0.1)</span><br><span class="line"></span><br><span class="line">#markers &lt;- read.table(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;TTCAll_select_COAD_DNB.txt&quot;)</span><br></pre></td></tr></table></figure></li>
-<li><p>查看受体配体信息</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">#ligs.recs.use &lt;- t(unique(markers))</span><br><span class="line">ligs.recs.use &lt;- unique(markers$gene)</span><br><span class="line">length(ligs.recs.use)</span><br><span class="line"></span><br><span class="line">#Yields 26 ligands and receptors to evaluate</span><br><span class="line">#产生了26对</span><br><span class="line">#Filter ramilowski pairs</span><br><span class="line">interactions.forward1 &lt;- ramilowski_pairs[as.character(ramilowski_pairs$ligand) %in% ligs.recs.use,]</span><br><span class="line">interactions.forward2 &lt;- ramilowski_pairs[as.character(ramilowski_pairs$receptor) %in% ligs.recs.use,]</span><br><span class="line">interact.for &lt;- rbind(interactions.forward1,interactions.forward2)</span><br><span class="line">dim(interact.for)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#Yields 87 ligand and receptor interactions to evaluate</span><br><span class="line">#Create data for celltalker</span><br><span class="line"></span><br><span class="line">expr.mat &lt;- GetAssayData(TTC,slot&#x3D;&quot;counts&quot;)</span><br><span class="line"></span><br><span class="line">#Create data for celltalker</span><br><span class="line">row_expr.mat &lt;- GetAssayData(TTC,slot&#x3D;&quot;counts&quot;)</span><br><span class="line">expr.mat&lt;-row_expr.mat</span><br><span class="line"></span><br><span class="line">TTC@meta.data</span><br><span class="line"></span><br><span class="line">defined.clusters &lt;- TTC@meta.data$Stage</span><br><span class="line">names(defined.clusters)&lt;-colnames(TTC)</span><br><span class="line">defined.clusters &lt;- as.factor(defined.clusters)</span><br><span class="line"></span><br><span class="line">defined.groups &lt;- TTC@meta.data$seurat_clusters</span><br><span class="line">names(defined.groups)&lt;-colnames(TTC)</span><br><span class="line">defined.groups &lt;- as.factor(defined.groups)</span><br><span class="line"></span><br><span class="line">defined.replicates &lt;- TTC@meta.data$seurat_clusters</span><br><span class="line">names(defined.replicates)&lt;-colnames(TTC)</span><br><span class="line">defined.replicates &lt;- as.factor(defined.replicates)</span><br><span class="line"></span><br><span class="line">reshaped.matrices &lt;- reshape_matrices(count.matrix&#x3D;expr.mat,</span><br><span class="line">                                      clusters&#x3D;defined.clusters,</span><br><span class="line">                                      groups&#x3D;defined.groups,</span><br><span class="line">                                      replicates&#x3D;defined.replicates,</span><br><span class="line">                                      ligands.and.receptors&#x3D;interact.for)</span><br><span class="line"></span><br><span class="line">#Check out the hierarchy of the tibble</span><br><span class="line">reshaped.matrices</span><br><span class="line"></span><br><span class="line">unnest(reshaped.matrices,cols&#x3D;&quot;samples&quot;)[[1]]</span><br><span class="line"></span><br><span class="line">names(pull(unnest(reshaped.matrices,cols&#x3D;&quot;samples&quot;))[[1]])</span><br><span class="line"></span><br><span class="line">#接下来，我们可以使用create_lig_rec_tib函数为每个组创建一组一致表达的配体和受体。</span><br><span class="line">consistent.lig.recs &lt;- create_lig_rec_tib(exp.tib &#x3D; reshaped.matrices,</span><br><span class="line">                                          clusters &#x3D; defined.clusters,</span><br><span class="line">                                          groups &#x3D; defined.groups,</span><br><span class="line">                                          replicates&#x3D;defined.replicates,</span><br><span class="line">                                          cells.reqd&#x3D;10,freq.pos.reqd&#x3D;1,</span><br><span class="line">                                          ligands.and.receptors&#x3D;interact.for)</span><br><span class="line"></span><br><span class="line">consistent.lig.recs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">unnest(consistent.lig.recs[1,2],cols&#x3D;&quot;lig.rec.exp&quot;)</span><br><span class="line"></span><br><span class="line">pull(unnest(consistent.lig.recs[1,2],cols&#x3D;&quot;lig.rec.exp&quot;)[1,2])[[1]]</span><br><span class="line"></span><br><span class="line">put.int &lt;- putative_interactions(ligand.receptor.tibble&#x3D;consistent.lig.recs,</span><br><span class="line">                                 clusters&#x3D;defined.clusters,</span><br><span class="line">                                 groups&#x3D;defined.groups,</span><br><span class="line">                                 freq.group.in.cluster&#x3D;0.05,</span><br><span class="line">                                 ligands.and.receptors&#x3D;interact.for)</span><br><span class="line"></span><br><span class="line">#Identify unique ligand&#x2F;receptor interactions present in each sample</span><br><span class="line">unique.ints &lt;- unique_interactions(put.int,group1&#x3D;&quot;1&quot;,group2&#x3D;&quot;2&quot;,interact.for)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>celltalker提取数据的方式分很多层，极其麻烦，我的数据在其中没有显示受体配体，所以换用其他方法</p>
-</blockquote>
-</li>
-<li><p>可视化步骤</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#Get data to plot circos for PBMC</span><br><span class="line">pbmc.to.plot &lt;- pull(unique.ints[1,2])[[1]]</span><br><span class="line">for.circos.pbmc &lt;- pull(put.int[1,2])[[1]][pbmc.to.plot]</span><br><span class="line"></span><br><span class="line">circos_plot(interactions&#x3D;for.circos.pbmc,clusters&#x3D;defined.clusters)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>生成环状图，图片类型单一,不推荐该包<br><img src="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%881%EF%BC%89-celltalker/1.png" alt="celltalker示例图"></p>
-</blockquote>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/07/%E7%BB%86%E8%83%9E%E4%BA%92%E4%BD%9C%E8%BD%AF%E4%BB%B6%EF%BC%881%EF%BC%89-celltalker/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-GSVA使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/">GSVA使用</a>
-    </h1>
-  
-
-        
-        <a href="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/" class="archive-article-date">
-  	<time datetime="2020-11-18T12:16:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-11-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#GSVA简介</p>
-<blockquote>
-<p>Gene Set Variation Analysis，被称为基因集变异分析,是一种非参数的无监督分析方法，主要用来评估芯片核转录组的基因集富集结果。主要是通过将基因在不同样品间的表达量矩阵转化成基因集在样品间的表达量矩阵，从而来评估不同的代谢通路在不同样品间是否富集。其实就是研究这些感兴趣的基因集在不同样品间的差异，或者寻找比较重要的基因集，作为一种分析方法，主要是是为了从生物信息学的角度去解释导致表型差异的原因。它的主要输入文件为表达量的矩阵和基因集的文件，通过gsva的方法就可以得出结果；既可以处理芯片的结果，也可以处理转录组的结果。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#清除环境</span><br><span class="line">rm(list &#x3D; ls()) </span><br><span class="line">options(stringsAsFactors &#x3D; F) </span><br><span class="line">options(digits &#x3D; 2)</span><br><span class="line">#设置路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;Monocle处理&#x2F;&quot;)</span><br><span class="line">genecount &lt;- read.csv(&quot;TTCAll_DNBcount_raw(labelled_pseudotime).csv&quot;,header &#x3D; T ,row.names &#x3D; 1)</span><br><span class="line">names(genecount) &lt;- genecount[1,]</span><br><span class="line">genecount &lt;- genecount[-1,]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">index_deg &lt;- which(rownames(genecount) %in% Deg_all)</span><br><span class="line"></span><br><span class="line">genecount_deg &lt;- genecount[index_deg,]</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>这里是为了求平均，使分组数据更直观，免得1400多样本</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">genecount_deg &#x3D; genecount</span><br><span class="line">index1 &lt;- names(genecount_deg) &#x3D;&#x3D;1</span><br><span class="line">index2 &lt;- names(genecount_deg) &#x3D;&#x3D;2</span><br><span class="line">index3 &lt;- names(genecount_deg) &#x3D;&#x3D;3</span><br><span class="line">index4 &lt;- names(genecount_deg) &#x3D;&#x3D;4</span><br><span class="line">index5 &lt;- names(genecount_deg) &#x3D;&#x3D;5</span><br><span class="line">index6 &lt;- names(genecount_deg) &#x3D;&#x3D;6</span><br><span class="line">index7 &lt;- names(genecount_deg) &#x3D;&#x3D;7</span><br><span class="line">index8 &lt;- names(genecount_deg) &#x3D;&#x3D;8</span><br><span class="line"></span><br><span class="line">genecount_1 &lt;- genecount_deg[,index1]</span><br><span class="line">genecount_2 &lt;- genecount_deg[,index2]</span><br><span class="line">genecount_3 &lt;- genecount_deg[,index3]</span><br><span class="line">genecount_4 &lt;- genecount_deg[,index4]</span><br><span class="line">genecount_5 &lt;- genecount_deg[,index5]</span><br><span class="line">genecount_6 &lt;- genecount_deg[,index6]</span><br><span class="line">genecount_7 &lt;- genecount_deg[,index7]</span><br><span class="line">genecount_8 &lt;- genecount_deg[,index8]</span><br><span class="line"></span><br><span class="line">Cluster1 &lt;- apply(genecount_1,1,mean)</span><br><span class="line">Cluster2 &lt;- apply(genecount_2,1,mean)</span><br><span class="line">Cluster3 &lt;- apply(genecount_3,1,mean)</span><br><span class="line">Cluster4 &lt;- apply(genecount_4,1,mean)</span><br><span class="line">Cluster5 &lt;- apply(genecount_5,1,mean)</span><br><span class="line">Cluster6 &lt;- apply(genecount_6,1,mean)</span><br><span class="line">Cluster7 &lt;- apply(genecount_7,1,mean)</span><br><span class="line">Cluster8 &lt;- apply(genecount_8,1,mean)</span><br><span class="line"></span><br><span class="line">deg_mathix &lt;-data.frame(Cluster1,Cluster2,Cluster3,Cluster4,Cluster5,Cluster6,Cluster7,Cluster8)</span><br><span class="line">deg_mathix &lt;- as.data.frame(t(deg_mathix))</span><br></pre></td></tr></table></figure>
-<ul>
-<li>提前按照好包<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">#need package GSVA</span><br><span class="line">library(GSVA)</span><br><span class="line"></span><br><span class="line">library(GSEABase)</span><br><span class="line"></span><br><span class="line">library(limma)</span><br><span class="line">#设置工作路径</span><br><span class="line">setwd(&quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;GSVA&#x2F;&quot;)</span><br><span class="line">getwd()</span><br><span class="line">#构建GMT文件，我采用的是免疫的</span><br><span class="line">geneSets &lt;- getGmt(&quot;immune.gmt&quot;)</span><br><span class="line">#geneSets &lt;- getGmt(&quot;Data&#x2F;kegg.v7.1.symbols.gmt&quot;)</span><br><span class="line"></span><br><span class="line">mydata &lt;- read.csv(file &#x3D; &quot;G:&#x2F;Project&#x2F;NTC_CD8&#x2F;Monocle处理&#x2F;TTCAll_DNBcount_raw(labelled_pseudotime).csv&quot;,header &#x3D; T)</span><br><span class="line">name &#x3D; mydata[,1]</span><br><span class="line">index &lt;- duplicated(mydata[,1])</span><br><span class="line">fildup &#x3D; mydata[!index,]</span><br><span class="line">exp &#x3D; fildup[,-1]</span><br><span class="line">row.names(exp) &#x3D; fildup[,1]</span><br><span class="line"></span><br><span class="line">exp &lt;- exp[-1,]</span><br><span class="line"></span><br><span class="line">mydata&#x3D; as.matrix(deg_mathix)</span><br><span class="line">mydata&#x3D;round(mydata)</span><br><span class="line">#这一步很耗时</span><br><span class="line">Es &lt;- gsva(mydata, geneSets, parallel.sz&#x3D;1,kcdf&#x3D;&quot;Poisson&quot;)</span><br><span class="line"></span><br><span class="line">pheatmap::pheatmap(Es,angle_col &#x3D; 0,cluster_cols &#x3D; F,cluster_rows &#x3D; T,</span><br><span class="line">                   color &#x3D; colorRampPalette(c(&quot;#B0E0E6&quot;,&quot;#FFF0F5&quot;,&quot;#FF4500&quot;),</span><br><span class="line">                                            border_color &#x3D; NA))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">library(pheatmap)</span><br><span class="line">pheatmap(Es, cluster_cols &#x3D; F, cluster_rows &#x3D; F, border&#x3D;FALSE,</span><br><span class="line">         color &#x3D; colorRampPalette(c(&quot;#B0E0E6&quot;,&quot;#FFF0F5&quot;,&quot;#FF4500&quot;))(50),</span><br><span class="line">         scale &#x3D; &quot;row&quot;,show_colnames &#x3D;T,show_rownames &#x3D; T,</span><br><span class="line">         main &#x3D; &quot;Expression in 8 different Pseudotime GSVA&quot;, angle_col &#x3D; 0,</span><br><span class="line">         treeheight_col &#x3D; 9,</span><br><span class="line">         fontsize &#x3D; 14,</span><br><span class="line">         fontsize_row &#x3D; 13,</span><br><span class="line">         fontsize_col &#x3D; 13)</span><br></pre></td></tr></table></figure></li>
-<li>最后结果热图展示<blockquote>
-<p>取平均了的数据<br><img src="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/1.png" alt="GSVA"></p>
-<blockquote>
-<p>未取平均的数据<br><img src="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/2.png" alt="GSVA"></p>
-</blockquote>
-</blockquote>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/11/18/GSVA%E4%BD%BF%E7%94%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
     </nav>
   
 

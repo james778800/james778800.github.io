@@ -151,6 +151,247 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-sierpinski-递归三角形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
+  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#递归的关键思想：不断缩小，调用自身<br><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/1.png" alt="实例"></p>
+<ul>
+<li>注意三角形绘制顺序是左上右！<blockquote>
+<p>谢尔宾斯基三角形（英语：Sierpinski triangle）是一种分形，<br>由波兰数学家谢尔宾斯基在1915年提出。它是自相似集的例子。它的豪斯多夫维是<br>log(3)/log(2) ≈ 1.585。</p>
+<ul>
+<li>先作一个正三角形，挖去一个“中心三角形”（即以原三角形各边的中点为顶点的三角形），<br>然后在剩下的小三角形中又挖去一个“中心三角形”，我们用黑色三角形代表挖去的面积，那么白三角形为剩下的面积（我们称白三角形为谢尔宾斯基三角形）。如果用上面的方法无限连续地作下去，则谢尔宾斯基三角形的面积越趋近于零，而它的周长越趋近于无限大（如图）。<br>若设操作次数为n（每挖去一次中心三角形算一次操作），<br>则剩余三角形面积公式为：4的n次方分之3的n次方。<br>将边长为1的等边三角形区域，均分成四个小等边三角形，去掉中间一个，<br>然后再对每个小等边三角形进行相同的操作得……，这样的操作不断继续下<br>去直到无穷，最终所得的极限图形称为谢尔宾斯基垫片。谢尔宾斯基垫片的<br>极限图形的面积趋于零，而小图形的数目趋于无穷，作为小图形的边的线段数目<br>趋于无穷，实际上是一个线集。操作n次后边长r=(1/2)n，三角形个数N(r)=3<br>n，根据公式N(r)=1/rD，3n=2Dr，D=ln3/ln2=1.585。所以谢尔宾斯基垫片是1.585。<br>它比普通的一维直线占据了更多空间，但还是没有二维正方形占据的那么多，可以用等比数列的知识求出他的面积是0。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def sierpinski(degree,points):</span><br><span class="line">    colormap &#x3D; [&quot;blue&quot;,&quot;red&quot;,&quot;green&quot;,&quot;white&quot;,&quot;yellow&quot;,&quot;orange&quot;]</span><br><span class="line">    drawTriangle(points,colormap[degree])</span><br><span class="line">    if degree &gt; 0:</span><br><span class="line">        sierpinski(degree -1,</span><br><span class="line">                   &#123;&quot;left&quot;:points[&quot;left&quot;],</span><br><span class="line">                    &quot;top&quot;:getMid(points[&quot;left&quot;],points[&quot;top&quot;]),</span><br><span class="line">                    &quot;right&quot;:getMid(points[&quot;left&quot;],points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;top&quot;]),</span><br><span class="line">                    &quot;top&quot;: points[&quot;top&quot;],</span><br><span class="line">                    &quot;right&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;])&#125;)</span><br><span class="line">        sierpinski(degree - 1,</span><br><span class="line">                   &#123;&quot;left&quot;: getMid(points[&quot;left&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;top&quot;: getMid(points[&quot;top&quot;], points[&quot;right&quot;]),</span><br><span class="line">                    &quot;right&quot;: points[&quot;right&quot;]&#125;)</span><br><span class="line">def drawTriangle(points,color):</span><br><span class="line">    t.fillcolor(color)</span><br><span class="line">    t.penup()</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.pendown()</span><br><span class="line">    t.begin_fill()</span><br><span class="line">    t.goto(points[&quot;left&quot;])</span><br><span class="line">    t.goto(points[&quot;right&quot;])</span><br><span class="line">    t.goto(points[&quot;top&quot;])</span><br><span class="line">    t.end_fill()</span><br><span class="line"></span><br><span class="line">def getMid(p1,p2):</span><br><span class="line">    return ((p1[0]+p2[0])&#x2F;2,(p1[1]+p2[1])&#x2F;2)</span><br><span class="line"></span><br><span class="line">t &#x3D;  turtle.Turtle()</span><br><span class="line"></span><br><span class="line">points &#x3D;&#123;&#39;left&#39;:(-200,-100),</span><br><span class="line">         &#39;top&#39;:(0,200),</span><br><span class="line">         &#39;right&#39;:(200,-100)&#125;</span><br><span class="line">sierpinski(5,points)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/2.png" alt="logo实例"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-盗版添柏岚Timberland-递归分形树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
+  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>title: 盗版添柏岚Timberland(递归分形树)<br>date: 2020-07-14 10:43:33<br>tags:<br>#递归的关键思想：不断缩小，调用自身</p>
+<ul>
+<li>利用该逻辑思想可进行简化问题</li>
+<li>树的结构可以用递归进行实现：同时大黄靴知名品牌添柏岚的LOGO便是如此相似<br>。使用递归的思想可以来盗版其logo<br><img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/1.png" alt="logo实例"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">def tree(branch_len):</span><br><span class="line">    if branch_len &gt; 10:</span><br><span class="line">        t.forward(branch_len)</span><br><span class="line">        t.right(20)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.left(40)</span><br><span class="line">        tree(branch_len - 20)</span><br><span class="line">        t.right(20)</span><br><span class="line">        t.backward(branch_len)</span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line">t.left(90)</span><br><span class="line">t.penup()</span><br><span class="line">t.backward(100)</span><br><span class="line">t.pendown()</span><br><span class="line">t.pencolor(&quot;black&quot;)</span><br><span class="line">t.pensize(17)</span><br><span class="line">tree(150)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
+<img src="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/2.png" alt="logo实例"></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-TCGA数据-3-生存分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(3):生存分析（bulk水平）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2020-07-07T16:30:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><p>##生存分析的关键在与处理meta信息的数据<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/1.png" alt="meta_new示例"></p>
+</li>
+<li><p>time属于自己做的，TCGA上没有</p>
+</li>
+<li><p>a.vital_status需要自己把Alive和Dead改成0 和 1</p>
+</li>
+<li><p>meta信息的样本和表达矩阵需要对应的上</p>
+</li>
+<li><p>##然后再使用以下包来进行分析：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rm(list &#x3D; ls())</span><br><span class="line"></span><br><span class="line">setwd(&quot;G:&#x2F;TCGA&#x2F;生存分析&#x2F;&quot;)</span><br><span class="line">########################################################################################</span><br><span class="line">options(stringsAsFactors &#x3D; F)</span><br><span class="line">########################################################################################</span><br><span class="line">library(survival)</span><br><span class="line">library(parallel)</span><br><span class="line">library(survminer)</span><br><span class="line">library(Cairo)</span><br></pre></td></tr></table></figure></li>
+<li><p>##读入整理的meta信息，以及转置后样本行数匹配的fpkm数据，因为需要合并制作生存分析的对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#Dead:0</span><br><span class="line">#Alive:1</span><br><span class="line"></span><br><span class="line">meta_data &lt;- read.csv(&quot;meta_new.csv&quot;,header &#x3D; T,check.names &#x3D; F)</span><br><span class="line">#meta_data &lt;- meta_data[,-1]</span><br><span class="line">fpkmdata &lt;- read.csv(&quot;FPKMexp_new.csv&quot;,header &#x3D; T,row.names &#x3D; 1)</span><br><span class="line">splots &lt;- list()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>##转置，再将两个矩阵的ID列完全匹配合并，使用merge()，考验数据清洗的基本功，显然我搞了半天mmp，太憨了老夫</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">T_EXP &lt;- as.data.frame(t(fpkmdata))</span><br><span class="line">T_EXP$ID &lt;- row.names(T_EXP)</span><br><span class="line"></span><br><span class="line">write.csv(dddd,&quot;FPKM_T_exp.csv&quot;)</span><br><span class="line"></span><br><span class="line">meta1 &lt;- read.csv(&quot;FPKM_T_exp.csv&quot;,header &#x3D; T)</span><br><span class="line">meta2 &lt;- read.csv(&quot;meta_new.csv&quot;,header &#x3D; T)</span><br><span class="line"></span><br><span class="line">data1 &lt;- merge(x &#x3D; meta2, y &#x3D; T_EXP , by &#x3D; &quot;ID&quot;, all &#x3D; TRUE)</span><br><span class="line">meta_data &#x3D; data1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>##定义MGP基因（你研究的gene）的表达量的高低，和平均表达量比或者中位数比，来分组进行线性拟合</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">group1&lt;-ifelse(meta_data$MGP&gt;mean(meta_data$MGP), &quot;High&quot;,&quot;Low&quot;)</span><br><span class="line">#group1&lt;-ifelse(meta_data$MGP&gt;median(meta_data$MGP), &quot;High&quot;,&quot;Low&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>##添加分组信息，绘制生存曲线</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">sfit1&lt;-survfit(Surv(time,a.vital_status)~group1,data &#x3D; meta_data)</span><br><span class="line">ggsurvplot(sfit1,</span><br><span class="line">           legend.title &#x3D; NULL,</span><br><span class="line">           conf.int &#x3D; F,</span><br><span class="line">           pval &#x3D; T,</span><br><span class="line">           title &#x3D; &#39;Gene Entropy Level&#39;,</span><br><span class="line">           risk.table &#x3D; F,</span><br><span class="line">           palette &#x3D; c(&quot;#E7B800&quot;,&quot;#2E9FDF&quot;),</span><br><span class="line">           risk.table.col &#x3D; &#39;strata&#39;,</span><br><span class="line">           tables.height &#x3D; 0.2,</span><br><span class="line">           xlab &#x3D; &quot;Time In Days&quot;,</span><br><span class="line">           pval.method &#x3D; TRUE,</span><br><span class="line">           surv.median.line &#x3D; &quot;hv&quot;,</span><br><span class="line">           ncensor.plot &#x3D; T)</span><br><span class="line">dev.off()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>1、按照中位数来分组的生存曲线：<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/2.png" alt="meta_new示例"><br>2、按照平均数数来分组的生存曲线：<br><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/3.png" alt="meta_new示例"></p>
+</blockquote>
+</li>
+<li><p>##然而这里两个生存分析的结果均不明显，选择直接网上下载</p>
+<blockquote>
+<p><a href="https://www.proteinatlas.org/" target="_blank" rel="noopener">https://www.proteinatlas.org/</a><br>#Human Protein Atlas 数据库<br>简称HPA数据库，它致力于提供全部24,000种人类蛋白质的组织和细胞分布信息，并免费提供公众查询。<br>创立这个数据库的瑞典 Knut &amp; Alice Wallenberg基金会使用特制的抗体，用免疫组化的技术，检查每一种蛋白质在48种人类正常组织，20种肿瘤组织，47个细胞系和12种血液细胞内的分布和表达，其结果用至少576张免疫组化染色图表示，并经专业人员阅读和标引。这些受检组织来自144个不同个体和216个肿瘤组织，保证染色结果具有充分的代表性。这是一个大规模蛋白质研究项目，主要目的是绘制人体组织和细胞中表达基因编码的蛋白位置。<br>举个栗子，查询明星基因pten的表达情况<br>在搜索栏输入基因名称。点击search。</p>
+</blockquote>
+</li>
+<li><p>还可以直接下载生存曲线哟！效果达到预期！真香！就是不高清……</p>
+<blockquote>
+<p><img src="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/4.png" alt="meta_new示例"></p>
+</blockquote>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-TCGA数据-2-相关性分析（bulk水平）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -374,224 +615,9 @@
 
 
   
-    <article id="post-递归可视化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        
-        <a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#递归的关键思想：不断缩小，调用自身</p>
-<ul>
-<li>利用该逻辑思想可进行简化问题</li>
-<li>1、画一个螺旋缩小正方形<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">def drawSpiral(t,lineLen):</span><br><span class="line">    if lineLen &gt; 0:</span><br><span class="line">        t.forward(lineLen)</span><br><span class="line">        t.right(90)</span><br><span class="line">        drawSpiral(t,lineLen - 5)</span><br><span class="line">drawSpiral(t,100)</span><br><span class="line"></span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/1.png" alt="螺旋结构展示"></li>
-<li>2、画一个五角星<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import turtle</span><br><span class="line"></span><br><span class="line">t &#x3D; turtle.Turtle()</span><br><span class="line"></span><br><span class="line">t.pencolor(&quot;green&quot;)</span><br><span class="line">t.pensize(3)</span><br><span class="line">for i in  range(5):</span><br><span class="line">    t.forward(100)</span><br><span class="line">    t.right(144)</span><br><span class="line">t.hideturtle()</span><br><span class="line">turtle.done()</span><br></pre></td></tr></table></figure>
-<img src="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/2.png" alt="螺旋结构展示"></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-后缀表达式计算" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">栈的应用-后缀表达式计算</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:20:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#后缀表达式计算</p>
-<blockquote>
-<p>正如中缀转后缀中所提到的、需要考虑运算的优先级，小学我们曾学过，先乘除后加减嘛23333333</p>
-</blockquote>
-<p><img src="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC.png" alt="后缀表达式计算示例"></p>
-<p>##代码实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def postfixEval(postfixExpr):</span><br><span class="line">        operandStack &#x3D; Stack()</span><br><span class="line">        tokenList&#x3D; list(postfixExpr)</span><br><span class="line"></span><br><span class="line">        for token in tokenList:</span><br><span class="line">            if token in &quot;0123456789&quot;:</span><br><span class="line">                operandStack.push(int(token))</span><br><span class="line">            else:</span><br><span class="line">                operand2 &#x3D; operandStack.pop()</span><br><span class="line">                operand1 &#x3D; operandStack.pop()</span><br><span class="line">                result &#x3D; doMath(token,operand1,operand2)</span><br><span class="line">                operandStack.push(result)</span><br><span class="line">        return operandStack.pop()</span><br><span class="line">def doMath(op,op1,op2):</span><br><span class="line">    if op &#x3D;&#x3D; &quot;*&quot;:</span><br><span class="line">      return op1*op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;&#x2F;&quot;:</span><br><span class="line">      return op1&#x2F;op2</span><br><span class="line">    elif op &#x3D;&#x3D; &quot;+&quot;:</span><br><span class="line">      return op1+op2</span><br><span class="line">    else:</span><br><span class="line">      return op1-op2</span><br><span class="line"></span><br><span class="line">print(postfixEval(&quot;789*+&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;后缀表达式计算.py</span><br><span class="line">79</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-栈的应用-中缀表达式变后缀表达式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#中缀表达式变后缀表达式</p>
-<blockquote>
-<p>和读取括号是否匹配类似，一层层读（），根据栈的数据结构的特性“先进后出”<br>，也就是说最里面的括号在中缀表达式里运算最先运算</p>
-</blockquote>
-<p>这里的代码的一些Tips：</p>
-<blockquote>
-<blockquote>
-<p>将括号替换为运算符，并且将运算符排序，与数字近的先运算，同时也要考虑运算的优先级</p>
-</blockquote>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">from pythonds.basic.stack import Stack</span><br><span class="line"></span><br><span class="line">def infixToPostfix(infixexpr):</span><br><span class="line">    prec &#x3D; &#123;&#125;</span><br><span class="line">    prec[&quot;*&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;&#x2F;&quot;] &#x3D; 3</span><br><span class="line">    prec[&quot;+&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;-&quot;] &#x3D; 2</span><br><span class="line">    prec[&quot;(&quot;] &#x3D; 1</span><br><span class="line">    opStack &#x3D; Stack()</span><br><span class="line">    postfixList &#x3D; []</span><br><span class="line">    tokenList &#x3D; list(infixexpr)</span><br><span class="line">    #以下的问题出现，改成上面</span><br><span class="line">    #tokenList &#x3D; infixexpr.split()</span><br><span class="line">    for token in tokenList:</span><br><span class="line">        if token in &quot;ABCDEFGHIJKLMNOPQRSTVUWXYZ&quot; or token in &quot;0123456789&quot;:</span><br><span class="line">            postfixList.append(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;(&quot;:</span><br><span class="line">            opStack.push(token)</span><br><span class="line">        elif token &#x3D;&#x3D; &quot;)&quot;:</span><br><span class="line">            topToken &#x3D; opStack.pop()</span><br><span class="line">            while  topToken !&#x3D; &quot;(&quot;:</span><br><span class="line">                postfixList.append(topToken)</span><br><span class="line">                topToken &#x3D; opStack.pop()</span><br><span class="line">        else:</span><br><span class="line">            while(not opStack.isEmpty()) and \</span><br><span class="line">                    (prec([opStack.peek()]) &gt;&#x3D; prec[token]):</span><br><span class="line">                postfixList.append(opStack.pop())</span><br><span class="line">            opStack.push(token)</span><br><span class="line">    while not opStack.isEmpty():</span><br><span class="line">        postfixList.append(opStack.pop())</span><br><span class="line">    return &quot; &quot; .join(postfixList)</span><br><span class="line"></span><br><span class="line">print(infixToPostfix(&quot;A+B&quot;))</span><br></pre></td></tr></table></figure>
-<p>##输出结果</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\James77\anaconda3\python.exe C:&#x2F;Python_file&#x2F;scRNA&#x2F;中缀表达式变后缀表达式.py</span><br><span class="line">A B +</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/6/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">Next &amp;raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/6/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/">Next &amp;raquo;</a>
     </nav>
   
 

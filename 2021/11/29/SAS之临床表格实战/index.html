@@ -6,18 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Biomagic</title>
+  <title>SAS之临床表格实战 | Biomagic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Biomagic">
-<meta property="og:url" content="http://yoursite.com/archives/page/4/index.html">
+  <meta name="description" content="##筛选TCGA病人的临床信息并进行描述性统计 123456789*读取TCGA meta信息 CSV文件;*filename TCGAmeta &quot;&#x2F;home&#x2F;u59716195&#x2F;test_data&#x2F;TCGA_BLCA_genemeta.csv&quot;;*proc import out&#x3D;TCGAmeta datafile&#x3D;T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SAS之临床表格实战">
+<meta property="og:url" content="http://yoursite.com/2021/11/29/SAS%E4%B9%8B%E4%B8%B4%E5%BA%8A%E8%A1%A8%E6%A0%BC%E5%AE%9E%E6%88%98/index.html">
 <meta property="og:site_name" content="Biomagic">
-<meta property="og:description" content="如何优雅的把自己的序列和可爱的小姐姐的序列重组是一个值得探讨的Question">
+<meta property="og:description" content="##筛选TCGA病人的临床信息并进行描述性统计 123456789*读取TCGA meta信息 CSV文件;*filename TCGAmeta &quot;&#x2F;home&#x2F;u59716195&#x2F;test_data&#x2F;TCGA_BLCA_genemeta.csv&quot;;*proc import out&#x3D;TCGAmeta datafile&#x3D;T">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://yoursite.com/2021/11/29/SAS%E4%B9%8B%E4%B8%B4%E5%BA%8A%E8%A1%A8%E6%A0%BC%E5%AE%9E%E6%88%98/1.png">
+<meta property="article:published_time" content="2021-11-29T15:53:30.000Z">
+<meta property="article:modified_time" content="2021-11-29T15:59:57.881Z">
 <meta property="article:author" content="Hu Jiaqi">
 <meta property="article:tag" content="Bioinformatics R Python Excel Linux">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/11/29/SAS%E4%B9%8B%E4%B8%B4%E5%BA%8A%E8%A1%A8%E6%A0%BC%E5%AE%9E%E6%88%98/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Biomagic" type="application/atom+xml">
   
@@ -149,295 +153,168 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-SAS之临床表格实战" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SAS之临床表格实战
+    </h1>
+  
+
+        
+        <a href="/2021/11/29/SAS%E4%B9%8B%E4%B8%B4%E5%BA%8A%E8%A1%A8%E6%A0%BC%E5%AE%9E%E6%88%98/" class="archive-article-date">
+  	<time datetime="2021-11-29T15:53:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-29</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##筛选TCGA病人的临床信息并进行描述性统计</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">*读取TCGA meta信息 CSV文件;</span><br><span class="line"></span><br><span class="line">*filename TCGAmeta &quot;&#x2F;home&#x2F;u59716195&#x2F;test_data&#x2F;TCGA_BLCA_genemeta.csv&quot;;</span><br><span class="line">*proc import out&#x3D;TCGAmeta datafile&#x3D;TCGAmeta</span><br><span class="line">*	dbms&#x3D;csv replace;</span><br><span class="line">*	getnames&#x3D;yes;</span><br><span class="line">*	guessingrows&#x3D;20;</span><br><span class="line">*	datarow&#x3D;2;</span><br><span class="line">*run;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>此处可以用proc导入数据，但是部分变量格式需要微调，于是在log日志进行细微调整</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">data TCGAMETA;</span><br><span class="line">             %let _EFIERR_ &#x3D; 0; &#x2F;* set the ERROR detection macro variable *&#x2F;</span><br><span class="line">              infile &quot;&#x2F;home&#x2F;u59716195&#x2F;test_data&#x2F;TCGA_BLCA_genemeta.csv&quot; delimiter &#x3D; &#39;,&#39; MISSOVER DSD  firstobs&#x3D;2 ;</span><br><span class="line">               informat VAR1 $16. ;</span><br><span class="line">               informat &quot;age_at_index.demographic&quot;N best32. ;</span><br><span class="line">               informat &quot;gender.demographic&quot;N $6. ;</span><br><span class="line">               informat &quot;vital_status.demographic&quot;N $5. ;</span><br><span class="line">               informat &quot;days_to_last_follow_up.diagnoses&quot;N $4. ;</span><br><span class="line">               informat &#39;pathologic_M&#39;n $2. ;</span><br><span class="line">               informat &#39;pathologic_N&#39;n $2. ;</span><br><span class="line">               informat &#39;pathologic_T&#39;n $3. ;</span><br><span class="line">               informat &quot;sample_type.samples&quot;N $30. ;</span><br><span class="line">               informat &quot;tumor_stage.diagnoses&quot;N $12. ;</span><br><span class="line">               informat &#39;neoplasm_histologic_grade&#39;n $10. ;</span><br><span class="line">               format VAR1 $16. ;</span><br><span class="line">               format &quot;age_at_index.demographic&quot;N best12. ;</span><br><span class="line">               format &quot;gender.demographic&quot;N $6. ;</span><br><span class="line">               format &quot;vital_status.demographic&quot;N $5. ;</span><br><span class="line">               format &quot;days_to_last_follow_up.diagnoses&quot;N $4. ;</span><br><span class="line">               format &#39;pathologic_M&#39;n $2. ;</span><br><span class="line">               format &#39;pathologic_N&#39;n $2. ;</span><br><span class="line">               format &#39;pathologic_T&#39;n $3. ;</span><br><span class="line">               format &quot;sample_type.samples&quot;N $30. ;</span><br><span class="line">               format &quot;tumor_stage.diagnoses&quot;N $9. ;</span><br><span class="line">               format &#39;neoplasm_histologic_grade&#39;n $10. ;</span><br><span class="line">             input</span><br><span class="line">                        VAR1 $</span><br><span class="line">                         &quot;age_at_index.demographic&quot;N</span><br><span class="line">                       &quot;gender.demographic&quot;N $</span><br><span class="line">                        &quot;vital_status.demographic&quot;N $</span><br><span class="line">                        &quot;days_to_last_follow_up.diagnoses&quot;N $</span><br><span class="line">                        &#39;pathologic_M&#39;n $</span><br><span class="line">                   		&#39;pathologic_N&#39;n $</span><br><span class="line">                       &#39;pathologic_T&#39;n $</span><br><span class="line">                       &quot;sample_type.samples&quot;N $</span><br><span class="line">                        &quot;tumor_stage.diagnoses&quot;N $</span><br><span class="line">                     &#39;neoplasm_histologic_grade&#39;n $ ;</span><br><span class="line">          if _ERROR_ then call symputx(&#39;_EFIERR_&#39;,1);  &#x2F;* set ERROR detection macro variable *&#x2F;</span><br><span class="line">run;</span><br></pre></td></tr></table></figure></li>
+<li><p>可以观察到data步骤采用了%宏的用法，下期采用宏来制表</p>
+</li>
+<li><p>此时逻辑库中已经保留用清洗导入的数据框的文件WORK.XXXX</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">*根据meta信息制作临床信息统计表格;</span><br><span class="line"></span><br><span class="line">data TCGA_clean;</span><br><span class="line">	set TCGAmeta;</span><br><span class="line">	rename &#39;var1&#39;n &#x3D; ID &#39;age_at_index.demographic&#39;n&#x3D;age &#39;gender.demographic&#39;n&#x3D;gender</span><br><span class="line">			&#39;vital_status.demographic&#39;n&#x3D;status &#39;days_to_last_follow_up.diagnoses&#39;n&#x3D;time</span><br><span class="line">			&#39;sample_type.samples&#39;n &#x3D; sample_type &#39;tumor_stage.diagnoses&#39;n&#x3D; tumor_stage</span><br><span class="line">			&#39;neoplasm_histologic_grade&#39;n &#x3D; grade;</span><br><span class="line">	keep &#39;var1&#39;n &#39;age_at_index.demographic&#39;n </span><br><span class="line">	&#39;gender.demographic&#39;n </span><br><span class="line">	&#39;pathologic_M&#39;n &#39;pathologic_N&#39;n</span><br><span class="line">	&#39;pathologic_T&#39;n &#39;sample_type.samples&#39;n &#39;tumor_stage.diagnoses&#39;n </span><br><span class="line">	&#39;neoplasm_histologic_grade&#39;n;</span><br><span class="line">run;</span><br><span class="line"></span><br><span class="line">*proc print data&#x3D;TCGA_clean;</span><br><span class="line">*run;</span><br></pre></td></tr></table></figure></li>
+<li><p>更改变量名字以及筛选保留需要统计分析的变量，生成单独的分析格式的文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ods tagsets.rtf file&#x3D;&quot;table5.rtf&quot; style&#x3D;journal3a;</span><br><span class="line"> title &quot;临床信息统计&quot;;</span><br><span class="line">proc tabulate data&#x3D;TCGA_clean;</span><br><span class="line"> class gender tumor_stage sample_type pathologic_M </span><br><span class="line"> 	   pathologic_N pathologic_T grade;</span><br><span class="line"> var  age;</span><br><span class="line"> table gender *(n colpctn) tumor_stage *(n colpctn)</span><br><span class="line"> 	   grade *(n colpctn) age*(mean std) </span><br><span class="line">       pathologic_M *(n colpctn)</span><br><span class="line"> 	   pathologic_N *(n colpctn)</span><br><span class="line">       pathologic_T *(n colpctn),sample_type;</span><br><span class="line">run;</span><br><span class="line">ods tagsets.rtf close;</span><br></pre></td></tr></table></figure></li>
+<li><p>采用ods系统保存分析的表格文件。<br><img src="/2021/11/29/SAS%E4%B9%8B%E4%B8%B4%E5%BA%8A%E8%A1%A8%E6%A0%BC%E5%AE%9E%E6%88%98/1.png" alt="Snakemake—-RNA-seq流程搭建实践"></p>
+</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/" class="archive-article-date">
-  	<time datetime="2020-07-14T03:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/14/sierpinski-%E9%80%92%E5%BD%92%E4%B8%89%E8%A7%92%E5%BD%A2/">sierpinski(递归三角形)</a>
-    </h1>
-  
+      
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/11/29/SAS%E4%B9%8B%E4%B8%B4%E5%BA%8A%E8%A1%A8%E6%A0%BC%E5%AE%9E%E6%88%98/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/" class="archive-article-date">
-  	<time datetime="2020-07-14T02:43:33.848Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-14</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/11/29/SAS%E4%B9%8BODS%E6%8A%93%E5%8F%96%E7%94%9F%E5%AD%98%E6%95%B0%E6%8D%AE/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">SAS之ODS抓取生存数据</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/14/%E7%9B%97%E7%89%88%E6%B7%BB%E6%9F%8F%E5%B2%9ATimberland-%E9%80%92%E5%BD%92%E5%88%86%E5%BD%A2%E6%A0%91/">盗版添柏岚Timberland-递归分形树</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:30:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-3-%E7%94%9F%E5%AD%98%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(3):生存分析（bulk水平）</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T16:16:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/08/TCGA%E6%95%B0%E6%8D%AE-2-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(2):相关性分析（bulk水平）</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:35:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/07/TCGA%E6%95%B0%E6%8D%AE-1-DESeq2%E5%B7%AE%E5%BC%82%E5%88%86%E6%9E%90%EF%BC%88bulk%E6%B0%B4%E5%B9%B3%EF%BC%89/">TCGA数据(1):DESeq2差异分析（bulk水平）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/" class="archive-article-date">
-  	<time datetime="2020-07-07T15:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/07/07/%E9%80%92%E5%BD%92%E5%8F%AF%E8%A7%86%E5%8C%96/">递归可视化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:20:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AE%A1%E7%AE%97/">栈的应用-后缀表达式计算</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:13:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%90%8E%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F/">栈的应用-中缀表达式变后缀表达式</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/" class="archive-article-date">
-  	<time datetime="2020-05-17T06:08:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/17/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E4%BA%8C%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2/">栈的应用-二进制转换</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/" class="archive-article-date">
-  	<time datetime="2020-05-15T16:13:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/05/16/%E6%A0%88%E7%9A%84%E5%BA%94%E7%94%A8-%E7%AE%80%E5%8D%95%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D%EF%BC%88%E4%BF%AE%E6%94%B9%EF%BC%89/">栈的应用-简单括号匹配（修改）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/5/">Next &amp;raquo;</a>
-    </nav>
   
 
 
@@ -461,8 +338,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
